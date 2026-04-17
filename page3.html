@@ -19,7 +19,6 @@
       padding: 32px 24px 40px;
     }
 
-    /* Stork display area */
     .stork-stage {
       position: relative;
       flex: 0 0 54vh;
@@ -34,43 +33,27 @@
       height: auto;
     }
 
-    /* Stork 1 – upper left, wobbles */
-    .stork1 {
-      top: 0;
-      left: 0;
-      animation: wobble1 4.0s ease-in-out infinite;
-    }
+    .stork1 { top: 0; left: 0; animation: wobble1 4.0s ease-in-out infinite; }
     @keyframes wobble1 {
       0%,100% { transform: translate(0px,   0px); }
       30%     { transform: translate(12px, -16px); }
       65%     { transform: translate(-7px,  -9px); }
     }
 
-    /* Stork 2 – right side, mirrored, different phase */
-    .stork2 {
-      top: 18%;
-      right: 0;
-      animation: wobble2 5.4s ease-in-out infinite;
-    }
+    .stork2 { top: 18%; right: 0; animation: wobble2 5.4s ease-in-out infinite; }
     @keyframes wobble2 {
       0%,100% { transform: scaleX(-1) translate(0px,   0px); }
       35%     { transform: scaleX(-1) translate(10px, -18px); }
       70%     { transform: scaleX(-1) translate(-9px, -11px); }
     }
 
-    /* Stork 3 – lower left, slower phase */
-    .stork3 {
-      top: 38%;
-      left: 0;
-      animation: wobble3 3.7s ease-in-out infinite;
-    }
+    .stork3 { top: 38%; left: 0; animation: wobble3 3.7s ease-in-out infinite; }
     @keyframes wobble3 {
       0%,100% { transform: translate(0px,   0px); }
       40%     { transform: translate(9px,  -14px); }
       75%     { transform: translate(-10px, -7px); }
     }
 
-    /* Form rows */
     .form-area {
       margin-top: 18px;
       display: flex;
@@ -122,6 +105,15 @@
       color: #2c1810;
       outline: none;
     }
+
+    .bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .bottom #btn-submit { margin-top: 0; }
+    .bottom #nav { margin-top: 0; padding-top: 0; }
   </style>
 </head>
 <body>
@@ -133,60 +125,88 @@
       <img class="stork-img stork3" src="assets/storCk3.jpg" alt="">
     </div>
 
-    <div class="form-area">
+    <form id="page3-form" class="form-area">
       <div class="row">
         <span class="row-label">Аист №</span>
-        <input class="num-field" type="number" min="1" max="3">
+        <input class="num-field" type="number" name="stork1_num" min="1" max="3">
         <span class="name-static">НИКИТА</span>
       </div>
       <div class="row">
         <span class="row-label">Аист №</span>
-        <input class="num-field" type="number" min="1" max="3">
-        <input class="name-field" type="text">
+        <input class="num-field" type="number" name="stork2_num" min="1" max="3">
+        <input class="name-field" type="text" name="stork2_name">
       </div>
       <div class="row">
         <span class="row-label">Аист №</span>
-        <input class="num-field" type="number" min="1" max="3">
-        <input class="name-field" type="text">
+        <input class="num-field" type="number" name="stork3_num" min="1" max="3">
+        <input class="name-field" type="text" name="stork3_name">
       </div>
-    </div>
+    </form>
 
-    <nav id="nav">
-      <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
-      <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
-    </nav>
+    <div class="bottom">
+      <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
+      <nav id="nav">
+        <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
+        <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
+      </nav>
+    </div>
 
   </div>
 
   <script>
     (function () {
-      const filename = location.pathname.split('/').pop() || '';
-      const btnBack  = document.getElementById('btn-back');
-      const btnNext  = document.getElementById('btn-next');
+      const filename  = location.pathname.split('/').pop() || '';
+      const btnBack   = document.getElementById('btn-back');
+      const btnNext   = document.getElementById('btn-next');
+      const btnSubmit = document.getElementById('btn-submit');
+      const form      = document.getElementById('page3-form');
 
       const match = filename.match(/^page(\d+)\.html$/);
-      if (!match) return;
+      if (match) {
+        const n        = parseInt(match[1], 10);
+        const prevFile = 'page' + (n - 1) + '.html';
+        const nextFile = 'page' + (n + 1) + '.html';
 
-      const n        = parseInt(match[1], 10);
-      const prevFile = 'page' + (n - 1) + '.html';
-      const nextFile = 'page' + (n + 1) + '.html';
+        btnBack.hidden = false;
+        btnNext.hidden = false;
 
-      btnBack.hidden = false;
-      btnNext.hidden = false;
+        function enableNav(file, btn) {
+          fetch(file, { method: 'HEAD' })
+            .then(function (r) {
+              if (r.ok) {
+                btn.disabled = false;
+                btn.addEventListener('click', function () { location.href = file; });
+              }
+            })
+            .catch(function () {});
+        }
 
-      function enableNav(file, btn) {
-        fetch(file, { method: 'HEAD' })
-          .then(function (r) {
-            if (r.ok) {
-              btn.disabled = false;
-              btn.addEventListener('click', function () { location.href = file; });
-            }
-          })
-          .catch(function () {});
+        enableNav(prevFile, btnBack);
+        enableNav(nextFile, btnNext);
       }
 
-      enableNav(prevFile, btnBack);
-      enableNav(nextFile, btnNext);
+      btnSubmit.addEventListener('click', function () {
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = '\u2026';
+
+        fetch('https://formspree.io/f/meevgjbz', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        })
+        .then(function (r) {
+          if (r.ok) {
+            btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';
+          } else {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
+          }
+        })
+        .catch(function () {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
+        });
+      });
     }());
   </script>
 </body>
