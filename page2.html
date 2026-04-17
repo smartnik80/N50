@@ -30,16 +30,15 @@
       gap: 0;
     }
 
+    /* Bleed photos to the full frame width, ignoring horizontal padding */
     .photo {
-      width: 100%;
       display: block;
-      border-radius: 2px;
+      width: calc(100% + 48px);
+      margin-left: -24px;
     }
 
-    .text-img {
-      width: 100%;
-      display: block;
-      margin-top: 14px;
+    .photo + .photo {
+      margin-top: 10px;
     }
 
     .choices {
@@ -180,7 +179,6 @@
           btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
         });
       });
-    }());
-  </script>
+    }());  </script>
 </body>
 </html>
