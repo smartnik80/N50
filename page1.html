@@ -16,7 +16,7 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
-      font-family: Georgia, 'Times New Roman', serif;
+      font-family: Georgia, serif;
     }
 
     .page {
@@ -35,7 +35,6 @@
       margin: 24px 0;
     }
 
-    /* ── Image + overlay container ────────────────────────────── */
     .photo-area {
       position: relative;
       width: 100%;
@@ -48,8 +47,8 @@
     }
 
     /* Transparent overlay on the right 50% of the image.
-       Flex column: names-list takes the text area height,
-       add-name sits in the empty area below.               */
+       flex: 4 / flex: 1 = ~80% names / ~20% input.
+       Adjust ratio if the empty area in the image is taller or shorter. */
     .overlay {
       position: absolute;
       top: 0;
@@ -60,9 +59,6 @@
       flex-direction: column;
     }
 
-    /* ── Names checklist ──────────────────────────────────────── */
-    /* flex: 4 / flex: 1 = 80 % / 20 % split.
-       Adjust if the empty area in your image is taller or shorter. */
     .names-list {
       flex: 4;
       display: flex;
@@ -74,18 +70,17 @@
     .name-row {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       cursor: pointer;
     }
 
-    /* Custom checkbox */
     .name-row input[type="checkbox"] {
       -webkit-appearance: none;
       appearance: none;
       position: relative;
       flex-shrink: 0;
-      width: 11px;
-      height: 11px;
+      width: 13px;
+      height: 13px;
       border: 1.5px solid rgba(139, 26, 26, 0.9);
       border-radius: 2px;
       background: rgba(250, 247, 242, 0.65);
@@ -102,32 +97,23 @@
       position: absolute;
       left: 2px;
       top: -1px;
-      width: 4px;
-      height: 7px;
-      border: 1.5px solid #faf7f2;
+      width: 5px;
+      height: 8px;
+      border: 2px solid #faf7f2;
       border-top: none;
       border-left: none;
       transform: rotate(45deg);
     }
 
-    .num {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 9px;
-      color: #8b1a1a;
-      min-width: 13px;
-      text-align: right;
-      flex-shrink: 0;
-    }
-
     .name-text {
-      font-size: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
       color: #2c1810;
-      /* white halo for legibility over the blurred image */
       text-shadow: 0 0 8px rgba(255,255,255,0.95), 0 0 3px rgba(255,255,255,0.8);
       white-space: nowrap;
     }
 
-    /* ── Custom name input ────────────────────────────────────── */
     .add-name {
       flex: 1;
       display: flex;
@@ -141,8 +127,8 @@
       border: none;
       border-bottom: 1.5px solid #8b1a1a;
       padding: 4px 3px;
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-size: 11px;
       color: #2c1810;
       outline: none;
     }
@@ -152,7 +138,6 @@
       font-style: italic;
     }
 
-    /* ── Navigation ───────────────────────────────────────────── */
     #nav {
       margin-top: auto;
       padding-top: 8px;
@@ -163,7 +148,7 @@
     .btn {
       flex: 1;
       padding: 17px 12px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
       font-size: 12px;
       font-weight: 400;
       letter-spacing: 0.14em;
@@ -189,30 +174,27 @@
 <body>
   <div class="page">
 
-    <!-- ── Photo with overlaid checklist ──────────────────────── -->
     <div class="photo-area">
       <img class="photo" src="assets/name_select.png" alt="">
 
       <div class="overlay">
 
-        <!-- Names fill the text area of the image (top ~80 %) -->
         <div class="names-list">
-          <label class="name-row"><input type="checkbox" name="name" value="Павел"><span class="num">1</span><span class="name-text">Павел</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Константин"><span class="num">2</span><span class="name-text">Константин</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Илья"><span class="num">3</span><span class="name-text">Илья</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Дмитрий"><span class="num">4</span><span class="name-text">Дмитрий</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Владимир"><span class="num">5</span><span class="name-text">Владимир</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Виктор"><span class="num">6</span><span class="name-text">Виктор</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Андрей"><span class="num">7</span><span class="name-text">Андрей</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Вадим"><span class="num">8</span><span class="name-text">Вадим</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Никита"><span class="num">9</span><span class="name-text">Никита</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Вячеслав"><span class="num">10</span><span class="name-text">Вячеслав</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Олег"><span class="num">11</span><span class="name-text">Олег</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Саша"><span class="num">12</span><span class="name-text">Саша</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Юрий"><span class="num">13</span><span class="name-text">Юрий</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Павел"><span class="name-text">Павел</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Константин"><span class="name-text">Константин</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Илья"><span class="name-text">Илья</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Дмитрий"><span class="name-text">Дмитрий</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Владимир"><span class="name-text">Владимир</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Виктор"><span class="name-text">Виктор</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Андрей"><span class="name-text">Андрей</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Вадим"><span class="name-text">Вадим</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Никита"><span class="name-text">Никита</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Вячеслав"><span class="name-text">Вячеслав</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Олег"><span class="name-text">Олег</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Саша"><span class="name-text">Саша</span></label>
+          <label class="name-row"><input type="checkbox" name="name" value="Юрий"><span class="name-text">Юрий</span></label>
         </div>
 
-        <!-- Empty bottom area of the image gets a text input -->
         <div class="add-name">
           <input type="text" placeholder="Добавь своё имя">
         </div>
@@ -222,7 +204,6 @@
 
     <hr class="rule">
 
-    <!-- ── Navigation ─────────────────────────────────────────── -->
     <nav id="nav">
       <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
       <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
