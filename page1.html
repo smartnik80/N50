@@ -29,12 +29,6 @@
       gap: 0;
     }
 
-    .rule {
-      border: none;
-      border-top: 1px solid #c8bfb0;
-      margin: 24px 0;
-    }
-
     .photo-area {
       position: relative;
       width: 100%;
@@ -46,9 +40,6 @@
       border-radius: 2px;
     }
 
-    /* Overlay covers the right 45% of the image, right-aligned.
-       names-list is fixed at 95% of image height to keep spacing even
-       across all 14 rows (13 checkboxes + text input). */
     .overlay {
       position: absolute;
       top: 0;
@@ -59,7 +50,6 @@
       flex-direction: column;
     }
 
-    /* All 14 rows distributed evenly via space-evenly */
     .names-list {
       flex: 0 0 95%;
       display: flex;
@@ -68,7 +58,6 @@
       padding: 2% 5% 0%;
     }
 
-    /* Shared row style for both checkboxes and the text input */
     .name-row,
     .custom-row {
       display: flex;
@@ -81,7 +70,6 @@
 
     .name-row { cursor: pointer; }
 
-    /* Custom checkbox */
     .name-row input[type="checkbox"] {
       -webkit-appearance: none;
       appearance: none;
@@ -95,7 +83,6 @@
       transition: background 0.1s, border-color 0.1s;
     }
 
-    /* SVG checkmark via background-image – cleaner than a CSS border trick */
     .name-row input[type="checkbox"]:checked {
       background-color: #8b1a1a;
       border-color: #8b1a1a;
@@ -112,7 +99,6 @@
       color: #2c1810;
     }
 
-    /* Text input row – same visual weight as a name-row */
     .custom-row input {
       flex: 1;
       min-width: 0;
@@ -133,7 +119,6 @@
       color: #9a8c82;
     }
 
-    /* ── Footer: submit button + nav, pushed to bottom ───────────── */
     .footer {
       margin-top: auto;
       display: flex;
@@ -141,7 +126,6 @@
       gap: 10px;
     }
 
-    /* ОТПРАВИТЬ: outlined style to distinguish from navigation */
     #btn-submit {
       width: 100%;
       padding: 15px 12px;
@@ -224,7 +208,6 @@
           <label class="name-row"><input type="checkbox" name="name" value="Саша"><span class="name-text">Саша</span></label>
           <label class="name-row"><input type="checkbox" name="name" value="Юрий"><span class="name-text">Юрий</span></label>
 
-          <!-- 14th row: free-text entry, same spacing and alignment -->
           <div class="custom-row">
             <input type="text" name="custom_name" placeholder="Мой вариант">
           </div>
@@ -233,11 +216,8 @@
       </form>
     </div>
 
-    <hr class="rule">
-
     <div class="footer">
 
-      <!-- Submits to FormSpree; decoupled from navigation -->
       <button id="btn-submit">ОТПРАВИТЬ</button>
 
       <nav id="nav">
@@ -257,7 +237,6 @@
       const btnSubmit = document.getElementById('btn-submit');
       const form      = document.getElementById('name-form');
 
-      // ── Navigation ─────────────────────────────────────────────
       const match = filename.match(/^page(\d+)\.html$/);
       if (match) {
         const n        = parseInt(match[1], 10);
@@ -282,7 +261,6 @@
         enableNav(nextFile, btnNext);
       }
 
-      // ── FormSpree submission (independent of navigation) ──────────
       btnSubmit.addEventListener('click', function () {
         btnSubmit.disabled = true;
         btnSubmit.textContent = '…';
