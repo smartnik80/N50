@@ -26,42 +26,52 @@
       position: relative;
     }
 
-    /* Wrapper bobs gently up and down while stork flies across */
+    /* Each wrapper bobs at a different phase */
     .stork-wrap {
       position: absolute;
-      top: 38%;
       left: 0;
       width: 100%;
       pointer-events: none;
       animation: bob 2.2s ease-in-out infinite;
     }
 
+    .stork-wrap:nth-child(1) { top: 25%; animation-delay:  0s;    }
+    .stork-wrap:nth-child(2) { top: 43%; animation-delay: -0.7s;  }
+    .stork-wrap:nth-child(3) { top: 61%; animation-delay: -1.4s;  }
+
     @keyframes bob {
       0%, 100% { transform: translateY(0);     }
       50%       { transform: translateY(-18px); }
     }
 
-    /* Stork translates left → right inside the wrapper */
     .stork {
       position: absolute;
-      animation: fly 7s linear infinite;
+      width: 160px;
+      height: auto;
     }
 
-    @keyframes fly {
-      from { left: -260px; }
-      to   { left: calc(100% + 60px); }
+    /* Left-to-right flight */
+    .ltr { animation: fly-ltr 7s linear infinite; }
+
+    /* Right-to-left: mirror the image and reverse the path */
+    .rtl {
+      transform: scaleX(-1);
+      animation: fly-rtl 7s linear infinite;
     }
 
-    /* Wing flaps around its body-attachment point (bottom-right of its bounding box) */
-    .wing {
-      transform-box: fill-box;
-      transform-origin: right bottom;
-      animation: flap 0.42s ease-in-out infinite alternate;
+    /* Stagger start positions ~2 s apart using negative delays */
+    .stork-wrap:nth-child(1) .stork { animation-delay:  0s;  }
+    .stork-wrap:nth-child(2) .stork { animation-delay: -2s;  }
+    .stork-wrap:nth-child(3) .stork { animation-delay: -4s;  }
+
+    @keyframes fly-ltr {
+      from { left: -180px; }
+      to   { left: calc(100% + 30px); }
     }
 
-    @keyframes flap {
-      from { transform: rotate(2deg);   }
-      to   { transform: rotate(-24deg); }
+    @keyframes fly-rtl {
+      from { left: calc(100% + 30px); }
+      to   { left: -180px; }
     }
   </style>
 </head>
@@ -69,47 +79,13 @@
   <div class="page">
 
     <div class="stork-wrap">
-      <svg class="stork" xmlns="http://www.w3.org/2000/svg"
-           viewBox="0 0 245 110" width="245" height="110">
-
-        <!-- Beak -->
-        <line x1="216" y1="31" x2="244" y2="26"
-              stroke="#3d2010" stroke-width="2.5" stroke-linecap="round"/>
-
-        <!-- Head -->
-        <ellipse cx="208" cy="34" rx="9" ry="7"
-                 stroke="#3d2010" fill="none" stroke-width="2"/>
-
-        <!-- Neck -->
-        <path d="M 200,40 Q 188,47 178,52"
-              stroke="#3d2010" fill="none" stroke-width="2.5"
-              stroke-linecap="round"/>
-
-        <!-- Body -->
-        <path d="M 143,55 Q 159,45 178,49 Q 197,53 201,60
-                 Q 197,71 175,72 Q 153,74 138,69 Q 128,64 131,58 Q 135,54 143,55 Z"
-              stroke="#3d2010" fill="none" stroke-width="2"/>
-
-        <!-- Wing (animated — rotates around where it meets the body) -->
-        <path class="wing"
-              d="M 157,51 Q 135,27 94,13 Q 64,3 24,17 Q 14,22 18,31
-                 Q 46,20 80,29 Q 118,39 150,53"
-              stroke="#3d2010" fill="none" stroke-width="2.5"
-              stroke-linejoin="round" stroke-linecap="round"/>
-
-        <!-- Tail feathers -->
-        <path d="M 133,63 Q 115,61 102,66 Q 93,70 98,76"
-              stroke="#3d2010" fill="none" stroke-width="2" stroke-linecap="round"/>
-
-        <!-- Leg 1 -->
-        <path d="M 153,71 L 132,103 L 118,103"
-              stroke="#3d2010" fill="none" stroke-width="2" stroke-linecap="round"/>
-
-        <!-- Leg 2 -->
-        <path d="M 163,72 L 145,100 L 131,100"
-              stroke="#3d2010" fill="none" stroke-width="2" stroke-linecap="round"/>
-
-      </svg>
+      <img class="stork ltr" src="assets/storck1.jpg" alt="">
+    </div>
+    <div class="stork-wrap">
+      <img class="stork rtl" src="assets/storck2.jpg" alt="">
+    </div>
+    <div class="stork-wrap">
+      <img class="stork ltr" src="assets/storck3.jpg" alt="">
     </div>
 
     <nav id="nav">
