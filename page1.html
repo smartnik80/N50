@@ -47,9 +47,9 @@
     }
 
     /* Overlay covers the right 45% of the image, right-aligned.
-       names-list is fixed at 88% of the image height (original 80% x 1.1
-       for +10% spacing between items). add-name has no flex-grow so it
-       sits directly below the last checkbox. */
+       names-list is fixed at 88% of image height (original 80% x 1.1
+       for +10% spacing). add-name has no flex-grow so it sits directly
+       below the last checkbox. */
     .overlay {
       position: absolute;
       top: 0;
@@ -176,7 +176,8 @@
     <div class="photo-area">
       <img class="photo" src="assets/name_select.png" alt="">
 
-      <div class="overlay">
+      <!-- Form wraps the inputs; submission is handled by JS below -->
+      <form id="name-form" class="overlay">
 
         <div class="names-list">
           <label class="name-row"><input type="checkbox" name="name" value="Павел"><span class="name-text">Павел</span></label>
@@ -195,10 +196,10 @@
         </div>
 
         <div class="add-name">
-          <input type="text" placeholder="Добавь своё имя">
+          <input type="text" name="custom_name" placeholder="Добавь своё имя">
         </div>
 
-      </div>
+      </form>
     </div>
 
     <hr class="rule">
@@ -215,25 +216,49 @@
       const filename = location.pathname.split('/').pop() || '';
       const btnBack  = document.getElementById('btn-back');
       const btnNext  = document.getElementById('btn-next');
+      const form     = document.getElementById('name-form');
+
       const match = filename.match(/^page(\d+)\.html$/);
       if (!match) return;
+
       const n        = parseInt(match[1], 10);
       const prevFile = 'page' + (n - 1) + '.html';
       const nextFile = 'page' + (n + 1) + '.html';
+
       btnBack.hidden = false;
       btnNext.hidden = false;
-      function enableIfExists(file, btn) {
-        fetch(file, { method: 'HEAD' })
-          .then(function (r) {
-            if (r.ok) {
-              btn.disabled = false;
-              btn.addEventListener('click', function () { location.href = file; });
-            }
-          })
-          .catch(function () {});
-      }
-      enableIfExists(prevFile, btnBack);
-      enableIfExists(nextFile, btnNext);
+
+      // НАЗАД: plain navigation, no submission.
+      fetch(prevFile, { method: 'HEAD' })
+        .then(function (r) {
+          if (r.ok) {
+            btnBack.disabled = false;
+            btnBack.addEventListener('click', function () { location.href = prevFile; });
+          }
+        })
+        .catch(function () {});
+
+      // ВПЕРЕД: POST form data to FormSpree, then navigate.
+      // Navigation happens whether FormSpree succeeds or fails so the
+      // user is never stuck on this page.
+      fetch(nextFile, { method: 'HEAD' })
+        .then(function (r) {
+          if (r.ok) {
+            btnNext.disabled = false;
+            btnNext.addEventListener('click', function () {
+              btnNext.disabled = true;
+              fetch('https://formspree.io/f/meevgjbz', {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'Accept': 'application/json' }
+              })
+              .finally(function () {
+                location.href = nextFile;
+              });
+            });
+          }
+        })
+        .catch(function () {});
     }());
   </script>
 </body>
