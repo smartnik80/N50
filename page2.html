@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page</title>
+  <title>Page 2</title>
   <link rel="stylesheet" href="buttons.css">
   <style>
     *, *::before, *::after {
@@ -30,77 +30,96 @@
       gap: 0;
     }
 
-    .rule {
-      border: none;
-      border-top: 1px solid #c8bfb0;
-      margin: 24px 0;
-    }
-
-    .photo-placeholder {
+    .photo {
       width: 100%;
-      aspect-ratio: 4 / 3;
-      background: #d4ccbf;
-      border: 1px solid #bdb5a8;
+      display: block;
       border-radius: 2px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      color: #9a8c82;
     }
 
-    .photo-placeholder svg { opacity: 0.45; }
-
-    .photo-placeholder span {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
+    .text-img {
+      width: 100%;
+      display: block;
+      margin-top: 14px;
     }
 
     .choices {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      margin-top: 20px;
     }
 
-    .choice {
-      height: 54px;
+    .choice-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       background: #f7f3ec;
       border: 1px solid #c8bfb0;
       border-left: 3px solid #8b1a1a;
       border-radius: 2px;
+      padding: 13px 14px;
+      cursor: pointer;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c1810;
+      transition: background 0.1s;
+    }
+
+    .choice-label:has(input:checked) {
+      background: #f0e8e0;
+    }
+
+    .choice-label input[type="radio"] {
+      -webkit-appearance: none;
+      appearance: none;
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(139, 26, 26, 0.65);
+      border-radius: 50%;
+      background: rgba(250, 247, 242, 0.9);
+      cursor: pointer;
+      transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
+    }
+
+    .choice-label input[type="radio"]:checked {
+      background-color: #8b1a1a;
+      border-color: #8b1a1a;
+      box-shadow: inset 0 0 0 3px #faf7f2;
     }
   </style>
 </head>
 <body>
   <div class="page">
 
-    <div class="photo-placeholder">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
-           stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="1"/>
-        <circle cx="8.5" cy="8.5" r="1.5"/>
-        <polyline points="21 15 16 10 5 21"/>
-      </svg>
-      <span>Photo</span>
-    </div>
+    <img class="photo" src="assets/adolf_szabad.png" alt="">
+    <img class="text-img" src="assets/adolf_szabad_txt.png" alt="">
 
-    <hr class="rule">
+    <form id="answer-form">
+      <div class="choices">
+        <label class="choice-label">
+          <input type="radio" name="answer" value="янычаром">
+          янычаром
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="дирижером">
+          дирижером
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="режиссером">
+          режиссером
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="ревизором">
+          ревизором
+        </label>
+      </div>
+    </form>
 
-    <div class="choices">
-      <div class="choice"></div>
-      <div class="choice"></div>
-      <div class="choice"></div>
-      <div class="choice"></div>
-    </div>
-
-    <hr class="rule">
+    <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
 
     <nav id="nav">
-      <button id="btn-start" class="btn" hidden>ВПЕРЕД</button>
       <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
       <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
     </nav>
@@ -109,23 +128,22 @@
 
   <script>
     (function () {
-      const filename = location.pathname.split('/').pop() || '';
-      const btnStart = document.getElementById('btn-start');
-      const btnBack  = document.getElementById('btn-back');
-      const btnNext  = document.getElementById('btn-next');
+      const filename  = location.pathname.split('/').pop() || '';
+      const btnBack   = document.getElementById('btn-back');
+      const btnNext   = document.getElementById('btn-next');
+      const btnSubmit = document.getElementById('btn-submit');
+      const form      = document.getElementById('answer-form');
 
-      if (filename === 'start.html') {
-        btnStart.hidden = false;
-        btnStart.addEventListener('click', function () { location.href = 'page1.html'; });
-      } else {
-        const match = filename.match(/^page(\d+)\.html$/);
-        if (!match) return;
+      const match = filename.match(/^page(\d+)\.html$/);
+      if (match) {
         const n        = parseInt(match[1], 10);
         const prevFile = 'page' + (n - 1) + '.html';
         const nextFile = 'page' + (n + 1) + '.html';
+
         btnBack.hidden = false;
         btnNext.hidden = false;
-        function enableIfExists(file, btn) {
+
+        function enableNav(file, btn) {
           fetch(file, { method: 'HEAD' })
             .then(function (r) {
               if (r.ok) {
@@ -135,9 +153,33 @@
             })
             .catch(function () {});
         }
-        enableIfExists(prevFile, btnBack);
-        enableIfExists(nextFile, btnNext);
+
+        enableNav(prevFile, btnBack);
+        enableNav(nextFile, btnNext);
       }
+
+      btnSubmit.addEventListener('click', function () {
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = '\u2026';
+
+        fetch('https://formspree.io/f/meevgjbz', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        })
+        .then(function (r) {
+          if (r.ok) {
+            btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';
+          } else {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
+          }
+        })
+        .catch(function () {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
+        });
+      });
     }());
   </script>
 </body>
