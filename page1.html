@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page 1</title>
+  <link rel="stylesheet" href="buttons.css">
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -118,66 +119,6 @@
       font-style: italic;
       color: #9a8c82;
     }
-
-    #btn-submit {
-      align-self: stretch;
-      padding: 4px 10px;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      border: 1.5px solid #8b1a1a;
-      border-radius: 3px;
-      background: rgba(237, 232, 223, 0.82);
-      color: #8b1a1a;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-    }
-
-    #btn-submit:not(:disabled):active {
-      background: #8b1a1a;
-      color: #faf7f2;
-    }
-
-    #btn-submit:disabled {
-      border-color: #c4b8ae;
-      color: #c4b8ae;
-      cursor: default;
-      pointer-events: none;
-    }
-
-    #nav {
-      margin-top: auto;
-      padding-top: 8px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 17px 12px;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      border: none;
-      border-radius: 2px;
-      background: #8b1a1a;
-      color: #faf7f2;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .btn:not(:disabled):active { background: #6e1515; }
-
-    .btn:disabled {
-      background: #c4b8ae;
-      color: #9a8e86;
-      cursor: default;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
@@ -207,11 +148,11 @@
             <input type="text" name="custom_name" placeholder="Мой вариант">
           </div>
 
-          <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
-
         </div>
       </form>
     </div>
+
+    <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
 
     <nav id="nav">
       <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
