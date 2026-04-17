@@ -12,75 +12,79 @@
     }
 
     body {
-      /* Dark surround makes the phone frame visible on desktop */
-      background: #111827;
+      /* Dark espresso surround – makes the parchment page frame pop */
+      background: #1a0e06;
       display: flex;
       justify-content: center;
       min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: Georgia, 'Times New Roman', serif;
     }
 
     /* ── Phone frame ────────────────────────────────────────────────
-       Width is derived from viewport height to keep a 9:16 portrait
-       ratio, capped at 430 px and never wider than the screen.
-       min-height: 100vh fills the visible area; extra content just
-       extends the document and scrolls normally – nothing is fixed.
+       9:16 portrait ratio from viewport height, capped at 430 px.
+       min-height: 100vh; content beyond that scrolls normally.
     ──────────────────────────────────────────────────────────────── */
     .page {
       width: min(calc(100vh * 9 / 16), 430px, 100vw);
       min-height: 100vh;
-      background: #ffffff;
+      background: #ede8df;
       display: flex;
       flex-direction: column;
-      padding: 28px 20px 36px;
-      gap: 20px;
+      padding: 32px 24px 40px;
+      gap: 0;
+    }
+
+    /* Thin warm-gray horizontal rules used as section dividers */
+    .rule {
+      border: none;
+      border-top: 1px solid #c8bfb0;
+      margin: 24px 0;
     }
 
     /* ── Photo placeholder ──────────────────────────────────────────
-       Replace with an <img> or a div with background-image.
-       The aspect-ratio keeps the block proportional regardless of width.
+       Replace contents with an <img> or background-image.
     ──────────────────────────────────────────────────────────────── */
     .photo-placeholder {
       width: 100%;
       aspect-ratio: 4 / 3;
-      background: #e5e7eb;
-      border-radius: 16px;
+      background: #d4ccbf;
+      border: 1px solid #bdb5a8;
+      border-radius: 2px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      color: #9ca3af;
+      color: #9a8c82;
     }
 
     .photo-placeholder svg {
-      opacity: 0.6;
+      opacity: 0.45;
     }
 
     .photo-placeholder span {
-      font-size: 12px;
-      letter-spacing: 0.08em;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
     }
 
     /* ── Multiple-choice placeholder ────────────────────────────────
        Add or remove .choice elements freely.
-       Replace each .choice with a real answer button or label.
+       Replace each with a real answer button or label.
     ──────────────────────────────────────────────────────────────── */
     .choices {
-      background: #f9fafb;
-      border-radius: 16px;
-      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .choice {
-      height: 52px;
-      background: #ffffff;
-      border: 2px solid #e5e7eb;
-      border-radius: 10px;
+      height: 54px;
+      background: #f7f3ec;
+      border: 1px solid #c8bfb0;
+      border-left: 3px solid #8b1a1a;
+      border-radius: 2px;
     }
 
     /* ── Navigation ─────────────────────────────────────────────────
@@ -91,30 +95,33 @@
       margin-top: auto;
       padding-top: 8px;
       display: flex;
-      gap: 12px;
+      gap: 10px;
     }
 
     .btn {
       flex: 1;
-      padding: 18px 12px;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.07em;
+      padding: 17px 12px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       border: none;
-      border-radius: 14px;
-      background: #2563eb;
-      color: #ffffff;
+      border-radius: 2px;
+      background: #8b1a1a;
+      color: #faf7f2;
       cursor: pointer;
       transition: background 0.15s;
     }
 
     .btn:not(:disabled):active {
-      background: #1d4ed8;
+      background: #6e1515;
     }
 
-    /* Disabled buttons are dimmed and absorb no pointer events */
+    /* Disabled: muted warm tone so it reads as unavailable, not broken */
     .btn:disabled {
-      opacity: 0.25;
+      background: #c4b8ae;
+      color: #9a8e86;
       cursor: default;
       pointer-events: none;
     }
@@ -125,18 +132,20 @@
 
     <!-- ── Photo placeholder ────────────────────────────────────── -->
     <div class="photo-placeholder">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
            stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <rect x="3" y="3" width="18" height="18" rx="1"/>
         <circle cx="8.5" cy="8.5" r="1.5"/>
         <polyline points="21 15 16 10 5 21"/>
       </svg>
       <span>Photo</span>
     </div>
 
+    <hr class="rule">
+
     <!-- ── Multiple-choice placeholder ─────────────────────────── -->
-    <!-- Duplicate or remove .choice blocks as needed -->
+    <!-- Add or remove .choice blocks as needed -->
     <div class="choices">
       <div class="choice"></div>
       <div class="choice"></div>
@@ -144,8 +153,10 @@
       <div class="choice"></div>
     </div>
 
+    <hr class="rule">
+
     <!-- ── Navigation ───────────────────────────────────────────── -->
-    <!-- All buttons are hidden on load; JS reveals the correct ones. -->
+    <!-- All buttons hidden on load; JS reveals the correct ones. -->
     <nav id="nav">
       <!-- Shown only on start.html -->
       <button id="btn-start" class="btn" hidden>ВПЕРЕД</button>
@@ -160,22 +171,14 @@
 
   <script>
     /* ── Navigation logic ──────────────────────────────────────────
-       This single file serves as the template for start.html and all
-       pageN.html pages.  On each load the script:
-         1. Reads the filename from the URL.
-         2. Shows the appropriate button(s).
-         3. For numbered pages, uses fetch() with method HEAD to check
-            whether the neighbouring files actually exist before enabling
-            the corresponding button.  A 404 (or any non-ok response)
-            leaves the button disabled.  This means page1.html will have
-            НАЗАД disabled whenever page0.html is absent – no special
-            casing is needed.
+       Reads the filename from the URL to decide which buttons to show.
+       For numbered pages, uses fetch() HEAD to confirm neighbouring
+       files exist before enabling the corresponding button.
+       A 404 keeps the button disabled – no special-casing needed.
 
-       Note: fetch() requires an HTTP server.  It will not work when
-       opening files directly via the file:// protocol.
+       Note: fetch() requires an HTTP server; file:// will always fail.
     ────────────────────────────────────────────────────────────── */
     (function () {
-      // Grab only the filename part of the URL path.
       const filename = location.pathname.split('/').pop() || '';
 
       const btnStart = document.getElementById('btn-start');
@@ -185,7 +188,6 @@
       if (filename === 'start.html') {
 
         // ── start.html ────────────────────────────────────────────
-        // One button, always enabled, always targets page1.html.
         btnStart.hidden = false;
         btnStart.addEventListener('click', function () {
           location.href = 'page1.html';
@@ -194,20 +196,17 @@
       } else {
 
         // ── pageN.html ────────────────────────────────────────────
-        // Extract the integer N from the filename.
         const match = filename.match(/^page(\d+)\.html$/);
-        if (!match) return; // unrecognised filename – show nothing
+        if (!match) return;
 
         const n        = parseInt(match[1], 10);
         const prevFile = 'page' + (n - 1) + '.html';
         const nextFile = 'page' + (n + 1) + '.html';
 
-        // Reveal both buttons (still disabled until checks below pass).
         btnBack.hidden = false;
         btnNext.hidden = false;
 
-        // Send a HEAD request for `file`.  If the server responds with
-        // 200 OK, enable `btn` and wire up its click handler.
+        // Enable btn and attach click only if file returns 200 OK.
         function enableIfExists(file, btn) {
           fetch(file, { method: 'HEAD' })
             .then(function (response) {
@@ -217,11 +216,8 @@
                   location.href = file;
                 });
               }
-              // Non-ok (e.g. 404) → button stays disabled.
             })
-            .catch(function () {
-              // Network error or CORS issue → button stays disabled.
-            });
+            .catch(function () {});
         }
 
         enableIfExists(prevFile, btnBack);
