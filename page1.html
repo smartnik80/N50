@@ -47,9 +47,8 @@
     }
 
     /* Overlay covers the right 45% of the image, right-aligned.
-       names-list is fixed at 88% of image height (original 80% x 1.1
-       for +10% spacing). add-name has no flex-grow so it sits directly
-       below the last checkbox. */
+       names-list is fixed at 95% of image height to keep spacing even
+       across all 14 rows (13 checkboxes + text input). */
     .overlay {
       position: absolute;
       top: 0;
@@ -60,53 +59,50 @@
       flex-direction: column;
     }
 
+    /* All 14 rows distributed evenly via space-evenly */
     .names-list {
-      flex: 0 0 88%;
+      flex: 0 0 95%;
       display: flex;
       flex-direction: column;
       justify-content: space-evenly;
       padding: 2% 5% 0%;
     }
 
-    .name-row {
+    /* Shared row style for both checkboxes and the text input */
+    .name-row,
+    .custom-row {
       display: flex;
       align-items: center;
       gap: 7px;
-      cursor: pointer;
       background: rgba(237, 232, 223, 0.82);
       padding: 3px 8px 3px 5px;
       border-radius: 3px;
     }
 
+    .name-row { cursor: pointer; }
+
+    /* Custom checkbox */
     .name-row input[type="checkbox"] {
       -webkit-appearance: none;
       appearance: none;
-      position: relative;
       flex-shrink: 0;
-      width: 14px;
-      height: 14px;
-      border: 1.5px solid rgba(139, 26, 26, 0.9);
-      border-radius: 2px;
+      width: 15px;
+      height: 15px;
+      border: 1.5px solid rgba(139, 26, 26, 0.85);
+      border-radius: 3px;
       background: rgba(250, 247, 242, 0.9);
       cursor: pointer;
+      transition: background 0.1s, border-color 0.1s;
     }
 
+    /* SVG checkmark via background-image – cleaner than a CSS border trick */
     .name-row input[type="checkbox"]:checked {
-      background: #8b1a1a;
+      background-color: #8b1a1a;
       border-color: #8b1a1a;
-    }
-
-    .name-row input[type="checkbox"]:checked::after {
-      content: '';
-      position: absolute;
-      left: 2px;
-      top: -1px;
-      width: 5px;
-      height: 8px;
-      border: 2px solid #faf7f2;
-      border-top: none;
-      border-left: none;
-      transform: rotate(45deg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpolyline points='1.5,6 4.5,9.5 10.5,2.5' fill='none' stroke='%23faf7f2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 82%;
     }
 
     .name-text {
@@ -116,30 +112,65 @@
       color: #2c1810;
     }
 
-    .add-name {
-      padding: 6px 5%;
-    }
-
-    .add-name input {
-      width: 100%;
-      background: rgba(237, 232, 223, 0.88);
+    /* Text input row – same visual weight as a name-row */
+    .custom-row input {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
       border: none;
-      border-bottom: 1.5px solid #8b1a1a;
-      padding: 5px 4px;
+      border-bottom: 1px solid rgba(139, 26, 26, 0.45);
+      padding: 0 2px;
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 14px;
+      font-size: 18px;
+      font-weight: 700;
       color: #2c1810;
       outline: none;
     }
 
-    .add-name input::placeholder {
-      color: #9a8c82;
+    .custom-row input::placeholder {
+      font-weight: 400;
       font-style: italic;
+      color: #9a8c82;
+    }
+
+    /* ── Footer: submit button + nav, pushed to bottom ───────────── */
+    .footer {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ОТПРАВИТЬ: outlined style to distinguish from navigation */
+    #btn-submit {
+      width: 100%;
+      padding: 15px 12px;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border: 1.5px solid #8b1a1a;
+      border-radius: 2px;
+      background: transparent;
+      color: #8b1a1a;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    #btn-submit:not(:disabled):active {
+      background: #8b1a1a;
+      color: #faf7f2;
+    }
+
+    #btn-submit:disabled {
+      border-color: #c4b8ae;
+      color: #c4b8ae;
+      cursor: default;
+      pointer-events: none;
     }
 
     #nav {
-      margin-top: auto;
-      padding-top: 8px;
       display: flex;
       gap: 10px;
     }
@@ -176,10 +207,9 @@
     <div class="photo-area">
       <img class="photo" src="assets/name_select.png" alt="">
 
-      <!-- Form wraps the inputs; submission is handled by JS below -->
       <form id="name-form" class="overlay">
-
         <div class="names-list">
+
           <label class="name-row"><input type="checkbox" name="name" value="Павел"><span class="name-text">Павел</span></label>
           <label class="name-row"><input type="checkbox" name="name" value="Константин"><span class="name-text">Константин</span></label>
           <label class="name-row"><input type="checkbox" name="name" value="Илья"><span class="name-text">Илья</span></label>
@@ -193,72 +223,88 @@
           <label class="name-row"><input type="checkbox" name="name" value="Олег"><span class="name-text">Олег</span></label>
           <label class="name-row"><input type="checkbox" name="name" value="Саша"><span class="name-text">Саша</span></label>
           <label class="name-row"><input type="checkbox" name="name" value="Юрий"><span class="name-text">Юрий</span></label>
-        </div>
 
-        <div class="add-name">
-          <input type="text" name="custom_name" placeholder="Добавь своё имя">
-        </div>
+          <!-- 14th row: free-text entry, same spacing and alignment -->
+          <div class="custom-row">
+            <input type="text" name="custom_name" placeholder="Мой вариант">
+          </div>
 
+        </div>
       </form>
     </div>
 
     <hr class="rule">
 
-    <nav id="nav">
-      <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
-      <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
-    </nav>
+    <div class="footer">
+
+      <!-- Submits to FormSpree; decoupled from navigation -->
+      <button id="btn-submit">ОТПРАВИТЬ</button>
+
+      <nav id="nav">
+        <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
+        <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
+      </nav>
+
+    </div>
 
   </div>
 
   <script>
     (function () {
-      const filename = location.pathname.split('/').pop() || '';
-      const btnBack  = document.getElementById('btn-back');
-      const btnNext  = document.getElementById('btn-next');
-      const form     = document.getElementById('name-form');
+      const filename  = location.pathname.split('/').pop() || '';
+      const btnBack   = document.getElementById('btn-back');
+      const btnNext   = document.getElementById('btn-next');
+      const btnSubmit = document.getElementById('btn-submit');
+      const form      = document.getElementById('name-form');
 
+      // ── Navigation ─────────────────────────────────────────────
       const match = filename.match(/^page(\d+)\.html$/);
-      if (!match) return;
+      if (match) {
+        const n        = parseInt(match[1], 10);
+        const prevFile = 'page' + (n - 1) + '.html';
+        const nextFile = 'page' + (n + 1) + '.html';
 
-      const n        = parseInt(match[1], 10);
-      const prevFile = 'page' + (n - 1) + '.html';
-      const nextFile = 'page' + (n + 1) + '.html';
+        btnBack.hidden = false;
+        btnNext.hidden = false;
 
-      btnBack.hidden = false;
-      btnNext.hidden = false;
+        function enableNav(file, btn) {
+          fetch(file, { method: 'HEAD' })
+            .then(function (r) {
+              if (r.ok) {
+                btn.disabled = false;
+                btn.addEventListener('click', function () { location.href = file; });
+              }
+            })
+            .catch(function () {});
+        }
 
-      // НАЗАД: plain navigation, no submission.
-      fetch(prevFile, { method: 'HEAD' })
+        enableNav(prevFile, btnBack);
+        enableNav(nextFile, btnNext);
+      }
+
+      // ── FormSpree submission (independent of navigation) ──────────
+      btnSubmit.addEventListener('click', function () {
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = '…';
+
+        fetch('https://formspree.io/f/meevgjbz', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        })
         .then(function (r) {
           if (r.ok) {
-            btnBack.disabled = false;
-            btnBack.addEventListener('click', function () { location.href = prevFile; });
+            btnSubmit.textContent = '✓ ОТПРАВЛЕНО';
+          } else {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'ОТПРАВИТЬ';
           }
         })
-        .catch(function () {});
-
-      // ВПЕРЕД: POST form data to FormSpree, then navigate.
-      // Navigation happens whether FormSpree succeeds or fails so the
-      // user is never stuck on this page.
-      fetch(nextFile, { method: 'HEAD' })
-        .then(function (r) {
-          if (r.ok) {
-            btnNext.disabled = false;
-            btnNext.addEventListener('click', function () {
-              btnNext.disabled = true;
-              fetch('https://formspree.io/f/meevgjbz', {
-                method: 'POST',
-                body: new FormData(form),
-                headers: { 'Accept': 'application/json' }
-              })
-              .finally(function () {
-                location.href = nextFile;
-              });
-            });
-          }
-        })
-        .catch(function () {});
+        .catch(function () {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'ОТПРАВИТЬ';
+        });
+      });
     }());
   </script>
 </body>
