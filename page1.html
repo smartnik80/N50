@@ -46,14 +46,14 @@
       border-radius: 2px;
     }
 
-    /* Transparent overlay on the right 75% of the image.
+    /* Transparent overlay on the right 50% of the image.
        flex: 4 / flex: 1 = ~80% names / ~20% input.
        Adjust ratio if the empty area in the image is taller or shorter. */
     .overlay {
       position: absolute;
       top: 0;
       right: 0;
-      width: 75%;
+      width: 50%;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -72,7 +72,6 @@
       align-items: center;
       gap: 7px;
       cursor: pointer;
-      /* Parchment pill behind each row for legibility */
       background: rgba(237, 232, 223, 0.82);
       padding: 3px 8px 3px 5px;
       border-radius: 3px;
