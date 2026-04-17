@@ -12,90 +12,98 @@
     }
 
     body {
-      /* Dark surround makes the phone frame visible on desktop */
-      background: #111827;
+      background: #1a0e06;
       display: flex;
       justify-content: center;
       min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: Georgia, 'Times New Roman', serif;
     }
 
     .page {
       width: min(calc(100vh * 9 / 16), 430px, 100vw);
       min-height: 100vh;
-      background: #ffffff;
+      background: #ede8df;
       display: flex;
       flex-direction: column;
-      padding: 28px 20px 36px;
-      gap: 20px;
+      padding: 32px 24px 40px;
+      gap: 0;
+    }
+
+    .rule {
+      border: none;
+      border-top: 1px solid #c8bfb0;
+      margin: 24px 0;
     }
 
     .photo-placeholder {
       width: 100%;
       aspect-ratio: 4 / 3;
-      background: #e5e7eb;
-      border-radius: 16px;
+      background: #d4ccbf;
+      border: 1px solid #bdb5a8;
+      border-radius: 2px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      color: #9ca3af;
+      color: #9a8c82;
     }
 
     .photo-placeholder svg {
-      opacity: 0.6;
+      opacity: 0.45;
     }
 
     .photo-placeholder span {
-      font-size: 12px;
-      letter-spacing: 0.08em;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
     }
 
     .choices {
-      background: #f9fafb;
-      border-radius: 16px;
-      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .choice {
-      height: 52px;
-      background: #ffffff;
-      border: 2px solid #e5e7eb;
-      border-radius: 10px;
+      height: 54px;
+      background: #f7f3ec;
+      border: 1px solid #c8bfb0;
+      border-left: 3px solid #8b1a1a;
+      border-radius: 2px;
     }
 
     #nav {
       margin-top: auto;
       padding-top: 8px;
       display: flex;
-      gap: 12px;
+      gap: 10px;
     }
 
     .btn {
       flex: 1;
-      padding: 18px 12px;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.07em;
+      padding: 17px 12px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
       border: none;
-      border-radius: 14px;
-      background: #2563eb;
-      color: #ffffff;
+      border-radius: 2px;
+      background: #8b1a1a;
+      color: #faf7f2;
       cursor: pointer;
       transition: background 0.15s;
     }
 
     .btn:not(:disabled):active {
-      background: #1d4ed8;
+      background: #6e1515;
     }
 
     .btn:disabled {
-      opacity: 0.25;
+      background: #c4b8ae;
+      color: #9a8e86;
       cursor: default;
       pointer-events: none;
     }
@@ -105,15 +113,17 @@
   <div class="page">
 
     <div class="photo-placeholder">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
            stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <rect x="3" y="3" width="18" height="18" rx="1"/>
         <circle cx="8.5" cy="8.5" r="1.5"/>
         <polyline points="21 15 16 10 5 21"/>
       </svg>
       <span>Photo</span>
     </div>
+
+    <hr class="rule">
 
     <div class="choices">
       <div class="choice"></div>
@@ -121,6 +131,8 @@
       <div class="choice"></div>
       <div class="choice"></div>
     </div>
+
+    <hr class="rule">
 
     <nav id="nav">
       <button id="btn-start" class="btn" hidden>ВПЕРЕД</button>
@@ -133,40 +145,31 @@
   <script>
     (function () {
       const filename = location.pathname.split('/').pop() || '';
-
       const btnStart = document.getElementById('btn-start');
       const btnBack  = document.getElementById('btn-back');
       const btnNext  = document.getElementById('btn-next');
 
       if (filename === 'start.html') {
         btnStart.hidden = false;
-        btnStart.addEventListener('click', function () {
-          location.href = 'page1.html';
-        });
+        btnStart.addEventListener('click', function () { location.href = 'page1.html'; });
       } else {
         const match = filename.match(/^page(\d+)\.html$/);
         if (!match) return;
-
         const n        = parseInt(match[1], 10);
         const prevFile = 'page' + (n - 1) + '.html';
         const nextFile = 'page' + (n + 1) + '.html';
-
         btnBack.hidden = false;
         btnNext.hidden = false;
-
         function enableIfExists(file, btn) {
           fetch(file, { method: 'HEAD' })
-            .then(function (response) {
-              if (response.ok) {
+            .then(function (r) {
+              if (r.ok) {
                 btn.disabled = false;
-                btn.addEventListener('click', function () {
-                  location.href = file;
-                });
+                btn.addEventListener('click', function () { location.href = file; });
               }
             })
             .catch(function () {});
         }
-
         enableIfExists(prevFile, btnBack);
         enableIfExists(nextFile, btnNext);
       }
