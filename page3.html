@@ -3,21 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page</title>
+  <title>Page 3</title>
   <link rel="stylesheet" href="buttons.css">
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: #1a0e06;
       display: flex;
       justify-content: center;
       min-height: 100vh;
-      font-family: Georgia, 'Times New Roman', serif;
     }
 
     .page {
@@ -27,80 +22,97 @@
       display: flex;
       flex-direction: column;
       padding: 32px 24px 40px;
-      gap: 0;
+      overflow: hidden;
+      position: relative;
     }
 
-    .rule {
-      border: none;
-      border-top: 1px solid #c8bfb0;
-      margin: 24px 0;
-    }
-
-    .photo-placeholder {
+    /* Wrapper bobs gently up and down while stork flies across */
+    .stork-wrap {
+      position: absolute;
+      top: 38%;
+      left: 0;
       width: 100%;
-      aspect-ratio: 4 / 3;
-      background: #d4ccbf;
-      border: 1px solid #bdb5a8;
-      border-radius: 2px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      color: #9a8c82;
+      pointer-events: none;
+      animation: bob 2.2s ease-in-out infinite;
     }
 
-    .photo-placeholder svg { opacity: 0.45; }
-
-    .photo-placeholder span {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
+    @keyframes bob {
+      0%, 100% { transform: translateY(0);     }
+      50%       { transform: translateY(-18px); }
     }
 
-    .choices {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    /* Stork translates left → right inside the wrapper */
+    .stork {
+      position: absolute;
+      animation: fly 7s linear infinite;
     }
 
-    .choice {
-      height: 54px;
-      background: #f7f3ec;
-      border: 1px solid #c8bfb0;
-      border-left: 3px solid #8b1a1a;
-      border-radius: 2px;
+    @keyframes fly {
+      from { left: -260px; }
+      to   { left: calc(100% + 60px); }
+    }
+
+    /* Wing flaps around its body-attachment point (bottom-right of its bounding box) */
+    .wing {
+      transform-box: fill-box;
+      transform-origin: right bottom;
+      animation: flap 0.42s ease-in-out infinite alternate;
+    }
+
+    @keyframes flap {
+      from { transform: rotate(2deg);   }
+      to   { transform: rotate(-24deg); }
     }
   </style>
 </head>
 <body>
   <div class="page">
 
-    <div class="photo-placeholder">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
-           stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="1"/>
-        <circle cx="8.5" cy="8.5" r="1.5"/>
-        <polyline points="21 15 16 10 5 21"/>
+    <div class="stork-wrap">
+      <svg class="stork" xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 245 110" width="245" height="110">
+
+        <!-- Beak -->
+        <line x1="216" y1="31" x2="244" y2="26"
+              stroke="#3d2010" stroke-width="2.5" stroke-linecap="round"/>
+
+        <!-- Head -->
+        <ellipse cx="208" cy="34" rx="9" ry="7"
+                 stroke="#3d2010" fill="none" stroke-width="2"/>
+
+        <!-- Neck -->
+        <path d="M 200,40 Q 188,47 178,52"
+              stroke="#3d2010" fill="none" stroke-width="2.5"
+              stroke-linecap="round"/>
+
+        <!-- Body -->
+        <path d="M 143,55 Q 159,45 178,49 Q 197,53 201,60
+                 Q 197,71 175,72 Q 153,74 138,69 Q 128,64 131,58 Q 135,54 143,55 Z"
+              stroke="#3d2010" fill="none" stroke-width="2"/>
+
+        <!-- Wing (animated — rotates around where it meets the body) -->
+        <path class="wing"
+              d="M 157,51 Q 135,27 94,13 Q 64,3 24,17 Q 14,22 18,31
+                 Q 46,20 80,29 Q 118,39 150,53"
+              stroke="#3d2010" fill="none" stroke-width="2.5"
+              stroke-linejoin="round" stroke-linecap="round"/>
+
+        <!-- Tail feathers -->
+        <path d="M 133,63 Q 115,61 102,66 Q 93,70 98,76"
+              stroke="#3d2010" fill="none" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- Leg 1 -->
+        <path d="M 153,71 L 132,103 L 118,103"
+              stroke="#3d2010" fill="none" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- Leg 2 -->
+        <path d="M 163,72 L 145,100 L 131,100"
+              stroke="#3d2010" fill="none" stroke-width="2" stroke-linecap="round"/>
+
       </svg>
-      <span>Photo</span>
     </div>
-
-    <hr class="rule">
-
-    <div class="choices">
-      <div class="choice"></div>
-      <div class="choice"></div>
-      <div class="choice"></div>
-      <div class="choice"></div>
-    </div>
-
-    <hr class="rule">
 
     <nav id="nav">
-      <button id="btn-start" class="btn" hidden>ВПЕРЕД</button>
       <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
       <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
     </nav>
@@ -110,34 +122,32 @@
   <script>
     (function () {
       const filename = location.pathname.split('/').pop() || '';
-      const btnStart = document.getElementById('btn-start');
       const btnBack  = document.getElementById('btn-back');
       const btnNext  = document.getElementById('btn-next');
 
-      if (filename === 'start.html') {
-        btnStart.hidden = false;
-        btnStart.addEventListener('click', function () { location.href = 'page1.html'; });
-      } else {
-        const match = filename.match(/^page(\d+)\.html$/);
-        if (!match) return;
-        const n        = parseInt(match[1], 10);
-        const prevFile = 'page' + (n - 1) + '.html';
-        const nextFile = 'page' + (n + 1) + '.html';
-        btnBack.hidden = false;
-        btnNext.hidden = false;
-        function enableIfExists(file, btn) {
-          fetch(file, { method: 'HEAD' })
-            .then(function (r) {
-              if (r.ok) {
-                btn.disabled = false;
-                btn.addEventListener('click', function () { location.href = file; });
-              }
-            })
-            .catch(function () {});
-        }
-        enableIfExists(prevFile, btnBack);
-        enableIfExists(nextFile, btnNext);
+      const match = filename.match(/^page(\d+)\.html$/);
+      if (!match) return;
+
+      const n        = parseInt(match[1], 10);
+      const prevFile = 'page' + (n - 1) + '.html';
+      const nextFile = 'page' + (n + 1) + '.html';
+
+      btnBack.hidden = false;
+      btnNext.hidden = false;
+
+      function enableNav(file, btn) {
+        fetch(file, { method: 'HEAD' })
+          .then(function (r) {
+            if (r.ok) {
+              btn.disabled = false;
+              btn.addEventListener('click', function () { location.href = file; });
+            }
+          })
+          .catch(function () {});
       }
+
+      enableNav(prevFile, btnBack);
+      enableNav(nextFile, btnNext);
     }());
   </script>
 </body>
