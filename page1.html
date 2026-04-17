@@ -119,6 +119,16 @@
       font-style: italic;
       color: #9a8c82;
     }
+
+    .bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bottom #btn-submit { margin-top: 0; }
+    .bottom #nav { margin-top: 0; padding-top: 0; }
   </style>
 </head>
 <body>
@@ -152,12 +162,13 @@
       </form>
     </div>
 
-    <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
-
-    <nav id="nav">
-      <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
-      <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
-    </nav>
+    <div class="bottom">
+      <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
+      <nav id="nav">
+        <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
+        <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
+      </nav>
+    </div>
 
   </div>
 
