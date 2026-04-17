@@ -119,24 +119,17 @@
       color: #9a8c82;
     }
 
-    .footer {
-      margin-top: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
     #btn-submit {
-      width: 100%;
-      padding: 15px 12px;
+      align-self: stretch;
+      padding: 4px 10px;
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       font-size: 15px;
       font-weight: 700;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       border: 1.5px solid #8b1a1a;
-      border-radius: 2px;
-      background: transparent;
+      border-radius: 3px;
+      background: rgba(237, 232, 223, 0.82);
       color: #8b1a1a;
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
@@ -155,6 +148,8 @@
     }
 
     #nav {
+      margin-top: auto;
+      padding-top: 8px;
       display: flex;
       gap: 10px;
     }
@@ -212,20 +207,16 @@
             <input type="text" name="custom_name" placeholder="Мой вариант">
           </div>
 
+          <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
+
         </div>
       </form>
     </div>
 
-    <div class="footer">
-
-      <button id="btn-submit">ОТПРАВИТЬ</button>
-
-      <nav id="nav">
-        <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
-        <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
-      </nav>
-
-    </div>
+    <nav id="nav">
+      <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
+      <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
+    </nav>
 
   </div>
 
@@ -263,7 +254,7 @@
 
       btnSubmit.addEventListener('click', function () {
         btnSubmit.disabled = true;
-        btnSubmit.textContent = '…';
+        btnSubmit.textContent = '\u2026';
 
         fetch('https://formspree.io/f/meevgjbz', {
           method: 'POST',
@@ -272,15 +263,15 @@
         })
         .then(function (r) {
           if (r.ok) {
-            btnSubmit.textContent = '✓ ОТПРАВЛЕНО';
+            btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';
           } else {
             btnSubmit.disabled = false;
-            btnSubmit.textContent = 'ОТПРАВИТЬ';
+            btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
           }
         })
         .catch(function () {
           btnSubmit.disabled = false;
-          btnSubmit.textContent = 'ОТПРАВИТЬ';
+          btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
         });
       });
     }());
