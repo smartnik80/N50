@@ -8,12 +8,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      background: #1a0e06;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-    }
+    body { background: #1a0e06; display: flex; justify-content: center; min-height: 100vh; }
 
     .page {
       width: min(calc(100vh * 9 / 16), 430px, 100vw);
@@ -22,70 +17,138 @@
       display: flex;
       flex-direction: column;
       padding: 32px 24px 40px;
-      overflow: hidden;
+    }
+
+    /* Stork display area */
+    .stork-stage {
       position: relative;
+      flex: 0 0 54vh;
+      width: calc(100% + 48px);
+      margin-left: -24px;
+      overflow: hidden;
     }
 
-    /* Each wrapper bobs at a different phase */
-    .stork-wrap {
+    .stork-img {
       position: absolute;
-      left: 0;
-      width: 100%;
-      pointer-events: none;
-      animation: bob 2.2s ease-in-out infinite;
-    }
-
-    .stork-wrap:nth-child(1) { top: 25%; animation-delay:  0s;    }
-    .stork-wrap:nth-child(2) { top: 43%; animation-delay: -0.7s;  }
-    .stork-wrap:nth-child(3) { top: 61%; animation-delay: -1.4s;  }
-
-    @keyframes bob {
-      0%, 100% { transform: translateY(0);     }
-      50%       { transform: translateY(-18px); }
-    }
-
-    .stork {
-      position: absolute;
-      width: 160px;
+      width: 230px;
       height: auto;
     }
 
-    /* Left-to-right flight */
-    .ltr { animation: fly-ltr 7s linear infinite; }
-
-    /* Right-to-left: mirror the image and reverse the path */
-    .rtl {
-      transform: scaleX(-1);
-      animation: fly-rtl 7s linear infinite;
+    /* Stork 1 – upper left, wobbles */
+    .stork1 {
+      top: 0;
+      left: 0;
+      animation: wobble1 4.0s ease-in-out infinite;
+    }
+    @keyframes wobble1 {
+      0%,100% { transform: translate(0px,   0px); }
+      30%     { transform: translate(12px, -16px); }
+      65%     { transform: translate(-7px,  -9px); }
     }
 
-    /* Stagger start positions ~2 s apart using negative delays */
-    .stork-wrap:nth-child(1) .stork { animation-delay:  0s;  }
-    .stork-wrap:nth-child(2) .stork { animation-delay: -2s;  }
-    .stork-wrap:nth-child(3) .stork { animation-delay: -4s;  }
-
-    @keyframes fly-ltr {
-      from { left: -180px; }
-      to   { left: calc(100% + 30px); }
+    /* Stork 2 – right side, mirrored, different phase */
+    .stork2 {
+      top: 18%;
+      right: 0;
+      animation: wobble2 5.4s ease-in-out infinite;
+    }
+    @keyframes wobble2 {
+      0%,100% { transform: scaleX(-1) translate(0px,   0px); }
+      35%     { transform: scaleX(-1) translate(10px, -18px); }
+      70%     { transform: scaleX(-1) translate(-9px, -11px); }
     }
 
-    @keyframes fly-rtl {
-      from { left: calc(100% + 30px); }
-      to   { left: -180px; }
+    /* Stork 3 – lower left, slower phase */
+    .stork3 {
+      top: 38%;
+      left: 0;
+      animation: wobble3 3.7s ease-in-out infinite;
+    }
+    @keyframes wobble3 {
+      0%,100% { transform: translate(0px,   0px); }
+      40%     { transform: translate(9px,  -14px); }
+      75%     { transform: translate(-10px, -7px); }
+    }
+
+    /* Form rows */
+    .form-area {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: #2c1810;
+    }
+
+    .row-label { white-space: nowrap; }
+
+    .num-field {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      text-align: center;
+      border: 1.5px solid rgba(139,26,26,0.7);
+      border-radius: 3px;
+      background: #f7f3ec;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #2c1810;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .num-field::-webkit-outer-spin-button,
+    .num-field::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .name-static { font-weight: 700; }
+
+    .name-field {
+      flex: 1;
+      height: 42px;
+      padding: 0 10px;
+      border: 1.5px solid rgba(139,26,26,0.7);
+      border-radius: 3px;
+      background: #f7f3ec;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      color: #2c1810;
+      outline: none;
     }
   </style>
 </head>
 <body>
   <div class="page">
 
-    <div class="stork-wrap">
-      <img class="stork ltr" src="assets/storck1.jpg" alt="">
+    <div class="stork-stage">
+      <img class="stork-img stork1" src="assets/storCk1.jpg" alt="">
+      <img class="stork-img stork2" src="assets/storCk2.jpg" alt="">
+      <img class="stork-img stork3" src="assets/storCk3.jpg" alt="">
     </div>
-    <div class="stork-wrap">
-      <img class="stork rtl" src="assets/storck2.jpg" alt="">
-    </div>
-    <div class="stork-wrap">
-      <img class="stork ltr" src="assets/storck3.jpg" alt="">
+
+    <div class="form-area">
+      <div class="row">
+        <span class="row-label">Аист №</span>
+        <input class="num-field" type="number" min="1" max="3">
+        <span class="name-static">НИКИТА</span>
+      </div>
+      <div class="row">
+        <span class="row-label">Аист №</span>
+        <input class="num-field" type="number" min="1" max="3">
+        <input class="name-field" type="text">
+      </div>
+      <div class="row">
+        <span class="row-label">Аист №</span>
+        <input class="num-field" type="number" min="1" max="3">
+        <input class="name-field" type="text">
+      </div>
     </div>
 
     <nav id="nav">
