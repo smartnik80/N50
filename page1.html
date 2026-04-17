@@ -47,8 +47,9 @@
     }
 
     /* Overlay covers the right 45% of the image, right-aligned.
-       flex: 4 / flex: 1 = ~80% names / ~20% input.
-       Adjust ratio if the empty area in the image is taller or shorter. */
+       names-list is fixed at 88% of the image height (original 80% x 1.1
+       for +10% spacing between items). add-name has no flex-grow so it
+       sits directly below the last checkbox. */
     .overlay {
       position: absolute;
       top: 0;
@@ -60,11 +61,11 @@
     }
 
     .names-list {
-      flex: 4;
+      flex: 0 0 88%;
       display: flex;
       flex-direction: column;
       justify-content: space-evenly;
-      padding: 2% 5% 1%;
+      padding: 2% 5% 0%;
     }
 
     .name-row {
@@ -116,10 +117,7 @@
     }
 
     .add-name {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      padding: 3% 5%;
+      padding: 6px 5%;
     }
 
     .add-name input {
