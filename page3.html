@@ -134,12 +134,12 @@
       </div>
       <div class="row">
         <span class="row-label">Аист №</span>
-        <input class="num-field" type="number" id="stork2-num" name="stork2_num" min="1" max="3">
+        <input class="num-field" type="number" id="stork2-num" name="stork2_num" min="1" max="3" readonly>
         <input class="name-field" type="text" name="stork2_name">
       </div>
       <div class="row">
         <span class="row-label">Аист №</span>
-        <input class="num-field" type="number" id="stork3-num" name="stork3_num" min="1" max="3">
+        <input class="num-field" type="number" id="stork3-num" name="stork3_num" min="1" max="3" readonly>
         <input class="name-field" type="text" name="stork3_name">
       </div>
     </form>
@@ -164,6 +164,11 @@
       const num1      = document.getElementById('stork1-num');
       const num2      = document.getElementById('stork2-num');
       const num3      = document.getElementById('stork3-num');
+
+      num1.addEventListener('keydown', function (e) {
+        var allowed = ['1','2','3','Backspace','Delete','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+        if (!allowed.includes(e.key)) e.preventDefault();
+      });
 
       num1.addEventListener('input', function () {
         var v = parseInt(num1.value, 10);
