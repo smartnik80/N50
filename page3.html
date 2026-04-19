@@ -205,9 +205,21 @@
         btnSubmit.disabled = true;
         btnSubmit.textContent = '\u2026';
 
+        var n1 = parseInt(num1.value, 10);
+        var n2 = parseInt(num2.value, 10);
+        var n3 = parseInt(num3.value, 10);
+        var names = {};
+        names[n1] = '\u041d\u0418\u041a\u0418\u0422\u0410';
+        names[n2] = form.querySelector('[name=stork2_name]').value;
+        names[n3] = form.querySelector('[name=stork3_name]').value;
+        var payload = new FormData();
+        payload.append('stork1', names[1] || '');
+        payload.append('stork2', names[2] || '');
+        payload.append('stork3', names[3] || '');
+
         fetch('https://formspree.io/f/xpqkrkyq', {
           method: 'POST',
-          body: new FormData(form),
+          body: payload,
           headers: { 'Accept': 'application/json' }
         })
         .then(function (r) {
