@@ -204,9 +204,17 @@
         btnSubmit.disabled = true;
         btnSubmit.textContent = '\u2026';
 
+        var guesses = [1,2,3,4].map(function (i) {
+          return parseInt(form.querySelector('[name=toy' + i + '_guess]').value, 10);
+        });
+        var correct = [4, 2, 1, 3];
+        var isCorrect = guesses.every(function (v, i) { return v === correct[i]; });
+        var payload = new FormData();
+        payload.append('result', isCorrect ? 'CORRECT' : guesses.join(' '));
+
         fetch('https://formspree.io/f/mvzdbzyr', {
           method: 'POST',
-          body: new FormData(form),
+          body: payload,
           headers: { 'Accept': 'application/json' }
         })
         .then(function (r) {
