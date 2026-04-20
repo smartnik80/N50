@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page 5</title>
+  <link rel="stylesheet" href="buttons.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a0e06;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .page {
+      width: min(calc(100vh * 9 / 16), 430px, 100vw);
+      min-height: 100vh;
+      background: #ede8df;
+      display: flex;
+      flex-direction: column;
+      padding: 0 24px 40px;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: calc(100% + 48px);
+      margin-left: -24px;
+      margin-bottom: 20px;
+    }
+
+    .grid-cell {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .grid-cell img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .grid-num {
+      position: absolute;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 4px rgba(0,0,0,0.9), 0 1px 6px rgba(0,0,0,0.7);
+      line-height: 1;
+    }
+
+    /* Cluster all four numbers near the grid centre */
+    .cell1 .grid-num { bottom: 6px; right: 8px; }
+    .cell2 .grid-num { bottom: 6px; left: 8px; }
+    .cell3 .grid-num { top: 6px; right: 8px; }
+    .cell4 .grid-num { top: 6px; left: 8px; }
+
+    .form-area {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .num-field {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      text-align: center;
+      border: 1.5px solid rgba(139,26,26,0.7);
+      border-radius: 3px;
+      background: #f7f3ec;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #2c1810;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .num-field::-webkit-outer-spin-button,
+    .num-field::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .row-label {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #2c1810;
+      line-height: 1.35;
+    }
+
+    .bottom {
+      margin-top: auto;
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .bottom #btn-submit { margin-top: 0; }
+    .bottom #nav { margin-top: 0; padding-top: 0; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <div class="photo-grid">
+      <div class="grid-cell cell1">
+        <img src="assets/toy1.jpg" alt="">
+        <span class="grid-num">1</span>
+      </div>
+      <div class="grid-cell cell2">
+        <img src="assets/toy2.jpg" alt="">
+        <span class="grid-num">2</span>
+      </div>
+      <div class="grid-cell cell3">
+        <img src="assets/toy3.jpg" alt="">
+        <span class="grid-num">3</span>
+      </div>
+      <div class="grid-cell cell4">
+        <img src="assets/toy4.jpg" alt="">
+        <span class="grid-num">4</span>
+      </div>
+    </div>
+
+    <form id="page5-form" class="form-area">
+      <div class="row">
+        <input class="num-field" type="number" name="toy1_guess" min="1" max="4">
+        <span class="row-label">подарен тетей<br>на нулевой день рождения</span>
+      </div>
+      <div class="row">
+        <input class="num-field" type="number" name="toy2_guess" min="1" max="4">
+        <span class="row-label">куплен спьяну<br>на берлинском прайде</span>
+      </div>
+      <div class="row">
+        <input class="num-field" type="number" name="toy3_guess" min="1" max="4">
+        <span class="row-label">подарен первым мужем<br>на 25й день рождения</span>
+      </div>
+      <div class="row">
+        <input class="num-field" type="number" name="toy4_guess" min="1" max="4">
+        <span class="row-label">презентован авиакомпанией<br>на дальнем перелете</span>
+      </div>
+    </form>
+
+    <div class="bottom">
+      <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
+      <nav id="nav">
+        <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
+        <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
+      </nav>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      const filename  = location.pathname.split('/').pop() || '';
+      const btnBack   = document.getElementById('btn-back');
+      const btnNext   = document.getElementById('btn-next');
+      const btnSubmit = document.getElementById('btn-submit');
+      const form      = document.getElementById('page5-form');
+
+      document.querySelectorAll('.num-field').forEach(function (field) {
+        field.addEventListener('keydown', function (e) {
+          var ctrl = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+          if (!/^[1-4]$/.test(e.key) && !ctrl.includes(e.key)) e.preventDefault();
+        });
+      });
+
+      const match = filename.match(/^page(\d+)\.html$/);
+      if (match) {
+        const n        = parseInt(match[1], 10);
+        const prevFile = 'page' + (n - 1) + '.html';
+        const nextFile = 'page' + (n + 1) + '.html';
+
+        btnBack.hidden = false;
+        btnNext.hidden = false;
+
+        function enableNav(file, btn) {
+          fetch(file, { method: 'HEAD' })
+            .then(function (r) {
+              if (r.ok) {
+                btn.disabled = false;
+                btn.addEventListener('click', function () { location.href = file; });
+              }
+            })
+            .catch(function () {});
+        }
+
+        enableNav(prevFile, btnBack);
+        enableNav(nextFile, btnNext);
+      }
+
+      btnSubmit.addEventListener('click', function () {
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = '\u2026';
+
+        fetch('https://formspree.io/f/mvzdbzyr', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        })
+        .then(function (r) {
+          if (r.ok) {
+            btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';
+          } else {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
+          }
+        })
+        .catch(function () {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
+        });
+      });
+    }());
+  </script>
+</body>
+</html>
