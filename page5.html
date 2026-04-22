@@ -28,6 +28,8 @@
     .photo-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      aspect-ratio: 1;
       width: calc(100% + 48px);
       margin-left: -24px;
       margin-bottom: 20px;
@@ -36,7 +38,6 @@
     .grid-cell {
       position: relative;
       overflow: hidden;
-      aspect-ratio: 1;
     }
 
     .grid-cell img {
