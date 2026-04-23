@@ -63,6 +63,7 @@
       background: #d4cdc2;
       border-radius: 2px;
       opacity: 0.5;
+      cursor: pointer;
     }
 
     .choices {
@@ -179,12 +180,18 @@
       const placeholder = document.getElementById('choices-placeholder');
       var remaining = 15;
 
+      function reveal() {
+        clearInterval(ticker);
+        placeholder.style.display = 'none';
+        choices.classList.add('visible');
+      }
+
+      placeholder.addEventListener('click', reveal);
+
       var ticker = setInterval(function () {
         remaining -= 1;
           if (remaining <= 0) {
-          clearInterval(ticker);
-          placeholder.style.display = 'none';
-          choices.classList.add('visible');
+          reveal();
         }
       }, 1000);
 
