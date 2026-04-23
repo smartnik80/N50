@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page 6</title>
+  <title>Page 7</title>
   <link rel="stylesheet" href="buttons.css">
   <style>
     *, *::before, *::after {
@@ -45,34 +45,11 @@
       opacity: 0.35;
     }
 
-    .choices-area {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .choices-placeholder {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .choice-ghost {
-      height: 48px;
-      background: #d4cdc2;
-      border-radius: 2px;
-      opacity: 0.5;
-    }
-
     .choices {
-      display: none;
+      display: flex;
       flex-direction: column;
       gap: 10px;
-    }
-
-    .choices.visible {
-      display: flex;
+      margin-top: 20px;
     }
 
     .choice-label {
@@ -127,37 +104,30 @@
       </svg>
     </div>
 
-    <div class="choices-area">
-
-      <div class="choices-placeholder" id="choices-placeholder">
-        <div class="choice-ghost"></div>
-        <div class="choice-ghost"></div>
-        <div class="choice-ghost"></div>
-        <div class="choice-ghost"></div>
+    <form id="answer-form">
+      <div class="choices">
+        <label class="choice-label">
+          <input type="radio" name="answer" value="XXV-го съезда КПСС">
+          XXV-го съезда КПСС
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="Огненного Дракона">
+          Огненного Дракона
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="запуска Эппла">
+          запуска Эппла
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="марсианского десанта">
+          марсианского десанта
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="перелета на Конкорде">
+          перелета на Конкорде
+        </label>
       </div>
-
-      <form id="answer-form">
-        <div class="choices" id="choices">
-          <label class="choice-label">
-            <input type="radio" name="answer" value="丙辰年">
-            丙辰年
-          </label>
-          <label class="choice-label">
-            <input type="radio" name="answer" value="甲子年">
-            甲子年
-          </label>
-          <label class="choice-label">
-            <input type="radio" name="answer" value="庚辰年">
-            庚辰年
-          </label>
-          <label class="choice-label">
-            <input type="radio" name="answer" value="癸巳年">
-            癸巳年
-          </label>
-        </div>
-      </form>
-
-    </div>
+    </form>
 
     <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
 
@@ -175,18 +145,6 @@
       const btnNext   = document.getElementById('btn-next');
       const btnSubmit = document.getElementById('btn-submit');
       const form      = document.getElementById('answer-form');
-      const choices   = document.getElementById('choices');
-      const placeholder = document.getElementById('choices-placeholder');
-      var remaining = 15;
-
-      var ticker = setInterval(function () {
-        remaining -= 1;
-          if (remaining <= 0) {
-          clearInterval(ticker);
-          placeholder.style.display = 'none';
-          choices.classList.add('visible');
-        }
-      }, 1000);
 
       const match = filename.match(/^page(\d+)\.html$/);
       if (match) {
