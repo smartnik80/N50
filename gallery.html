@@ -183,37 +183,40 @@
       dateEl.textContent = formatDate(dates[current]);
     }
 
-    function show(index, direction) {
+    function enterFullscreen() {
+      var el = document.documentElement;
+      if (el.requestFullscreen)       el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    }
+
+    function show(index) {
       if (busy) return;
       busy = true;
 
       var next = (index + photos.length) % photos.length;
 
-      // Play sound
       sound.currentTime = 0;
       sound.play().catch(function () {});
 
-      // Fade out
       photo.classList.add('fade-out');
       photo.classList.remove('fade-in');
 
       setTimeout(function () {
         current = next;
-        photo.src = photos[current];
         updateDate();
 
-        photo.onload = function () {
-          photo.classList.remove('fade-out');
-          photo.classList.add('fade-in');
-          busy = false;
-        };
-
-        // Fallback in case onload already fired (cached)
-        if (photo.complete) {
+        function onLoaded() {
+          photo.removeEventListener('load', onLoaded);
           photo.classList.remove('fade-out');
           photo.classList.add('fade-in');
           busy = false;
         }
+
+        photo.addEventListener('load', onLoaded);
+        photo.src = photos[current];
+
+        // Already cached — load event won't fire
+        if (photo.complete) onLoaded();
       }, 250);
     }
 
@@ -223,10 +226,12 @@
     }
 
     document.getElementById('zone-next').addEventListener('click', function () {
+      enterFullscreen();
       advance(1);
     });
 
     document.getElementById('zone-prev').addEventListener('click', function () {
+      enterFullscreen();
       advance(-1);
     });
 
