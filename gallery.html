@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>Gallery</title>
   <style>
     *, *::before, *::after {
@@ -120,6 +122,7 @@
   <audio id="click-sound" src="assets/gallery/diapoclick.mp3" preload="auto"></audio>
 
   <script>
+    /* BUILD:photos */
     var photos = [
       'assets/gallery/DSC_0065.JPG',
       'assets/gallery/DSC_0128.JPG',
@@ -134,7 +137,7 @@
       'assets/gallery/DSC_4415.JPG',
       'assets/gallery/DSC_4526.JPG'
     ];
-
+    /* BUILD:dates */
     var dates = [
       '2011-05-16',
       '2011-05-16',
@@ -149,6 +152,7 @@
       '2009-03-06',
       '2009-03-07'
     ];
+    /* BUILD:end */
 
     var current   = 0;
     var photo     = document.getElementById('photo');
