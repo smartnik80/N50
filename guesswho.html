@@ -27,15 +27,25 @@
     #photo-section {
       flex: 1;
       min-height: 0;
-      background: #100800;
+      background: #1f1208;
+      overflow: hidden;
+      position: relative;
+      cursor: default;
     }
+
+    #photo-section.zoomed { cursor: grab; }
+    #photo-section.zoomed:active { cursor: grabbing; }
 
     #photo-img {
       width: 100%;
       height: 100%;
       object-fit: contain;
       display: block;
+      transform-origin: center center;
       transition: opacity 0.5s ease;
+      will-change: transform;
+      user-select: none;
+      -webkit-user-drag: none;
     }
 
     #photo-img.fade { opacity: 0; }
@@ -54,7 +64,6 @@
 
     #belt-section:active { cursor: grabbing; }
 
-    /* Face stickers */
     .face {
       position: absolute;
       top: 50%;
@@ -198,26 +207,41 @@ const STRIDE = FACE_W + GAP;
 const BASE_SPEED = 0.55;
 const MAX_SPEED = 8;
 
-// ─── State ───────────────────────────────────────
+// ─── Game state ──────────────────────────────────
 let photoIdx = 0;
 let targetNames = [];
 let foundNames = new Set();
 let removedGuests = new Set();
-let photoRevealed = false;
+let photoRevealed = false;  // true = showing 02
 
-// Belt
-let positions = [];  // [{name, x}]
-let faceElMap = {};  // name → element
+// ─── Belt state ──────────────────────────────────
+let positions = [];
+let faceElMap = {};
 let speed = BASE_SPEED;
 let beltWidth = 0;
 
-// Drag tracking
-let dragActive = false;
-let dragStartX = 0;
-let dragLastX = 0;
-let dragLastTime = 0;
-let dragVelocity = 0; // px/ms
-let didDrag = false;
+// Belt drag
+let beltDragActive = false;
+let beltDragStartX = 0;
+let beltDragLastX = 0;
+let beltDragLastTime = 0;
+let beltDragVelocity = 0;
+let beltDidDrag = false;
+
+// ─── Photo zoom state ────────────────────────────
+let pz = { scale: 1, tx: 0, ty: 0 };
+let pinchStartDist = 0;
+let pinchLastMidX = 0, pinchLastMidY = 0;
+let panStartX = 0, panStartY = 0;
+let panStartTx = 0, panStartTy = 0;
+let photoPanning = false;
+let photoTouchCount = 0;
+let lastTapTime = 0;
+
+// Mouse zoom pan
+let mouseZooming = false;
+let mouseZoomStartX = 0, mouseZoomStartY = 0;
+let mouseZoomStartTx = 0, mouseZoomStartTy = 0;
 
 // ─── Boot ────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -225,7 +249,9 @@ window.addEventListener('DOMContentLoaded', () => {
   loadPhoto(0);
   buildBelt();
   startLoop();
-  bindEvents();
+  bindBeltEvents();
+  bindPhotoEvents();
+  bindNavEvents();
   updateNav();
 });
 
@@ -240,6 +266,7 @@ function loadPhoto(idx) {
   targetNames = base.split('_');
   foundNames.clear();
   photoRevealed = false;
+  resetPhotoZoom(false);
 
   const img = document.getElementById('photo-img');
   img.classList.add('fade');
@@ -254,10 +281,162 @@ function loadPhoto(idx) {
 function revealPhoto() {
   const img = document.getElementById('photo-img');
   img.classList.add('fade');
+  resetPhotoZoom(false);
   setTimeout(() => {
     img.src = PHOTO_BASE + PHOTOS[photoIdx] + '02.jpg';
     img.classList.remove('fade');
   }, 380);
+  photoRevealed = true;
+  updateNav();
+}
+
+// ─── Photo zoom ──────────────────────────────────
+function applyPhotoZoom(animated) {
+  const img = document.getElementById('photo-img');
+  const section = document.getElementById('photo-section');
+  const w = section.offsetWidth;
+  const h = section.offsetHeight;
+
+  const maxTx = Math.max(0, w * (pz.scale - 1) / 2);
+  const maxTy = Math.max(0, h * (pz.scale - 1) / 2);
+  pz.tx = Math.max(-maxTx, Math.min(maxTx, pz.tx));
+  pz.ty = Math.max(-maxTy, Math.min(maxTy, pz.ty));
+
+  if (animated) {
+    img.style.transition = 'opacity 0.5s ease, transform 0.28s ease';
+    setTimeout(() => { img.style.transition = 'opacity 0.5s ease'; }, 290);
+  }
+  img.style.transform = `translate(${pz.tx}px, ${pz.ty}px) scale(${pz.scale})`;
+  section.classList.toggle('zoomed', pz.scale > 1.01);
+}
+
+function resetPhotoZoom(animated) {
+  pz.scale = 1; pz.tx = 0; pz.ty = 0;
+  applyPhotoZoom(animated);
+}
+
+function pinchDist(t1, t2) {
+  return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+}
+
+function bindPhotoEvents() {
+  const section = document.getElementById('photo-section');
+
+  section.addEventListener('touchstart', e => {
+    photoTouchCount = e.touches.length;
+
+    if (e.touches.length === 2) {
+      photoPanning = false;
+      pinchStartDist = pinchDist(e.touches[0], e.touches[1]);
+      pinchLastMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      pinchLastMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    } else if (e.touches.length === 1) {
+      const t = e.touches[0];
+      if (pz.scale > 1.01) {
+        panStartX = t.clientX; panStartY = t.clientY;
+        panStartTx = pz.tx; panStartTy = pz.ty;
+        photoPanning = true;
+      }
+      // Double-tap detection
+      const now = Date.now();
+      if (now - lastTapTime < 280 && pz.scale > 1.01) {
+        resetPhotoZoom(true);
+      }
+      lastTapTime = now;
+    }
+  }, { passive: true });
+
+  section.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const section = document.getElementById('photo-section');
+    const rect = section.getBoundingClientRect();
+
+    if (e.touches.length === 2) {
+      photoPanning = false;
+      const d = pinchDist(e.touches[0], e.touches[1]);
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+      const newScale = Math.max(1, Math.min(6, pz.scale * (d / pinchStartDist)));
+
+      // Zoom toward pinch midpoint
+      const cx = midX - rect.left - rect.width / 2;
+      const cy = midY - rect.top - rect.height / 2;
+      const ratio = newScale / pz.scale;
+      pz.tx = cx + (pz.tx - cx) * ratio;
+      pz.ty = cy + (pz.ty - cy) * ratio;
+      pz.scale = newScale;
+
+      // Pan by midpoint movement
+      pz.tx += midX - pinchLastMidX;
+      pz.ty += midY - pinchLastMidY;
+
+      pinchStartDist = d;
+      pinchLastMidX = midX;
+      pinchLastMidY = midY;
+      applyPhotoZoom(false);
+
+    } else if (e.touches.length === 1 && photoPanning) {
+      pz.tx = panStartTx + (e.touches[0].clientX - panStartX);
+      pz.ty = panStartTy + (e.touches[0].clientY - panStartY);
+      applyPhotoZoom(false);
+    }
+  }, { passive: false });
+
+  section.addEventListener('touchend', e => {
+    photoTouchCount = e.touches.length;
+    if (e.touches.length === 1 && pz.scale > 1.01) {
+      // Transition from pinch to single-finger pan
+      const t = e.touches[0];
+      panStartX = t.clientX; panStartY = t.clientY;
+      panStartTx = pz.tx; panStartTy = pz.ty;
+      photoPanning = true;
+    }
+    if (e.touches.length === 0) {
+      photoPanning = false;
+      if (pz.scale < 1.05) resetPhotoZoom(true);
+    }
+  }, { passive: true });
+
+  // Mouse wheel zoom
+  section.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = section.getBoundingClientRect();
+    const cx = e.clientX - rect.left - rect.width / 2;
+    const cy = e.clientY - rect.top - rect.height / 2;
+    const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+    const newScale = Math.max(1, Math.min(6, pz.scale * factor));
+    const ratio = newScale / pz.scale;
+    pz.tx = cx + (pz.tx - cx) * ratio;
+    pz.ty = cy + (pz.ty - cy) * ratio;
+    pz.scale = newScale;
+    if (pz.scale <= 1) { pz.tx = 0; pz.ty = 0; }
+    applyPhotoZoom(false);
+  }, { passive: false });
+
+  // Mouse drag for panning when zoomed
+  section.addEventListener('mousedown', e => {
+    if (pz.scale > 1.01) {
+      mouseZooming = true;
+      mouseZoomStartX = e.clientX; mouseZoomStartY = e.clientY;
+      mouseZoomStartTx = pz.tx; mouseZoomStartTy = pz.ty;
+      e.preventDefault();
+    }
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!mouseZooming) return;
+    pz.tx = mouseZoomStartTx + (e.clientX - mouseZoomStartX);
+    pz.ty = mouseZoomStartTy + (e.clientY - mouseZoomStartY);
+    applyPhotoZoom(false);
+  });
+
+  window.addEventListener('mouseup', () => { mouseZooming = false; });
+
+  // Double-click to reset zoom
+  section.addEventListener('dblclick', () => {
+    if (pz.scale > 1.01) resetPhotoZoom(true);
+  });
 }
 
 // ─── Belt ────────────────────────────────────────
@@ -287,7 +466,6 @@ function stepBelt() {
   const n = positions.length;
   if (!n) return;
   const loopWidth = n * STRIDE;
-
   positions.forEach(p => {
     p.x += speed;
     if (p.x > beltWidth + FACE_W + GAP) p.x -= loopWidth;
@@ -300,10 +478,7 @@ function stepBelt() {
 function startLoop() {
   (function loop() {
     stepBelt();
-    // Slowly ease back toward base speed when not dragging
-    if (!dragActive) {
-      speed += (BASE_SPEED - speed) * 0.006;
-    }
+    if (!beltDragActive) speed += (BASE_SPEED - speed) * 0.006;
     requestAnimationFrame(loop);
   })();
 }
@@ -322,7 +497,6 @@ function identifyFace(name) {
 
     const allFound = targetNames.every(n => foundNames.has(n));
     if (allFound && !photoRevealed) {
-      photoRevealed = true;
       setTimeout(revealPhoto, 700);
     }
   } else {
@@ -338,90 +512,85 @@ function identifyFace(name) {
   }
 }
 
-function tapAt(clientX, clientY) {
+function tapBeltAt(clientX, clientY) {
   const el = document.elementFromPoint(clientX, clientY);
   const face = el?.closest?.('.face') || (el?.classList?.contains('face') ? el : null);
   if (face) identifyFace(face.dataset.name);
 }
 
-// ─── Drag helpers ────────────────────────────────
-function onDragStart(x) {
-  dragActive = true;
-  dragStartX = x;
-  dragLastX = x;
-  dragLastTime = performance.now();
-  dragVelocity = 0;
-  didDrag = false;
-}
-
-function onDragMove(x) {
-  const now = performance.now();
-  const dt = Math.max(now - dragLastTime, 1);
-  const dx = x - dragLastX;
-  dragVelocity = dx / dt; // px/ms
-  dragLastX = x;
-  dragLastTime = now;
-  if (Math.abs(x - dragStartX) > 6) didDrag = true;
-  // Direct speed control: dx per event mapped to speed change
-  speed += dx * 0.18;
-  speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed));
-}
-
-function onDragEnd(clientX, clientY) {
-  dragActive = false;
-  if (!didDrag) {
-    tapAt(clientX, clientY);
-  } else {
-    // Apply final flick momentum
-    const flick = dragVelocity * 50;
-    speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + flick));
-  }
-}
-
-// ─── Events ──────────────────────────────────────
-function bindEvents() {
+// ─── Belt drag ───────────────────────────────────
+function bindBeltEvents() {
   const belt = document.getElementById('belt-section');
 
-  // Touch
   belt.addEventListener('touchstart', e => {
     e.preventDefault();
     const t = e.touches[0];
-    onDragStart(t.clientX);
+    beltDragActive = true; beltDragStartX = t.clientX;
+    beltDragLastX = t.clientX; beltDragLastTime = performance.now();
+    beltDragVelocity = 0; beltDidDrag = false;
   }, { passive: false });
 
   belt.addEventListener('touchmove', e => {
     e.preventDefault();
-    const t = e.touches[0];
-    onDragMove(t.clientX);
+    const x = e.touches[0].clientX;
+    const now = performance.now();
+    const dx = x - beltDragLastX;
+    beltDragVelocity = dx / Math.max(now - beltDragLastTime, 1);
+    beltDragLastX = x; beltDragLastTime = now;
+    if (Math.abs(x - beltDragStartX) > 6) beltDidDrag = true;
+    speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + dx * 0.18));
   }, { passive: false });
 
   belt.addEventListener('touchend', e => {
     e.preventDefault();
+    beltDragActive = false;
     const t = e.changedTouches[0];
-    onDragEnd(t.clientX, t.clientY);
+    if (!beltDidDrag) {
+      tapBeltAt(t.clientX, t.clientY);
+    } else {
+      speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + beltDragVelocity * 50));
+    }
   }, { passive: false });
 
-  // Mouse
   belt.addEventListener('mousedown', e => {
-    onDragStart(e.clientX);
+    beltDragActive = true; beltDragStartX = e.clientX;
+    beltDragLastX = e.clientX; beltDragLastTime = performance.now();
+    beltDragVelocity = 0; beltDidDrag = false;
   });
 
   window.addEventListener('mousemove', e => {
-    if (!dragActive) return;
-    onDragMove(e.clientX);
+    if (!beltDragActive) return;
+    const dx = e.clientX - beltDragLastX;
+    const now = performance.now();
+    beltDragVelocity = dx / Math.max(now - beltDragLastTime, 1);
+    beltDragLastX = e.clientX; beltDragLastTime = now;
+    if (Math.abs(e.clientX - beltDragStartX) > 6) beltDidDrag = true;
+    speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + dx * 0.18));
   });
 
   window.addEventListener('mouseup', e => {
-    if (!dragActive) return;
-    onDragEnd(e.clientX, e.clientY);
+    if (!beltDragActive) return;
+    beltDragActive = false;
+    if (!beltDidDrag) {
+      tapBeltAt(e.clientX, e.clientY);
+    } else {
+      speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + beltDragVelocity * 50));
+    }
   });
-
-  // Nav
-  document.getElementById('btn-prev').addEventListener('click', () => goTo(photoIdx - 1));
-  document.getElementById('btn-next').addEventListener('click', () => goTo(photoIdx + 1));
 }
 
 // ─── Navigation ──────────────────────────────────
+function bindNavEvents() {
+  document.getElementById('btn-prev').addEventListener('click', () => goTo(photoIdx - 1));
+  document.getElementById('btn-next').addEventListener('click', () => {
+    if (!photoRevealed) {
+      revealPhoto();
+    } else {
+      goTo(photoIdx + 1);
+    }
+  });
+}
+
 function goTo(idx) {
   if (idx < 0 || idx >= PHOTOS.length) return;
   removedGuests.clear();
@@ -432,7 +601,8 @@ function goTo(idx) {
 
 function updateNav() {
   document.getElementById('btn-prev').disabled = photoIdx === 0;
-  document.getElementById('btn-next').disabled = photoIdx === PHOTOS.length - 1;
+  // Right disabled only when already on 02 of the last photo
+  document.getElementById('btn-next').disabled = photoRevealed && photoIdx === PHOTOS.length - 1;
 }
 </script>
 </body>
