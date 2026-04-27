@@ -9,7 +9,7 @@
 
     html, body {
       height: 100%;
-      background: #0f0f0f;
+      background: #1a0e06;
       color: #fff;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       overflow: hidden;
@@ -27,8 +27,7 @@
     #photo-section {
       flex: 1;
       min-height: 0;
-      position: relative;
-      background: #000;
+      background: #100800;
     }
 
     #photo-img {
@@ -41,76 +40,19 @@
 
     #photo-img.fade { opacity: 0; }
 
-    #progress {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 0 12px;
-      pointer-events: none;
-    }
-
-    .badge {
-      background: rgba(0,0,0,0.65);
-      color: rgba(255,255,255,0.35);
-      padding: 3px 11px;
-      border-radius: 20px;
-      font-size: 12px;
-      letter-spacing: 0.4px;
-      transition: all 0.4s;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .badge.found {
-      background: rgba(255,200,0,0.88);
-      color: #000;
-      font-weight: 600;
-      border-color: rgba(255,200,0,0.4);
-    }
-
     /* ── Belt section ──────────────────────────── */
     #belt-section {
       height: 136px;
-      background: #141414;
+      background: #1f1208;
       position: relative;
       overflow: hidden;
       cursor: grab;
       flex-shrink: 0;
-      border-top: 1px solid #222;
-      border-bottom: 1px solid #222;
+      border-top: 1px solid #2e1a08;
+      border-bottom: 1px solid #2e1a08;
     }
 
     #belt-section:active { cursor: grabbing; }
-
-    /* Selection zone indicator */
-    #zone {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 96px;
-      height: 96px;
-      border-radius: 14px;
-      border: 2px solid rgba(255,200,0,0.55);
-      pointer-events: none;
-      z-index: 20;
-      animation: zone-pulse 2.4s ease-in-out infinite;
-    }
-
-    @keyframes zone-pulse {
-      0%, 100% {
-        border-color: rgba(255,200,0,0.35);
-        box-shadow: 0 0 0 rgba(255,200,0,0);
-      }
-      50% {
-        border-color: rgba(255,200,0,0.9);
-        box-shadow: 0 0 18px rgba(255,200,0,0.18);
-      }
-    }
 
     /* Face stickers */
     .face {
@@ -124,6 +66,7 @@
       will-change: left;
       user-select: none;
       -webkit-user-select: none;
+      cursor: pointer;
     }
 
     .face img {
@@ -135,22 +78,16 @@
       -webkit-user-drag: none;
     }
 
-    .face.central {
-      transform: translateY(-50%) scale(1.1);
-      z-index: 10;
-      box-shadow: 0 0 0 2px rgba(255,200,0,0.6);
-    }
-
     @keyframes wobble {
-      0%   { transform: translateY(-50%) scale(1.1) rotate(0deg); }
-      10%  { transform: translateY(-50%) scale(1.24) rotate(-10deg); }
-      22%  { transform: translateY(-50%) scale(1.24) rotate(10deg); }
-      34%  { transform: translateY(-50%) scale(1.19) rotate(-7deg); }
-      46%  { transform: translateY(-50%) scale(1.19) rotate(7deg); }
-      58%  { transform: translateY(-50%) scale(1.14) rotate(-4deg); }
-      70%  { transform: translateY(-50%) scale(1.14) rotate(4deg); }
-      84%  { transform: translateY(-50%) scale(1.11) rotate(-1deg); }
-      100% { transform: translateY(-50%) scale(1.1) rotate(0deg); }
+      0%   { transform: translateY(-50%) scale(1)    rotate(0deg); }
+      10%  { transform: translateY(-50%) scale(1.22) rotate(-10deg); }
+      22%  { transform: translateY(-50%) scale(1.22) rotate(10deg); }
+      34%  { transform: translateY(-50%) scale(1.17) rotate(-7deg); }
+      46%  { transform: translateY(-50%) scale(1.17) rotate(7deg); }
+      58%  { transform: translateY(-50%) scale(1.12) rotate(-4deg); }
+      70%  { transform: translateY(-50%) scale(1.12) rotate(4deg); }
+      84%  { transform: translateY(-50%) scale(1.06) rotate(-1deg); }
+      100% { transform: translateY(-50%) scale(1)    rotate(0deg); }
     }
 
     .face.wobble {
@@ -159,20 +96,21 @@
     }
 
     @keyframes zoom-out {
-      0%   { transform: translateY(-50%) scale(1.1); opacity: 1; }
+      0%   { transform: translateY(-50%) scale(1);   opacity: 1; }
       60%  { transform: translateY(-50%) scale(0.3); opacity: 0.5; }
-      100% { transform: translateY(-50%) scale(0); opacity: 0; }
+      100% { transform: translateY(-50%) scale(0);   opacity: 0; }
     }
 
     .face.removing {
       animation: zoom-out 0.38s ease-in forwards;
       z-index: 15;
+      pointer-events: none;
     }
 
     /* ── Navigation ────────────────────────────── */
     #nav {
       height: 50px;
-      background: #0a0a0a;
+      background: #120a02;
       display: flex;
       align-items: center;
       padding: 0 14px;
@@ -183,10 +121,10 @@
     .nav-arrow {
       flex: 1;
       height: 36px;
-      background: #1c1c1c;
+      background: #2a1508;
       border: none;
-      border-radius: 7px;
-      color: #bbb;
+      border-radius: 6px;
+      color: #c8a882;
       font-size: 20px;
       cursor: pointer;
       display: flex;
@@ -196,12 +134,12 @@
       outline: none;
     }
 
-    .nav-arrow:not(:disabled):active { background: #2c2c2c; color: #fff; }
-    .nav-arrow:disabled { opacity: 0.22; cursor: default; }
+    .nav-arrow:not(:disabled):active { background: #3e200c; color: #fff; }
+    .nav-arrow:disabled { opacity: 0.2; cursor: default; }
 
     #counter {
       font-size: 12px;
-      color: #484848;
+      color: #5a3a1e;
       min-width: 52px;
       text-align: center;
       white-space: nowrap;
@@ -212,12 +150,9 @@
 
 <div id="photo-section">
   <img id="photo-img" alt="">
-  <div id="progress"></div>
 </div>
 
-<div id="belt-section">
-  <div id="zone"></div>
-</div>
+<div id="belt-section"></div>
 
 <nav id="nav">
   <button class="nav-arrow" id="btn-prev">&#8592;</button>
@@ -257,12 +192,11 @@ const ALL_GUESTS = [
   'skorodumov','sukhotsky','tamuza','tamuzs',
 ];
 
-// Belt constants
 const FACE_W = 90;
 const GAP = 16;
 const STRIDE = FACE_W + GAP;
 const BASE_SPEED = 0.55;
-const MAX_SPEED = 7;
+const MAX_SPEED = 8;
 
 // ─── State ───────────────────────────────────────
 let photoIdx = 0;
@@ -272,17 +206,18 @@ let removedGuests = new Set();
 let photoRevealed = false;
 
 // Belt
-let positions = [];   // [{name, x}]
-let faceElMap = {};   // name → element
+let positions = [];  // [{name, x}]
+let faceElMap = {};  // name → element
 let speed = BASE_SPEED;
 let beltWidth = 0;
-let centralName = null;
 
-// Interaction
-let isTouching = false;
-let touchStartX = 0;
-let touchLastX = 0;
-let touchMoved = false;
+// Drag tracking
+let dragActive = false;
+let dragStartX = 0;
+let dragLastX = 0;
+let dragLastTime = 0;
+let dragVelocity = 0; // px/ms
+let didDrag = false;
 
 // ─── Boot ────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -313,20 +248,7 @@ function loadPhoto(idx) {
     img.classList.remove('fade');
   }, 280);
 
-  renderBadges();
-  document.getElementById('counter').textContent = `${idx + 1} / ${PHOTOS.length}`;
-}
-
-function renderBadges() {
-  const el = document.getElementById('progress');
-  el.innerHTML = '';
-  targetNames.forEach(name => {
-    const b = document.createElement('div');
-    b.className = 'badge' + (foundNames.has(name) ? ' found' : '');
-    b.id = 'badge-' + name;
-    b.textContent = name;
-    el.appendChild(b);
-  });
+  document.getElementById('counter').textContent = `${idx + 1} / ${PHOTOS.length}`;
 }
 
 function revealPhoto() {
@@ -340,7 +262,6 @@ function revealPhoto() {
 
 // ─── Belt ────────────────────────────────────────
 function buildBelt() {
-  // Clear existing
   Object.values(faceElMap).forEach(el => el.remove());
   faceElMap = {};
   positions = [];
@@ -352,6 +273,7 @@ function buildBelt() {
   active.forEach((name, i) => {
     const el = document.createElement('div');
     el.className = 'face';
+    el.dataset.name = name;
     const img = document.createElement('img');
     img.src = GUEST_BASE + name + '.jpg';
     el.appendChild(img);
@@ -364,84 +286,49 @@ function buildBelt() {
 function stepBelt() {
   const n = positions.length;
   if (!n) return;
-
   const loopWidth = n * STRIDE;
-  const cx = beltWidth / 2 - FACE_W / 2;
-
-  let minDist = Infinity;
-  let nextCentral = null;
 
   positions.forEach(p => {
     p.x += speed;
-    // Wrap
     if (p.x > beltWidth + FACE_W + GAP) p.x -= loopWidth;
     if (p.x < -FACE_W - GAP) p.x += loopWidth;
-
     const el = faceElMap[p.name];
-    if (!el || el.classList.contains('removing')) return;
-
-    const dist = Math.abs(p.x - cx);
-    if (dist < minDist) { minDist = dist; nextCentral = p.name; }
-  });
-
-  centralName = nextCentral;
-
-  // Update DOM
-  positions.forEach(p => {
-    const el = faceElMap[p.name];
-    if (!el) return;
-    el.style.left = p.x + 'px';
-    const isCenter = p.name === centralName;
-    if (isCenter && !el.classList.contains('removing') && !el.classList.contains('wobble')) {
-      el.classList.add('central');
-    } else if (!isCenter) {
-      el.classList.remove('central');
-    }
+    if (el) el.style.left = p.x + 'px';
   });
 }
 
 function startLoop() {
   (function loop() {
     stepBelt();
-    if (!isTouching) {
-      // Ease back toward base speed
-      speed += (BASE_SPEED - speed) * 0.028;
+    // Slowly ease back toward base speed when not dragging
+    if (!dragActive) {
+      speed += (BASE_SPEED - speed) * 0.006;
     }
     requestAnimationFrame(loop);
   })();
 }
 
 // ─── Identification ──────────────────────────────
-function identify() {
-  if (!centralName) return;
-  if (foundNames.has(centralName)) return;
-
-  const el = faceElMap[centralName];
+function identifyFace(name) {
+  if (!name) return;
+  if (foundNames.has(name)) return;
+  const el = faceElMap[name];
   if (!el || el.classList.contains('removing') || el.classList.contains('wobble')) return;
 
-  const matched = targetNames.includes(centralName);
-
-  if (matched) {
-    foundNames.add(centralName);
-
+  if (targetNames.includes(name)) {
+    foundNames.add(name);
     el.classList.add('wobble');
     el.addEventListener('animationend', () => el.classList.remove('wobble'), { once: true });
 
-    const badge = document.getElementById('badge-' + centralName);
-    if (badge) badge.classList.add('found');
-
-    // Check completion
     const allFound = targetNames.every(n => foundNames.has(n));
     if (allFound && !photoRevealed) {
       photoRevealed = true;
       setTimeout(revealPhoto, 700);
     }
   } else {
-    // Remove from belt
-    removedGuests.add(centralName);
-    el.classList.remove('central');
+    removedGuests.add(name);
     el.classList.add('removing');
-    const gone = centralName;
+    const gone = name;
     setTimeout(() => {
       const e = faceElMap[gone];
       if (e) e.remove();
@@ -451,19 +338,44 @@ function identify() {
   }
 }
 
-// ─── Navigation ──────────────────────────────────
-function goTo(idx) {
-  if (idx < 0 || idx >= PHOTOS.length) return;
-  // Reset per-photo game state (keep removed guests across photos)
-  removedGuests.clear();
-  buildBelt();
-  loadPhoto(idx);
-  updateNav();
+function tapAt(clientX, clientY) {
+  const el = document.elementFromPoint(clientX, clientY);
+  const face = el?.closest?.('.face') || (el?.classList?.contains('face') ? el : null);
+  if (face) identifyFace(face.dataset.name);
 }
 
-function updateNav() {
-  document.getElementById('btn-prev').disabled = photoIdx === 0;
-  document.getElementById('btn-next').disabled = photoIdx === PHOTOS.length - 1;
+// ─── Drag helpers ────────────────────────────────
+function onDragStart(x) {
+  dragActive = true;
+  dragStartX = x;
+  dragLastX = x;
+  dragLastTime = performance.now();
+  dragVelocity = 0;
+  didDrag = false;
+}
+
+function onDragMove(x) {
+  const now = performance.now();
+  const dt = Math.max(now - dragLastTime, 1);
+  const dx = x - dragLastX;
+  dragVelocity = dx / dt; // px/ms
+  dragLastX = x;
+  dragLastTime = now;
+  if (Math.abs(x - dragStartX) > 6) didDrag = true;
+  // Direct speed control: dx per event mapped to speed change
+  speed += dx * 0.18;
+  speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed));
+}
+
+function onDragEnd(clientX, clientY) {
+  dragActive = false;
+  if (!didDrag) {
+    tapAt(clientX, clientY);
+  } else {
+    // Apply final flick momentum
+    const flick = dragVelocity * 50;
+    speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + flick));
+  }
 }
 
 // ─── Events ──────────────────────────────────────
@@ -474,59 +386,53 @@ function bindEvents() {
   belt.addEventListener('touchstart', e => {
     e.preventDefault();
     const t = e.touches[0];
-    touchStartX = t.clientX;
-    touchLastX = t.clientX;
-    touchMoved = false;
-    isTouching = true;
+    onDragStart(t.clientX);
   }, { passive: false });
 
   belt.addEventListener('touchmove', e => {
     e.preventDefault();
     const t = e.touches[0];
-    const dx = t.clientX - touchLastX;
-    if (Math.abs(t.clientX - touchStartX) > 8) touchMoved = true;
-    speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + dx * 0.09));
-    touchLastX = t.clientX;
+    onDragMove(t.clientX);
   }, { passive: false });
 
   belt.addEventListener('touchend', e => {
     e.preventDefault();
-    isTouching = false;
-    if (!touchMoved) identify();
+    const t = e.changedTouches[0];
+    onDragEnd(t.clientX, t.clientY);
   }, { passive: false });
 
-  // Mouse (desktop)
-  let mouseDown = false;
-  let mouseStartX = 0;
-  let mouseLastX = 0;
-  let mouseMoved = false;
-
+  // Mouse
   belt.addEventListener('mousedown', e => {
-    mouseDown = true;
-    mouseStartX = e.clientX;
-    mouseLastX = e.clientX;
-    mouseMoved = false;
-    isTouching = true;
+    onDragStart(e.clientX);
   });
 
   window.addEventListener('mousemove', e => {
-    if (!mouseDown) return;
-    const dx = e.clientX - mouseLastX;
-    if (Math.abs(e.clientX - mouseStartX) > 5) mouseMoved = true;
-    speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + dx * 0.09));
-    mouseLastX = e.clientX;
+    if (!dragActive) return;
+    onDragMove(e.clientX);
   });
 
-  window.addEventListener('mouseup', () => {
-    if (!mouseDown) return;
-    mouseDown = false;
-    isTouching = false;
-    if (!mouseMoved) identify();
+  window.addEventListener('mouseup', e => {
+    if (!dragActive) return;
+    onDragEnd(e.clientX, e.clientY);
   });
 
-  // Nav buttons
+  // Nav
   document.getElementById('btn-prev').addEventListener('click', () => goTo(photoIdx - 1));
   document.getElementById('btn-next').addEventListener('click', () => goTo(photoIdx + 1));
+}
+
+// ─── Navigation ──────────────────────────────────
+function goTo(idx) {
+  if (idx < 0 || idx >= PHOTOS.length) return;
+  removedGuests.clear();
+  buildBelt();
+  loadPhoto(idx);
+  updateNav();
+}
+
+function updateNav() {
+  document.getElementById('btn-prev').disabled = photoIdx === 0;
+  document.getElementById('btn-next').disabled = photoIdx === PHOTOS.length - 1;
 }
 </script>
 </body>
