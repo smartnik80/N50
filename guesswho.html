@@ -277,6 +277,10 @@ function loadPhoto(idx) {
     img.classList.remove('fade');
   }, 280);
 
+  // Preload the reveal image so revealPhoto() has no loading flicker
+  const pre = new Image();
+  pre.src = PHOTO_BASE + base + '02.jpg';
+
   document.getElementById('counter').textContent = `${idx + 1} / ${PHOTOS.length}`;
 }
 
