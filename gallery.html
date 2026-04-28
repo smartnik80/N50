@@ -37,7 +37,6 @@
       -webkit-user-drag: none;
     }
 
-    /* Fade transition */
     #slide img.fade-out {
       opacity: 0;
       transition: opacity 0.25s ease;
@@ -48,7 +47,6 @@
       transition: opacity 0.25s ease;
     }
 
-    /* Left / right tap zones */
     .zone {
       position: fixed;
       top: 0;
@@ -61,8 +59,6 @@
     #zone-prev { left: 0; }
     #zone-next { right: 0; }
 
-
-    /* Arrow hints (subtle) */
     .arrow {
       position: fixed;
       top: 50%;
@@ -80,7 +76,6 @@
     #arrow-prev { left: 12px; }
     #arrow-next { right: 12px; }
 
-    /* Fullscreen button */
     #btn-fs {
       position: fixed;
       top: 14px;
@@ -100,7 +95,6 @@
 
     #btn-fs:hover { color: rgba(255, 255, 255, 0.85); }
 
-    /* Hide button when already fullscreen */
     :fullscreen #btn-fs,
     :-webkit-full-screen #btn-fs { display: none; }
   </style>
@@ -138,21 +132,8 @@
   <audio id="click-sound" src="assets/gallery/diapoclick.mp3" preload="auto"></audio>
 
   <script>
-    /* BUILD:photos */
-    var photos = [
-      'assets/gallery/DSC_0065.JPG',
-      'assets/gallery/DSC_0128.JPG',
-      'assets/gallery/DSC_0133.JPG',
-      'assets/gallery/DSC_0188.JPG',
-      'assets/gallery/DSC_0190.JPG',
-      'assets/gallery/DSC_0212.JPG',
-      'assets/gallery/DSC_0219.jpg',
-      'assets/gallery/DSC_0290.JPG',
-      'assets/gallery/DSC_0392.jpg',
-      'assets/gallery/DSC_0997.JPG',
-      'assets/gallery/DSC_4415.JPG',
-      'assets/gallery/DSC_4526.JPG'
-    ];
+    /* BUILD:total */
+    var TOTAL = 234;
     /* BUILD:end */
 
     var current   = 0;
@@ -163,22 +144,25 @@
 
     var AUTO_INTERVAL = 15000;
 
-    function resetTimer() {
-      clearTimeout(autoTimer);
-      autoTimer = setTimeout(function () { advance(1); }, AUTO_INTERVAL);
+    function pad(n) {
+      return String(n).padStart(3, '0');
     }
 
-    document.getElementById('btn-fs').addEventListener('click', function () {
-      var el = document.documentElement;
-      if (el.requestFullscreen)            el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    });
+    function randomOther() {
+      if (TOTAL === 1) return 0;
+      var n;
+      do { n = Math.floor(Math.random() * TOTAL); } while (n === current);
+      return n;
+    }
+
+    function resetTimer() {
+      clearTimeout(autoTimer);
+      autoTimer = setTimeout(function () { show(randomOther()); resetTimer(); }, AUTO_INTERVAL);
+    }
 
     function show(index) {
       if (busy) return;
       busy = true;
-
-      var next = (index + photos.length) % photos.length;
 
       sound.currentTime = 0;
       sound.play().catch(function () {});
@@ -187,7 +171,7 @@
       photo.classList.remove('fade-in');
 
       setTimeout(function () {
-        current = next;
+        current = index;
 
         function onLoaded() {
           photo.removeEventListener('load', onLoaded);
@@ -197,36 +181,43 @@
         }
 
         photo.addEventListener('load', onLoaded);
-        photo.src = photos[current];
+        photo.src = 'assets/gallery/' + pad(current) + '.jpg';
 
-        // Already cached — load event won't fire
         if (photo.complete) onLoaded();
       }, 250);
     }
 
     function advance(delta) {
-      show(current + delta);
+      var next = (current + delta + TOTAL) % TOTAL;
+      show(next);
       resetTimer();
     }
 
+    document.getElementById('btn-fs').addEventListener('click', function () {
+      var el = document.documentElement;
+      if (el.requestFullscreen)            el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    });
+
     document.getElementById('zone-next').addEventListener('click', function () {
-      advance(1);
+      show(randomOther());
+      resetTimer();
     });
 
     document.getElementById('zone-prev').addEventListener('click', function () {
-      advance(-1);
+      show(randomOther());
+      resetTimer();
     });
 
-    // Keyboard support
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); advance(1); }
-      if (e.key === 'ArrowLeft')                   { e.preventDefault(); advance(-1); }
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(randomOther()); resetTimer(); }
+      if (e.key === 'ArrowLeft')                   { e.preventDefault(); show(randomOther()); resetTimer(); }
     });
 
-    // Init
-    photo.src = photos[current];
+    // Init: start on a random photo
+    current = Math.floor(Math.random() * TOTAL);
+    photo.src = 'assets/gallery/' + pad(current) + '.jpg';
     photo.classList.add('fade-in');
-    updateDate();
     resetTimer();
   </script>
 </body>
