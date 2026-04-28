@@ -447,7 +447,7 @@ function stepBelt() {
     }
     const loopPos = ((s.slotIndex * STRIDE + beltOffset) % loopWidth + loopWidth) % loopWidth;
     const el = faceElMap[s.name];
-    if (el) el.style.left = (loopPos + s.slotOffset) + 'px';
+    if (el) el.style.left = (loopPos - FACE_W + s.slotOffset) + 'px';
   });
 }
 
@@ -459,27 +459,36 @@ function startLoop() {
   })();
 }
 
-// Remove a slot and smoothly close the gap.
-// Faces with slotIndex > removed get slotOffset += STRIDE (visual lag)
-// then have their slotIndex decremented, which pulls them left by STRIDE.
 function removeSlot(name, withZoomOut) {
-  const s  = slots.find(sl => sl.name === name);
-  const el = faceElMap[name];
-  const removedIdx = s ? s.slotIndex : -1;
+  const s = slots.find(sl => sl.name === name);
+  if (!s) {
+    const el = faceElMap[name];
+    if (el) { el.remove(); delete faceElMap[name]; }
+    return;
+  }
+  const removedIdx = s.slotIndex;
+
+  // Snapshot canonical loop positions of all remaining slots BEFORE state changes.
+  const cpBefore = {};
+  slots.forEach(sl => {
+    if (sl.name === name) return;
+    cpBefore[sl.name] = ((sl.slotIndex * STRIDE + beltOffset) % loopWidth + loopWidth) % loopWidth;
+  });
 
   slots = slots.filter(sl => sl.name !== name);
+  const newLoopWidth = Math.max(STRIDE, loopWidth - STRIDE);
+  beltOffset = ((beltOffset % newLoopWidth) + newLoopWidth) % newLoopWidth;
+  loopWidth  = newLoopWidth;
 
-  if (loopWidth > STRIDE) {
-    loopWidth -= STRIDE;
-    beltOffset = ((beltOffset % loopWidth) + loopWidth) % loopWidth;
-    slots.forEach(sl => {
-      if (sl.slotIndex > removedIdx) {
-        sl.slotOffset += STRIDE; // lag: will decay to 0, sliding them left
-        sl.slotIndex  -= 1;
-      }
-    });
-  }
+  // Reindex and compensate: slotOffset absorbs the exact position jump so
+  // the visual position is continuous. It then decays to 0 over ~40 frames.
+  slots.forEach(sl => {
+    if (sl.slotIndex > removedIdx) sl.slotIndex -= 1;
+    const cpAfter = ((sl.slotIndex * STRIDE + beltOffset) % loopWidth + loopWidth) % loopWidth;
+    sl.slotOffset += cpBefore[sl.name] - cpAfter;
+  });
 
+  const el = faceElMap[name];
   if (el) {
     if (withZoomOut) {
       el.classList.add('removing');
