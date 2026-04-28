@@ -103,14 +103,7 @@
       z-index: 15;
     }
 
-    @keyframes zoom-out {
-      0%   { transform: translateY(-50%) scale(1);   opacity: 1; }
-      60%  { transform: translateY(-50%) scale(0.3); opacity: 0.5; }
-      100% { transform: translateY(-50%) scale(0);   opacity: 0; }
-    }
-
     .face.removing {
-      animation: zoom-out 0.38s ease-in forwards;
       z-index: 15;
       pointer-events: none;
     }
@@ -269,6 +262,7 @@ function loadPhoto(idx) {
   foundNames.clear();
   photoRevealed = false;
   resetPhotoZoom(false);
+  document.getElementById('belt-section').style.display = '';
 
   const img = document.getElementById('photo-img');
   img.classList.add('fade');
@@ -292,6 +286,7 @@ function revealPhoto() {
     img.src = PHOTO_BASE + PHOTOS[photoIdx] + '02.jpg';
     img.classList.remove('fade');
   }, 380);
+  document.getElementById('belt-section').style.display = 'none';
   photoRevealed = true;
   updateNav();
 }
@@ -451,7 +446,7 @@ function stepBelt() {
     }
     const loopPos = ((s.slotIndex * STRIDE + beltOffset) % loopWidth + loopWidth) % loopWidth;
     const el = faceElMap[s.name];
-    if (el) el.style.left = (loopPos - FACE_W + s.slotOffset) + 'px';
+    if (el && !el.classList.contains('removing')) el.style.left = (loopPos - FACE_W + s.slotOffset) + 'px';
   });
 }
 
@@ -496,7 +491,13 @@ function removeSlot(name, withZoomOut) {
   if (el) {
     if (withZoomOut) {
       el.classList.add('removing');
-      setTimeout(() => { el.remove(); delete faceElMap[name]; }, 420);
+      // stepBelt no longer moves this element; slide it off the right edge
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        el.style.transition = 'left 0.35s ease-in, opacity 0.25s ease-in 0.12s';
+        el.style.left = (beltWidth + FACE_W) + 'px';
+        el.style.opacity = '0';
+      }));
+      setTimeout(() => { el.remove(); delete faceElMap[name]; }, 480);
     } else {
       el.remove();
       delete faceElMap[name];
