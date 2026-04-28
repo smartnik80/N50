@@ -219,6 +219,7 @@ let positions = [];
 let faceElMap = {};
 let speed = BASE_SPEED;
 let beltWidth = 0;
+let loopWidth = 0; // fixed at build time; never shrinks on removal
 
 // Belt drag
 let beltDragActive = false;
@@ -449,6 +450,8 @@ function buildBelt() {
   const active = ALL_GUESTS.filter(g => !removedGuests.has(g));
   if (!active.length) return;
 
+  loopWidth = active.length * STRIDE;
+
   active.forEach((name, i) => {
     const el = document.createElement('div');
     el.className = 'face';
@@ -463,9 +466,7 @@ function buildBelt() {
 }
 
 function stepBelt() {
-  const n = positions.length;
-  if (!n) return;
-  const loopWidth = n * STRIDE;
+  if (!positions.length || !loopWidth) return;
   positions.forEach(p => {
     p.x += speed;
     if (p.x > beltWidth + FACE_W + GAP) p.x -= loopWidth;
