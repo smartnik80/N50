@@ -72,7 +72,6 @@
       height: 90px;
       border-radius: 11px;
       overflow: hidden;
-      will-change: left;
       user-select: none;
       -webkit-user-select: none;
       cursor: pointer;
@@ -202,32 +201,37 @@ const ALL_GUESTS = [
 ];
 
 const FACE_W = 90;
-const GAP = 16;
+const GAP    = 16;
 const STRIDE = FACE_W + GAP;
 const BASE_SPEED = 0.55;
-const MAX_SPEED = 8;
+const MAX_SPEED  = 8;
 
 // ─── Game state ──────────────────────────────────
-let photoIdx = 0;
-let targetNames = [];
-let foundNames = new Set();
+let photoIdx     = 0;
+let targetNames  = [];
+let foundNames   = new Set();
 let removedGuests = new Set();
-let photoRevealed = false;  // true = showing 02
+let photoRevealed = false;
 
 // ─── Belt state ──────────────────────────────────
-let positions = [];
-let faceElMap = {};
-let speed = BASE_SPEED;
-let beltWidth = 0;
-let loopWidth = 0; // fixed at build time; never shrinks on removal
+// Each slot: { name, slotIndex, slotOffset }
+// Position on screen = (slotIndex * STRIDE + beltOffset) % loopWidth + slotOffset
+// beltOffset advances by speed each frame; wraps within [0, loopWidth).
+// slotOffset is a visual lag that decays toward 0 to animate gap closing.
+let slots      = [];
+let faceElMap  = {};
+let beltOffset = 0;
+let loopWidth  = 0;
+let speed      = BASE_SPEED;
+let beltWidth  = 0;
 
 // Belt drag
-let beltDragActive = false;
-let beltDragStartX = 0;
-let beltDragLastX = 0;
+let beltDragActive   = false;
+let beltDragStartX   = 0;
+let beltDragLastX    = 0;
 let beltDragLastTime = 0;
 let beltDragVelocity = 0;
-let beltDidDrag = false;
+let beltDidDrag      = false;
 
 // ─── Photo zoom state ────────────────────────────
 let pz = { scale: 1, tx: 0, ty: 0 };
@@ -236,10 +240,7 @@ let pinchLastMidX = 0, pinchLastMidY = 0;
 let panStartX = 0, panStartY = 0;
 let panStartTx = 0, panStartTy = 0;
 let photoPanning = false;
-let photoTouchCount = 0;
-let lastTapTime = 0;
-
-// Mouse zoom pan
+let lastTapTime  = 0;
 let mouseZooming = false;
 let mouseZoomStartX = 0, mouseZoomStartY = 0;
 let mouseZoomStartTx = 0, mouseZoomStartTy = 0;
@@ -293,16 +294,12 @@ function revealPhoto() {
 
 // ─── Photo zoom ──────────────────────────────────
 function applyPhotoZoom(animated) {
-  const img = document.getElementById('photo-img');
+  const img     = document.getElementById('photo-img');
   const section = document.getElementById('photo-section');
-  const w = section.offsetWidth;
-  const h = section.offsetHeight;
-
-  const maxTx = Math.max(0, w * (pz.scale - 1) / 2);
-  const maxTy = Math.max(0, h * (pz.scale - 1) / 2);
+  const maxTx = Math.max(0, section.offsetWidth  * (pz.scale - 1) / 2);
+  const maxTy = Math.max(0, section.offsetHeight * (pz.scale - 1) / 2);
   pz.tx = Math.max(-maxTx, Math.min(maxTx, pz.tx));
   pz.ty = Math.max(-maxTy, Math.min(maxTy, pz.ty));
-
   if (animated) {
     img.style.transition = 'opacity 0.5s ease, transform 0.28s ease';
     setTimeout(() => { img.style.transition = 'opacity 0.5s ease'; }, 290);
@@ -324,8 +321,6 @@ function bindPhotoEvents() {
   const section = document.getElementById('photo-section');
 
   section.addEventListener('touchstart', e => {
-    photoTouchCount = e.touches.length;
-
     if (e.touches.length === 2) {
       photoPanning = false;
       pinchStartDist = pinchDist(e.touches[0], e.touches[1]);
@@ -335,48 +330,32 @@ function bindPhotoEvents() {
       const t = e.touches[0];
       if (pz.scale > 1.01) {
         panStartX = t.clientX; panStartY = t.clientY;
-        panStartTx = pz.tx; panStartTy = pz.ty;
+        panStartTx = pz.tx;   panStartTy = pz.ty;
         photoPanning = true;
       }
-      // Double-tap detection
       const now = Date.now();
-      if (now - lastTapTime < 280 && pz.scale > 1.01) {
-        resetPhotoZoom(true);
-      }
+      if (now - lastTapTime < 280 && pz.scale > 1.01) resetPhotoZoom(true);
       lastTapTime = now;
     }
   }, { passive: true });
 
   section.addEventListener('touchmove', e => {
     e.preventDefault();
-    const section = document.getElementById('photo-section');
     const rect = section.getBoundingClientRect();
-
     if (e.touches.length === 2) {
       photoPanning = false;
-      const d = pinchDist(e.touches[0], e.touches[1]);
+      const d    = pinchDist(e.touches[0], e.touches[1]);
       const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
       const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-
       const newScale = Math.max(1, Math.min(6, pz.scale * (d / pinchStartDist)));
-
-      // Zoom toward pinch midpoint
-      const cx = midX - rect.left - rect.width / 2;
-      const cy = midY - rect.top - rect.height / 2;
+      const cx = midX - rect.left - rect.width  / 2;
+      const cy = midY - rect.top  - rect.height / 2;
       const ratio = newScale / pz.scale;
-      pz.tx = cx + (pz.tx - cx) * ratio;
-      pz.ty = cy + (pz.ty - cy) * ratio;
+      pz.tx = cx + (pz.tx - cx) * ratio + (midX - pinchLastMidX);
+      pz.ty = cy + (pz.ty - cy) * ratio + (midY - pinchLastMidY);
       pz.scale = newScale;
-
-      // Pan by midpoint movement
-      pz.tx += midX - pinchLastMidX;
-      pz.ty += midY - pinchLastMidY;
-
-      pinchStartDist = d;
-      pinchLastMidX = midX;
-      pinchLastMidY = midY;
+      pinchStartDist = d; pinchLastMidX = midX; pinchLastMidY = midY;
       applyPhotoZoom(false);
-
     } else if (e.touches.length === 1 && photoPanning) {
       pz.tx = panStartTx + (e.touches[0].clientX - panStartX);
       pz.ty = panStartTy + (e.touches[0].clientY - panStartY);
@@ -385,9 +364,7 @@ function bindPhotoEvents() {
   }, { passive: false });
 
   section.addEventListener('touchend', e => {
-    photoTouchCount = e.touches.length;
     if (e.touches.length === 1 && pz.scale > 1.01) {
-      // Transition from pinch to single-finger pan
       const t = e.touches[0];
       panStartX = t.clientX; panStartY = t.clientY;
       panStartTx = pz.tx; panStartTy = pz.ty;
@@ -399,15 +376,14 @@ function bindPhotoEvents() {
     }
   }, { passive: true });
 
-  // Mouse wheel zoom
   section.addEventListener('wheel', e => {
     e.preventDefault();
-    const rect = section.getBoundingClientRect();
-    const cx = e.clientX - rect.left - rect.width / 2;
-    const cy = e.clientY - rect.top - rect.height / 2;
+    const rect   = section.getBoundingClientRect();
+    const cx     = e.clientX - rect.left - rect.width  / 2;
+    const cy     = e.clientY - rect.top  - rect.height / 2;
     const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
     const newScale = Math.max(1, Math.min(6, pz.scale * factor));
-    const ratio = newScale / pz.scale;
+    const ratio  = newScale / pz.scale;
     pz.tx = cx + (pz.tx - cx) * ratio;
     pz.ty = cy + (pz.ty - cy) * ratio;
     pz.scale = newScale;
@@ -415,7 +391,6 @@ function bindPhotoEvents() {
     applyPhotoZoom(false);
   }, { passive: false });
 
-  // Mouse drag for panning when zoomed
   section.addEventListener('mousedown', e => {
     if (pz.scale > 1.01) {
       mouseZooming = true;
@@ -424,62 +399,55 @@ function bindPhotoEvents() {
       e.preventDefault();
     }
   });
-
   window.addEventListener('mousemove', e => {
     if (!mouseZooming) return;
     pz.tx = mouseZoomStartTx + (e.clientX - mouseZoomStartX);
     pz.ty = mouseZoomStartTy + (e.clientY - mouseZoomStartY);
     applyPhotoZoom(false);
   });
-
   window.addEventListener('mouseup', () => { mouseZooming = false; });
-
-  // Double-click to reset zoom
-  section.addEventListener('dblclick', () => {
-    if (pz.scale > 1.01) resetPhotoZoom(true);
-  });
+  section.addEventListener('dblclick', () => { if (pz.scale > 1.01) resetPhotoZoom(true); });
 }
 
 // ─── Belt ────────────────────────────────────────
 function buildBelt() {
   Object.values(faceElMap).forEach(el => el.remove());
-  faceElMap = {};
-  positions = [];
+  faceElMap  = {};
+  slots      = [];
+  beltOffset = 0;
 
-  const belt = document.getElementById('belt-section');
+  const belt   = document.getElementById('belt-section');
   const active = ALL_GUESTS.filter(g => !removedGuests.has(g));
   if (!active.length) return;
 
   loopWidth = active.length * STRIDE;
 
   active.forEach((name, i) => {
-    const el = document.createElement('div');
+    const el  = document.createElement('div');
     el.className = 'face';
     el.dataset.name = name;
     const img = document.createElement('img');
-    img.src = GUEST_BASE + name + '.jpg';
+    img.src   = GUEST_BASE + name + '.jpg';
     el.appendChild(img);
     belt.appendChild(el);
     faceElMap[name] = el;
-    positions.push({ name, x: i * STRIDE });
+    slots.push({ name, slotIndex: i, slotOffset: 0 });
   });
 }
 
 function stepBelt() {
-  if (!positions.length || !loopWidth) return;
-  positions.forEach(p => {
-    // Smoothly absorb drift (gap closing) into x
-    if (p.drift) {
-      const step = p.drift * 0.1;
-      p.x += step;
-      p.drift -= step;
-      if (Math.abs(p.drift) < 0.2) { p.x += p.drift; p.drift = 0; }
+  if (!slots.length || !loopWidth) return;
+  beltOffset = ((beltOffset + speed) % loopWidth + loopWidth) % loopWidth;
+
+  slots.forEach(s => {
+    // Decay visual lag (gap closing animation)
+    if (s.slotOffset) {
+      s.slotOffset *= 0.84;
+      if (Math.abs(s.slotOffset) < 0.3) s.slotOffset = 0;
     }
-    p.x += speed;
-    if (p.x > beltWidth + FACE_W + GAP) p.x -= loopWidth;
-    if (p.x < -FACE_W - GAP) p.x += loopWidth;
-    const el = faceElMap[p.name];
-    if (el) el.style.left = p.x + 'px';
+    const loopPos = ((s.slotIndex * STRIDE + beltOffset) % loopWidth + loopWidth) % loopWidth;
+    const el = faceElMap[s.name];
+    if (el) el.style.left = (loopPos + s.slotOffset) + 'px';
   });
 }
 
@@ -489,6 +457,38 @@ function startLoop() {
     if (!beltDragActive) speed += (BASE_SPEED - speed) * 0.006;
     requestAnimationFrame(loop);
   })();
+}
+
+// Remove a slot and smoothly close the gap.
+// Faces with slotIndex > removed get slotOffset += STRIDE (visual lag)
+// then have their slotIndex decremented, which pulls them left by STRIDE.
+function removeSlot(name, withZoomOut) {
+  const s  = slots.find(sl => sl.name === name);
+  const el = faceElMap[name];
+  const removedIdx = s ? s.slotIndex : -1;
+
+  slots = slots.filter(sl => sl.name !== name);
+
+  if (loopWidth > STRIDE) {
+    loopWidth -= STRIDE;
+    beltOffset = ((beltOffset % loopWidth) + loopWidth) % loopWidth;
+    slots.forEach(sl => {
+      if (sl.slotIndex > removedIdx) {
+        sl.slotOffset += STRIDE; // lag: will decay to 0, sliding them left
+        sl.slotIndex  -= 1;
+      }
+    });
+  }
+
+  if (el) {
+    if (withZoomOut) {
+      el.classList.add('removing');
+      setTimeout(() => { el.remove(); delete faceElMap[name]; }, 420);
+    } else {
+      el.remove();
+      delete faceElMap[name];
+    }
+  }
 }
 
 // ─── Identification ──────────────────────────────
@@ -501,41 +501,56 @@ function identifyFace(name) {
   if (targetNames.includes(name)) {
     foundNames.add(name);
     el.classList.add('wobble');
-    el.addEventListener('animationend', () => el.classList.remove('wobble'), { once: true });
-
-    const allFound = targetNames.every(n => foundNames.has(n));
-    if (allFound && !photoRevealed) {
-      setTimeout(revealPhoto, 700);
-    }
+    el.addEventListener('animationend', () => {
+      flyFaceToPhoto(name);
+      const allFound = targetNames.every(n => foundNames.has(n));
+      if (allFound && !photoRevealed) setTimeout(revealPhoto, 800);
+    }, { once: true });
   } else {
     removedGuests.add(name);
-    el.classList.add('removing');
-
-    // Immediately close the gap: shift all faces that come after the
-    // removed one (in loop order) by -STRIDE, absorbed smoothly over time.
-    const gone = positions.find(p => p.name === name);
-    if (gone && loopWidth > STRIDE) {
-      const goneNorm = ((gone.x % loopWidth) + loopWidth) % loopWidth;
-      positions.forEach(p => {
-        if (p.name === name) return;
-        const norm = ((p.x % loopWidth) + loopWidth) % loopWidth;
-        if (norm > goneNorm) p.drift = (p.drift || 0) - STRIDE;
-      });
-      loopWidth -= STRIDE;
-    }
-
-    const goneName = name;
-    setTimeout(() => {
-      const e = faceElMap[goneName];
-      if (e) e.remove();
-      delete faceElMap[goneName];
-      positions = positions.filter(p => p.name !== goneName);
-    }, 420);
+    removeSlot(name, true);
   }
 }
 
+function flyFaceToPhoto(name) {
+  const el = faceElMap[name];
+  if (!el) return;
+
+  const faceRect  = el.getBoundingClientRect();
+  const photoRect = document.getElementById('photo-section').getBoundingClientRect();
+
+  // Hide the belt element; a fixed clone does the animation
+  el.style.visibility = 'hidden';
+
+  const clone = document.createElement('div');
+  clone.style.cssText =
+    `position:fixed;left:${faceRect.left}px;top:${faceRect.top}px;` +
+    `width:${faceRect.width}px;height:${faceRect.height}px;` +
+    `border-radius:11px;overflow:hidden;z-index:999;pointer-events:none;` +
+    `transition:left .52s cubic-bezier(.25,.46,.45,.94),` +
+               `top .52s cubic-bezier(.25,.46,.45,.94),` +
+               `width .52s,height .52s,opacity .3s .44s`;
+  const img = document.createElement('img');
+  img.src   = GUEST_BASE + name + '.jpg';
+  img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+  clone.appendChild(img);
+  document.body.appendChild(clone);
+
+  const tw = 100, th = 100;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    clone.style.left    = (photoRect.left + photoRect.width  / 2 - tw / 2) + 'px';
+    clone.style.top     = (photoRect.top  + photoRect.height / 2 - th / 2) + 'px';
+    clone.style.width   = tw + 'px';
+    clone.style.height  = th + 'px';
+    clone.style.opacity = '0';
+  }));
+
+  setTimeout(() => clone.remove(), 1000);
+  removeSlot(name, false);
+}
+
 function tapBeltAt(clientX, clientY) {
-  const el = document.elementFromPoint(clientX, clientY);
+  const el   = document.elementFromPoint(clientX, clientY);
   const face = el?.closest?.('.face') || (el?.classList?.contains('face') ? el : null);
   if (face) identifyFace(face.dataset.name);
 }
@@ -548,14 +563,13 @@ function bindBeltEvents() {
     e.preventDefault();
     const t = e.touches[0];
     beltDragActive = true; beltDragStartX = t.clientX;
-    beltDragLastX = t.clientX; beltDragLastTime = performance.now();
+    beltDragLastX  = t.clientX; beltDragLastTime = performance.now();
     beltDragVelocity = 0; beltDidDrag = false;
   }, { passive: false });
 
   belt.addEventListener('touchmove', e => {
     e.preventDefault();
-    const x = e.touches[0].clientX;
-    const now = performance.now();
+    const x = e.touches[0].clientX, now = performance.now();
     const dx = x - beltDragLastX;
     beltDragVelocity = dx / Math.max(now - beltDragLastTime, 1);
     beltDragLastX = x; beltDragLastTime = now;
@@ -567,23 +581,19 @@ function bindBeltEvents() {
     e.preventDefault();
     beltDragActive = false;
     const t = e.changedTouches[0];
-    if (!beltDidDrag) {
-      tapBeltAt(t.clientX, t.clientY);
-    } else {
-      speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + beltDragVelocity * 50));
-    }
+    if (!beltDidDrag) tapBeltAt(t.clientX, t.clientY);
+    else speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + beltDragVelocity * 50));
   }, { passive: false });
 
   belt.addEventListener('mousedown', e => {
     beltDragActive = true; beltDragStartX = e.clientX;
-    beltDragLastX = e.clientX; beltDragLastTime = performance.now();
+    beltDragLastX  = e.clientX; beltDragLastTime = performance.now();
     beltDragVelocity = 0; beltDidDrag = false;
   });
 
   window.addEventListener('mousemove', e => {
     if (!beltDragActive) return;
-    const dx = e.clientX - beltDragLastX;
-    const now = performance.now();
+    const dx = e.clientX - beltDragLastX, now = performance.now();
     beltDragVelocity = dx / Math.max(now - beltDragLastTime, 1);
     beltDragLastX = e.clientX; beltDragLastTime = now;
     if (Math.abs(e.clientX - beltDragStartX) > 6) beltDidDrag = true;
@@ -593,11 +603,8 @@ function bindBeltEvents() {
   window.addEventListener('mouseup', e => {
     if (!beltDragActive) return;
     beltDragActive = false;
-    if (!beltDidDrag) {
-      tapBeltAt(e.clientX, e.clientY);
-    } else {
-      speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + beltDragVelocity * 50));
-    }
+    if (!beltDidDrag) tapBeltAt(e.clientX, e.clientY);
+    else speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + beltDragVelocity * 50));
   });
 }
 
@@ -605,11 +612,8 @@ function bindBeltEvents() {
 function bindNavEvents() {
   document.getElementById('btn-prev').addEventListener('click', () => goTo(photoIdx - 1));
   document.getElementById('btn-next').addEventListener('click', () => {
-    if (!photoRevealed) {
-      revealPhoto();
-    } else {
-      goTo(photoIdx + 1);
-    }
+    if (!photoRevealed) revealPhoto();
+    else goTo(photoIdx + 1);
   });
 }
 
@@ -623,7 +627,6 @@ function goTo(idx) {
 
 function updateNav() {
   document.getElementById('btn-prev').disabled = photoIdx === 0;
-  // Right disabled only when already on 02 of the last photo
   document.getElementById('btn-next').disabled = photoRevealed && photoIdx === PHOTOS.length - 1;
 }
 </script>
