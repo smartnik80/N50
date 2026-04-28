@@ -468,6 +468,13 @@ function buildBelt() {
 function stepBelt() {
   if (!positions.length || !loopWidth) return;
   positions.forEach(p => {
+    // Smoothly absorb drift (gap closing) into x
+    if (p.drift) {
+      const step = p.drift * 0.1;
+      p.x += step;
+      p.drift -= step;
+      if (Math.abs(p.drift) < 0.2) { p.x += p.drift; p.drift = 0; }
+    }
     p.x += speed;
     if (p.x > beltWidth + FACE_W + GAP) p.x -= loopWidth;
     if (p.x < -FACE_W - GAP) p.x += loopWidth;
@@ -503,12 +510,26 @@ function identifyFace(name) {
   } else {
     removedGuests.add(name);
     el.classList.add('removing');
-    const gone = name;
+
+    // Immediately close the gap: shift all faces that come after the
+    // removed one (in loop order) by -STRIDE, absorbed smoothly over time.
+    const gone = positions.find(p => p.name === name);
+    if (gone && loopWidth > STRIDE) {
+      const goneNorm = ((gone.x % loopWidth) + loopWidth) % loopWidth;
+      positions.forEach(p => {
+        if (p.name === name) return;
+        const norm = ((p.x % loopWidth) + loopWidth) % loopWidth;
+        if (norm > goneNorm) p.drift = (p.drift || 0) - STRIDE;
+      });
+      loopWidth -= STRIDE;
+    }
+
+    const goneName = name;
     setTimeout(() => {
-      const e = faceElMap[gone];
+      const e = faceElMap[goneName];
       if (e) e.remove();
-      delete faceElMap[gone];
-      positions = positions.filter(p => p.name !== gone);
+      delete faceElMap[goneName];
+      positions = positions.filter(p => p.name !== goneName);
     }, 420);
   }
 }
