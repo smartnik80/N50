@@ -133,7 +133,7 @@
 
   <script>
     /* BUILD:total */
-    var TOTAL = 234;
+    var TOTAL = 292;
     /* BUILD:end */
 
     var current   = 0;
@@ -148,16 +148,32 @@
       return String(n).padStart(3, '0');
     }
 
-    function randomOther() {
-      if (TOTAL === 1) return 0;
-      var n;
-      do { n = Math.floor(Math.random() * TOTAL); } while (n === current);
-      return n;
+    // Shuffled deck: every photo shown once before any repeat
+    var deck = [];
+    var deckPos = 0;
+
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+    }
+
+    function nextFromDeck() {
+      if (deckPos >= deck.length) {
+        deck = [];
+        for (var i = 0; i < TOTAL; i++) deck.push(i);
+        shuffle(deck);
+        // Avoid immediate repeat across reshuffles
+        if (deck[0] === current) { var tmp = deck[0]; deck[0] = deck[deck.length - 1]; deck[deck.length - 1] = tmp; }
+        deckPos = 0;
+      }
+      return deck[deckPos++];
     }
 
     function resetTimer() {
       clearTimeout(autoTimer);
-      autoTimer = setTimeout(function () { show(randomOther()); resetTimer(); }, AUTO_INTERVAL);
+      autoTimer = setTimeout(function () { show(nextFromDeck()); resetTimer(); }, AUTO_INTERVAL);
     }
 
     function show(index) {
@@ -200,18 +216,18 @@
     });
 
     document.getElementById('zone-next').addEventListener('click', function () {
-      show(randomOther());
+      show(nextFromDeck());
       resetTimer();
     });
 
     document.getElementById('zone-prev').addEventListener('click', function () {
-      show(randomOther());
+      show(nextFromDeck());
       resetTimer();
     });
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(randomOther()); resetTimer(); }
-      if (e.key === 'ArrowLeft')                   { e.preventDefault(); show(randomOther()); resetTimer(); }
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(nextFromDeck()); resetTimer(); }
+      if (e.key === 'ArrowLeft')                   { e.preventDefault(); show(nextFromDeck()); resetTimer(); }
     });
 
     // Init: start on a random photo
