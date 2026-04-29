@@ -221,8 +221,9 @@
       resetTimer();
     }
 
-    document.getElementById('btn-fs').addEventListener('click', function () {
-      var el = document.documentElement;
+    document.getElementById('btn-fs').addEventListener('click', function (e) {
+      e.stopPropagation();
+      var el = document.body;
       if (el.requestFullscreen)            el.requestFullscreen();
       else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
     });
