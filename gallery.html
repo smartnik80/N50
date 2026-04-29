@@ -141,6 +141,7 @@
     var sound     = document.getElementById('click-sound');
     var busy      = false;
     var autoTimer = null;
+    var paused    = false;
 
     var AUTO_INTERVAL = 15000;
 
@@ -173,7 +174,18 @@
 
     function resetTimer() {
       clearTimeout(autoTimer);
-      autoTimer = setTimeout(function () { show(nextFromDeck()); resetTimer(); }, AUTO_INTERVAL);
+      if (!paused) {
+        autoTimer = setTimeout(function () { show(nextFromDeck()); resetTimer(); }, AUTO_INTERVAL);
+      }
+    }
+
+    function togglePause() {
+      paused = !paused;
+      if (paused) {
+        clearTimeout(autoTimer);
+      } else {
+        resetTimer();
+      }
     }
 
     function show(index) {
@@ -226,8 +238,9 @@
     });
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(nextFromDeck()); resetTimer(); }
-      if (e.key === 'ArrowLeft')                   { e.preventDefault(); show(nextFromDeck()); resetTimer(); }
+      if (e.key === ' ')          { e.preventDefault(); togglePause(); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(nextFromDeck()); resetTimer(); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); show(nextFromDeck()); resetTimer(); }
     });
 
     // Init: start on a random photo
