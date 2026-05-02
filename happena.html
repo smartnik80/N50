@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Меню — Happena</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f5f0e8;
+      color: #2c1a0e;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 17px;
+      line-height: 1.55;
+      padding: 0 0 40px;
+    }
+
+    header {
+      background: #2c1a0e;
+      color: #f5f0e8;
+      text-align: center;
+      padding: 28px 20px 22px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    header p {
+      margin-top: 6px;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      letter-spacing: 0.08em;
+    }
+
+    .section {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    .section-title {
+      margin-top: 36px;
+      margin-bottom: 6px;
+      font-size: 0.72rem;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8b5e3c;
+      border-bottom: 1px solid #c9b49a;
+      padding-bottom: 8px;
+    }
+
+    .item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid #e0d5c4;
+    }
+
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    /* Custom checkbox */
+    .item input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      margin-top: 2px;
+      border: 2px solid #8b5e3c;
+      border-radius: 5px;
+      background: #fff;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .item input[type="checkbox"]:checked {
+      background: #8b5e3c;
+      border-color: #6b4428;
+    }
+
+    .item input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 2px;
+      width: 9px;
+      height: 15px;
+      border: 3px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(42deg);
+    }
+
+    .item-text {
+      flex: 1;
+    }
+
+    .item-name {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #2c1a0e;
+    }
+
+    .item-name-tr {
+      font-weight: normal;
+      color: #7a5c40;
+      font-size: 0.93rem;
+    }
+
+    .item-desc {
+      display: block;
+      margin-top: 3px;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: #5a4030;
+      line-height: 1.45;
+    }
+
+    /* Footer form */
+    .footer-form {
+      max-width: 680px;
+      margin: 44px auto 0;
+      padding: 28px 16px 10px;
+      border-top: 2px solid #c9b49a;
+    }
+
+    .footer-form label {
+      display: block;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #8b5e3c;
+      margin-bottom: 8px;
+    }
+
+    .footer-form input[type="text"] {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-family: Georgia, serif;
+      border: 2px solid #c9b49a;
+      border-radius: 6px;
+      background: #fff;
+      color: #2c1a0e;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .footer-form input[type="text"]:focus {
+      border-color: #8b5e3c;
+    }
+
+    .footer-form button {
+      margin-top: 14px;
+      width: 100%;
+      padding: 14px;
+      background: #2c1a0e;
+      color: #f5f0e8;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .footer-form button:hover,
+    .footer-form button:active {
+      background: #8b5e3c;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Happena</h1>
+  <p>Меню</p>
+</header>
+
+<div class="section">
+
+  <h2 class="section-title">Холодные закуски</h2>
+
+  <div class="item">
+    <input type="checkbox" id="i1">
+    <label class="item-text" for="i1">
+      <span class="item-name">Суп дня <span class="item-name-tr">(Günün Çorbası)</span></span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i2">
+    <label class="item-text" for="i2">
+      <span class="item-name">Хайдари <span class="item-name-tr">(Haydari)</span></span>
+      <span class="item-desc">Йогуртовый дип с сушёной мятой, сливочным маслом, брынзой и острым соусом</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i3">
+    <label class="item-text" for="i3">
+      <span class="item-name">Хумус <span class="item-name-tr">(Humus)</span></span>
+      <span class="item-desc">Пюре из нута с тахини, чесноком и специями</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i4">
+    <label class="item-text" for="i4">
+      <span class="item-name">Баклажан-сёгюш <span class="item-name-tr">(Patlıcan Söğüş)</span></span>
+      <span class="item-desc">Запечённые на углях баклажаны с петрушкой, мятой, помидорами, луком и чесноком</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i5">
+    <label class="item-text" for="i5">
+      <span class="item-name">Имам баялды <span class="item-name-tr">(İmam Bayıldı)</span></span>
+      <span class="item-desc">Баклажаны, фаршированные помидорами, луком, кедровыми орешками и пряностями</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i6">
+    <label class="item-text" for="i6">
+      <span class="item-name">Фасоль в оливковом масле <span class="item-name-tr">(Zeytinyağlı Fasulye)</span></span>
+      <span class="item-desc">Стручковая фасоль с луком, чесноком, лимоном и помидорами, подаётся холодной</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i7">
+    <label class="item-text" for="i7">
+      <span class="item-name">Ассорти мезе <span class="item-name-tr">(Karışık Meze Tabağı)</span></span>
+      <span class="item-desc">Имам баялды, табуле, хумус, баклажанный салат и острый хайдари</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i8">
+    <label class="item-text" for="i8">
+      <span class="item-name">Сардины в рассоле <span class="item-name-tr">(Salamura Sardalya)</span></span>
+      <span class="item-desc">С зеленью, лимоном и помидорами</span>
+    </label>
+  </div>
+
+
+  <h2 class="section-title">Салаты</h2>
+
+  <div class="item">
+    <input type="checkbox" id="i9">
+    <label class="item-text" for="i9">
+      <span class="item-name">Пастуший салат <span class="item-name-tr">(Çoban Salata)</span></span>
+      <span class="item-desc">Помидоры, лук, огурцы, оливковое масло, лимон, грецкий орех</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i10">
+    <label class="item-text" for="i10">
+      <span class="item-name">Салат шефа <span class="item-name-tr">(Şef'in Salatası)</span></span>
+      <span class="item-desc">Сезонная зелень, свёкла, горошек, красный лук, сухарики, лимон</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i11">
+    <label class="item-text" for="i11">
+      <span class="item-name">Куриный салат <span class="item-name-tr">(Tavuklu Salata)</span></span>
+      <span class="item-desc">Курица-гриль, сезонная зелень, пармезан, гранатовая патока, лимонная заправка</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i12">
+    <label class="item-text" for="i12">
+      <span class="item-name">Сезонный салат <span class="item-name-tr">(Mevsim Salata)</span></span>
+      <span class="item-desc">Краснокочанная капуста, морковь, сезонная зелень и овощи</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i13">
+    <label class="item-text" for="i13">
+      <span class="item-name">Табуле <span class="item-name-tr">(Tabule Salatası)</span></span>
+      <span class="item-desc">Мелко рубленая петрушка, мята, лук, булгур и помидоры</span>
+    </label>
+  </div>
+
+
+  <h2 class="section-title">Горячие закуски</h2>
+
+  <div class="item">
+    <input type="checkbox" id="i14">
+    <label class="item-text" for="i14">
+      <span class="item-name">Охотничий пирог <span class="item-name-tr">(Avcı Böreği)</span></span>
+      <span class="item-desc">Блинчики с фаршем из телятины, горошком, луком и чесноком; подаются с зеленью</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i15">
+    <label class="item-text" for="i15">
+      <span class="item-name">Вёшенки на гриле <span class="item-name-tr">(Izgara İstiridye Mantar)</span></span>
+      <span class="item-desc">С тимьяном, красным перцем и сливочным маслом</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i16">
+    <label class="item-text" for="i16">
+      <span class="item-name">Ичли кёфте <span class="item-name-tr">(İçli Köfte)</span></span>
+      <span class="item-desc">Котлеты в оболочке из булгура с начинкой из фарша телятины и лука; подаются с йогуртом</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i17">
+    <label class="item-text" for="i17">
+      <span class="item-name">Хумус с пастырмой <span class="item-name-tr">(Pastırmalı Humus)</span></span>
+      <span class="item-desc">Тёплый хумус с тахини и специями, сверху пастырма — вяленая говядина в обмазке из специй</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i18">
+    <label class="item-text" for="i18">
+      <span class="item-name">Долма из виноградных листьев <span class="item-name-tr">(Zeytinyağlı Yaprak Sarma)</span></span>
+      <span class="item-desc">Виноградные листья, фаршированные булгуром и рисом, с йогуртом и томатной пастой</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i19">
+    <label class="item-text" for="i19">
+      <span class="item-name">Кокореч в лаваше <span class="item-name-tr">(Kokoreç Dürüm)</span></span>
+      <span class="item-desc">Жаренные на гриле бараньи потрошки со специями, завёрнутые в лаваш с луком</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i20">
+    <label class="item-text" for="i20">
+      <span class="item-name">Каппадокийская картошка фри <span class="item-name-tr">(Patates Tava)</span></span>
+      <span class="item-desc">С приправой каджун</span>
+    </label>
+  </div>
+
+
+  <h2 class="section-title">Древние блюда</h2>
+
+  <div class="item">
+    <input type="checkbox" id="i21">
+    <label class="item-text" for="i21">
+      <span class="item-name">Эсри <span class="item-name-tr">(Esri)</span></span>
+      <span class="item-desc">Рубленая телятина с курдючным жиром, булгурный плов, гранатовый соус, исот</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i22">
+    <label class="item-text" for="i22">
+      <span class="item-name">Вестара <span class="item-name-tr">(Westara)</span></span>
+      <span class="item-desc">Бараньи печёночные ломтики в мучной панировке, обжаренные на сковороде</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i23">
+    <label class="item-text" for="i23">
+      <span class="item-name">Нохутлу яхни <span class="item-name-tr">(Nohutlu Yahni)</span></span>
+      <span class="item-desc">Баранина на кости, тушёная с нутом и томатной пастой; булгурный плов и домашние соленья</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i24">
+    <label class="item-text" for="i24">
+      <span class="item-name">Тирит <span class="item-name-tr">(Tirit)</span></span>
+      <span class="item-desc">Тушёная баранья шея на кости на лепёшке-пиде, пропитанной мясным соком; домашние соленья</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i25">
+    <label class="item-text" for="i25">
+      <span class="item-name">Перепел в печи <span class="item-name-tr">(Fırında Bıldırcın)</span></span>
+      <span class="item-desc">Перепел с пшенично-булгурным пловом, конопляными семенами и луком-шалот</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i26">
+    <label class="item-text" for="i26">
+      <span class="item-name">Хаппена <span class="item-name-tr">(Happena)</span></span>
+      <span class="item-desc">Шашлык из ягнёнка с соусом из сливочного и оливкового масла, винограда, мёда и имбиря</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i27">
+    <label class="item-text" for="i27">
+      <span class="item-name">Хаттуша-кебаб <span class="item-name-tr">(Hattusha Kebap)</span></span>
+      <span class="item-desc">Бараньи семенники на шампуре с овощами на углях</span>
+    </label>
+  </div>
+
+
+  <h2 class="section-title">Каппадокийские блюда</h2>
+
+  <div class="item">
+    <input type="checkbox" id="i28">
+    <label class="item-text" for="i28">
+      <span class="item-name">Тести-кебаб <span class="item-name-tr">(Testi Kebabı)</span></span>
+      <span class="item-desc">Кебаб медленного томления с помидорами, перцем, луком и чесноком в запечатанном глиняном кувшине; подаётся с пловом. Возможен куриный вариант</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i29">
+    <label class="item-text" for="i29">
+      <span class="item-name">Каппадокийские манты <span class="item-name-tr">(Kapadokya Mantısı)</span></span>
+      <span class="item-desc">Домашние пельмени с говядиной; чесночный йогурт и острый соус из перца</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i30">
+    <label class="item-text" for="i30">
+      <span class="item-name">Эриште <span class="item-name-tr">(Erişte)</span></span>
+      <span class="item-desc">Домашняя обжаренная пшеничная лапша со сливочным маслом, сыром тулум и тыквенными семечками</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i31">
+    <label class="item-text" for="i31">
+      <span class="item-name">Сёмга в кунжуте <span class="item-name-tr">(Susamlı Somon)</span></span>
+      <span class="item-desc">Сёмга в кунжутной панировке, обжаренная во фритюре, с сезонными овощами</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i32">
+    <label class="item-text" for="i32">
+      <span class="item-name">Кёфте на черепице <span class="item-name-tr">(Kiremitte Köfte)</span></span>
+      <span class="item-desc">Котлеты с сезонными овощами в томатном соусе под кашаром; гарнир — картофельное пюре</span>
+    </label>
+  </div>
+
+
+  <h2 class="section-title">Десерты</h2>
+
+  <div class="item">
+    <input type="checkbox" id="i33">
+    <label class="item-text" for="i33">
+      <span class="item-name">Сушёный инжир и курага <span class="item-name-tr">(Kuru İncir ve Kayısı Tatlısı)</span></span>
+      <span class="item-desc">Местный инжир и курага, томлённые в виноградной патоке</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i34">
+    <label class="item-text" for="i34">
+      <span class="item-name">Тыквенный десерт с пишмание <span class="item-name-tr">(Pişmaniyeli Çıtır Kabak Tatlısı)</span></span>
+      <span class="item-desc">Засахаренная тыква в виноградной патоке с турецкой сахарной «ватой»</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i35">
+    <label class="item-text" for="i35">
+      <span class="item-name">Пахлава <span class="item-name-tr">(Baklava)</span></span>
+      <span class="item-desc">Домашняя пахлава с густыми турецкими сливками каймак</span>
+    </label>
+  </div>
+
+  <div class="item">
+    <input type="checkbox" id="i36">
+    <label class="item-text" for="i36">
+      <span class="item-name">Мороженое <span class="item-name-tr">(Dondurma)</span></span>
+      <span class="item-desc">Шоколадное и ванильное</span>
+    </label>
+  </div>
+
+</div><!-- /section -->
+
+<div class="footer-form section">
+  <label for="guest-name">ИМЯ</label>
+  <input type="text" id="guest-name" name="guest-name" autocomplete="given-name">
+  <button type="button">ОТПРАВИТЬ</button>
+</div>
+
+</body>
+</html>
