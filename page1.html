@@ -17,7 +17,7 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
-      font-family: Georgia, serif;
+      font-family: Georgia, 'Times New Roman', serif;
     }
 
     .page {
@@ -26,149 +26,101 @@
       background: #ede8df;
       display: flex;
       flex-direction: column;
-      padding: 32px 24px 40px;
+      padding: 0 24px 40px;
       gap: 0;
     }
 
-    .photo-area {
-      position: relative;
-      width: 100%;
-    }
-
+    /* Bleed photos to the full frame width, ignoring horizontal padding */
     .photo {
-      width: 100%;
       display: block;
-      border-radius: 2px;
+      width: calc(100% + 48px);
+      margin-left: -24px;
     }
 
-    .overlay {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 45%;
-      height: 100%;
+    .photo + .photo {
+      margin-top: 10px;
+    }
+
+    .choices {
       display: flex;
       flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
     }
 
-    .names-list {
-      flex: 0 0 95%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
-      padding: 2% 5% 0%;
-    }
-
-    .name-row,
-    .custom-row {
+    .choice-label {
       display: flex;
       align-items: center;
-      gap: 7px;
-      background: rgba(237, 232, 223, 0.82);
-      padding: 3px 8px 3px 5px;
-      border-radius: 3px;
+      gap: 12px;
+      background: #f7f3ec;
+      border: 1px solid #c8bfb0;
+      border-left: 3px solid #8b1a1a;
+      border-radius: 2px;
+      padding: 13px 14px;
+      cursor: pointer;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c1810;
+      transition: background 0.1s;
     }
 
-    .name-row { cursor: pointer; }
+    .choice-label:has(input:checked) {
+      background: #f0e8e0;
+    }
 
-    .name-row input[type="checkbox"] {
+    .choice-label input[type="radio"] {
       -webkit-appearance: none;
       appearance: none;
       flex-shrink: 0;
-      width: 15px;
-      height: 15px;
-      border: 1.5px solid rgba(139, 26, 26, 0.85);
-      border-radius: 3px;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(139, 26, 26, 0.65);
+      border-radius: 50%;
       background: rgba(250, 247, 242, 0.9);
       cursor: pointer;
-      transition: background 0.1s, border-color 0.1s;
+      transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
     }
 
-    .name-row input[type="checkbox"]:checked {
+    .choice-label input[type="radio"]:checked {
       background-color: #8b1a1a;
       border-color: #8b1a1a;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpolyline points='1.5,6 4.5,9.5 10.5,2.5' fill='none' stroke='%23faf7f2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: 82%;
+      box-shadow: inset 0 0 0 3px #faf7f2;
     }
-
-    .name-text {
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: #2c1810;
-    }
-
-    .custom-row input {
-      flex: 1;
-      min-width: 0;
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid rgba(139, 26, 26, 0.45);
-      padding: 0 2px;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: #2c1810;
-      outline: none;
-    }
-
-    .custom-row input::placeholder {
-      font-weight: 400;
-      font-style: italic;
-      color: #9a8c82;
-    }
-
-    .bottom {
-      margin-top: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .bottom #btn-submit { margin-top: 0; }
-    .bottom #nav { margin-top: 0; padding-top: 0; }
   </style>
 </head>
 <body>
   <div class="page">
 
-    <div class="photo-area">
-      <img class="photo" src="assets/name_select.jpg" alt="">
+    <img class="photo" src="assets/adolf_szabad.jpg" alt="">
 
-      <form id="name-form" class="overlay">
-        <div class="names-list">
+    <form id="answer-form" style="margin-top: 20px;">
+      <div class="choices">
+        <label class="choice-label">
+          <input type="radio" name="answer" value="янычаром">
+          янычаром
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="агрономом">
+          агрономом
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="режиссером">
+          режиссером
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="ревизором">
+          ревизором
+        </label>
+      </div>
+    </form>
 
-          <label class="name-row"><input type="checkbox" name="name" value="Павел"><span class="name-text">Павел</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Константин"><span class="name-text">Константин</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Илья"><span class="name-text">Илья</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Дмитрий"><span class="name-text">Дмитрий</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Владимир"><span class="name-text">Владимир</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Виктор"><span class="name-text">Виктор</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Андрей"><span class="name-text">Андрей</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Вадим"><span class="name-text">Вадим</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Никита"><span class="name-text">Никита</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Вячеслав"><span class="name-text">Вячеслав</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Олег"><span class="name-text">Олег</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Саша"><span class="name-text">Саша</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Юрий"><span class="name-text">Юрий</span></label>
+    <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
 
-          <div class="custom-row">
-            <input type="text" name="custom_name" placeholder="Мой вариант">
-          </div>
-
-        </div>
-      </form>
-    </div>
-
-    <div class="bottom">
-      <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
-      <nav id="nav">
-        <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
-        <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
-      </nav>
-    </div>
+    <nav id="nav">
+      <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
+      <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
+    </nav>
 
   </div>
 
@@ -178,7 +130,7 @@
       const btnBack   = document.getElementById('btn-back');
       const btnNext   = document.getElementById('btn-next');
       const btnSubmit = document.getElementById('btn-submit');
-      const form      = document.getElementById('name-form');
+      const form      = document.getElementById('answer-form');
 
       const match = filename.match(/^page(\d+)\.html$/);
       if (match) {
@@ -208,7 +160,7 @@
         btnSubmit.disabled = true;
         btnSubmit.textContent = '\u2026';
 
-        fetch('https://formspree.io/f/meevgjbz', {
+        fetch('https://formspree.io/f/mlgabdwv', {
           method: 'POST',
           body: new FormData(form),
           headers: { 'Accept': 'application/json' }
@@ -226,8 +178,6 @@
           btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
         });
       });
-    }());
-  </script>
+    }());  </script>
 </body>
 </html>
-
