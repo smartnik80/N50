@@ -17,7 +17,6 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
-      font-family: Georgia, 'Times New Roman', serif;
     }
 
     .page {
@@ -26,96 +25,23 @@
       background: #ede8df;
       display: flex;
       flex-direction: column;
-      padding: 0 24px 40px;
-      gap: 0;
+      padding: 0 0 40px;
     }
 
-    /* Bleed photos to the full frame width, ignoring horizontal padding */
     .photo {
       display: block;
-      width: calc(100% + 48px);
-      margin-left: -24px;
+      width: 100%;
     }
 
-    .photo + .photo {
-      margin-top: 10px;
-    }
-
-    .choices {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .choice-label {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: #f7f3ec;
-      border: 1px solid #c8bfb0;
-      border-left: 3px solid #8b1a1a;
-      border-radius: 2px;
-      padding: 13px 14px;
-      cursor: pointer;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      color: #2c1810;
-      transition: background 0.1s;
-    }
-
-    .choice-label:has(input:checked) {
-      background: #f0e8e0;
-    }
-
-    .choice-label input[type="radio"] {
-      -webkit-appearance: none;
-      appearance: none;
-      flex-shrink: 0;
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(139, 26, 26, 0.65);
-      border-radius: 50%;
-      background: rgba(250, 247, 242, 0.9);
-      cursor: pointer;
-      transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
-    }
-
-    .choice-label input[type="radio"]:checked {
-      background-color: #8b1a1a;
-      border-color: #8b1a1a;
-      box-shadow: inset 0 0 0 3px #faf7f2;
+    #nav {
+      margin-top: auto;
     }
   </style>
 </head>
 <body>
   <div class="page">
 
-    <img class="photo" src="assets/adolf_szabad.jpg" alt="">
-
-    <form id="answer-form" style="margin-top: 20px;">
-      <div class="choices">
-        <label class="choice-label">
-          <input type="radio" name="answer" value="янычаром">
-          янычаром
-        </label>
-        <label class="choice-label">
-          <input type="radio" name="answer" value="агрономом">
-          агрономом
-        </label>
-        <label class="choice-label">
-          <input type="radio" name="answer" value="режиссером">
-          режиссером
-        </label>
-        <label class="choice-label">
-          <input type="radio" name="answer" value="ревизором">
-          ревизором
-        </label>
-      </div>
-    </form>
-
-    <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
+    <img class="photo" src="assets/victorina/namecard_unmasked.jpg" alt="">
 
     <nav id="nav">
       <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
@@ -126,11 +52,9 @@
 
   <script>
     (function () {
-      const filename  = location.pathname.split('/').pop() || '';
-      const btnBack   = document.getElementById('btn-back');
-      const btnNext   = document.getElementById('btn-next');
-      const btnSubmit = document.getElementById('btn-submit');
-      const form      = document.getElementById('answer-form');
+      const filename = location.pathname.split('/').pop() || '';
+      const btnBack  = document.getElementById('btn-back');
+      const btnNext  = document.getElementById('btn-next');
 
       const match = filename.match(/^page(\d+)\.html$/);
       if (match) {
@@ -155,29 +79,7 @@
         enableNav(prevFile, btnBack);
         enableNav(nextFile, btnNext);
       }
-
-      btnSubmit.addEventListener('click', function () {
-        btnSubmit.disabled = true;
-        btnSubmit.textContent = '\u2026';
-
-        fetch('https://formspree.io/f/mlgabdwv', {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { 'Accept': 'application/json' }
-        })
-        .then(function (r) {
-          if (r.ok) {
-            btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';
-          } else {
-            btnSubmit.disabled = false;
-            btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
-          }
-        })
-        .catch(function () {
-          btnSubmit.disabled = false;
-          btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
-        });
-      });
-    }());  </script>
+    }());
+  </script>
 </body>
 </html>
