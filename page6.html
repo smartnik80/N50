@@ -30,19 +30,15 @@
       gap: 0;
     }
 
+    /* Bleed photos to the full frame width, ignoring horizontal padding */
     .photo {
       display: block;
       width: calc(100% + 48px);
       margin-left: -24px;
     }
 
-    .caption {
+    .photo + .photo {
       margin-top: 10px;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 13px;
-      font-style: italic;
-      color: #6b5c52;
-      text-align: center;
     }
 
     .choices {
@@ -96,26 +92,25 @@
 <body>
   <div class="page">
 
-    <img class="photo" src="assets/victorina/lodina.jpg" alt="">
-    <p class="caption">Прабабушка с семьей брата, 1910-е</p>
+    <img class="photo" src="assets/adolf_szabad.jpg" alt="">
 
-    <form id="answer-form">
+    <form id="answer-form" style="margin-top: 20px;">
       <div class="choices">
         <label class="choice-label">
-          <input type="radio" name="answer" value="телефонная книга жителей Москвы">
-          телефонная книга жителей Москвы
+          <input type="radio" name="answer" value="янычаром">
+          янычаром
         </label>
         <label class="choice-label">
-          <input type="radio" name="answer" value="адрес-календарь дворянства Тверской губернии">
-          адрес-календарь дворянства Тверской губернии
+          <input type="radio" name="answer" value="агрономом">
+          агрономом
         </label>
         <label class="choice-label">
-          <input type="radio" name="answer" value="переписная книга Троице-Сергиевой Лавры">
-          переписная книга Троице-Сергиевой Лавры
+          <input type="radio" name="answer" value="режиссером">
+          режиссером
         </label>
         <label class="choice-label">
-          <input type="radio" name="answer" value="купеческая гильдейская книга">
-          купеческая гильдейская книга
+          <input type="radio" name="answer" value="ревизором">
+          ревизором
         </label>
       </div>
     </form>
@@ -163,7 +158,7 @@
 
       btnSubmit.addEventListener('click', function () {
         btnSubmit.disabled = true;
-        btnSubmit.textContent = '…';
+        btnSubmit.textContent = '\u2026';
 
         fetch('https://formspree.io/f/mlgabdwv', {
           method: 'POST',
@@ -172,18 +167,17 @@
         })
         .then(function (r) {
           if (r.ok) {
-            btnSubmit.textContent = '✓ ОТПРАВЛЕНО';
+            btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';
           } else {
             btnSubmit.disabled = false;
-            btnSubmit.textContent = 'ОТПРАВИТЬ';
+            btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
           }
         })
         .catch(function () {
           btnSubmit.disabled = false;
-          btnSubmit.textContent = 'ОТПРАВИТЬ';
+          btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
         });
       });
-    }());
-  </script>
+    }());  </script>
 </body>
 </html>

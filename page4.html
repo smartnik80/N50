@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page 1</title>
+  <title>Page 4</title>
   <link rel="stylesheet" href="buttons.css">
   <style>
     *, *::before, *::after {
@@ -27,25 +27,53 @@
       display: flex;
       flex-direction: column;
       padding: 0 24px 40px;
-      gap: 0;
     }
 
-    /* Bleed photos to the full frame width, ignoring horizontal padding */
-    .photo {
-      display: block;
+    .photo-placeholder {
       width: calc(100% + 48px);
       margin-left: -24px;
+      aspect-ratio: 4 / 3;
+      background: #d4cdc2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .photo + .photo {
-      margin-top: 10px;
+    .photo-placeholder svg {
+      width: 48px;
+      height: 48px;
+      opacity: 0.35;
     }
 
-    .choices {
+    .choices-area {
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-top: 20px;
+    }
+
+    .choices-placeholder {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choice-ghost {
+      height: 48px;
+      background: #d4cdc2;
+      border-radius: 2px;
+      opacity: 0.5;
+      cursor: pointer;
+    }
+
+    .choices {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choices.visible {
+      display: flex;
     }
 
     .choice-label {
@@ -92,28 +120,45 @@
 <body>
   <div class="page">
 
-    <img class="photo" src="assets/adolf_szabad.jpg" alt="">
+    <div class="photo-placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21,15 16,10 5,21"/>
+      </svg>
+    </div>
 
-    <form id="answer-form" style="margin-top: 20px;">
-      <div class="choices">
-        <label class="choice-label">
-          <input type="radio" name="answer" value="янычаром">
-          янычаром
-        </label>
-        <label class="choice-label">
-          <input type="radio" name="answer" value="агрономом">
-          агрономом
-        </label>
-        <label class="choice-label">
-          <input type="radio" name="answer" value="режиссером">
-          режиссером
-        </label>
-        <label class="choice-label">
-          <input type="radio" name="answer" value="ревизором">
-          ревизором
-        </label>
+    <div class="choices-area">
+
+      <div class="choices-placeholder" id="choices-placeholder">
+        <div class="choice-ghost"></div>
+        <div class="choice-ghost"></div>
+        <div class="choice-ghost"></div>
+        <div class="choice-ghost"></div>
       </div>
-    </form>
+
+      <form id="answer-form">
+        <div class="choices" id="choices">
+          <label class="choice-label">
+            <input type="radio" name="answer" value="丙辰年">
+            丙辰年
+          </label>
+          <label class="choice-label">
+            <input type="radio" name="answer" value="甲子年">
+            甲子年
+          </label>
+          <label class="choice-label">
+            <input type="radio" name="answer" value="庚辰年">
+            庚辰年
+          </label>
+          <label class="choice-label">
+            <input type="radio" name="answer" value="癸巳年">
+            癸巳年
+          </label>
+        </div>
+      </form>
+
+    </div>
 
     <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
 
@@ -131,6 +176,24 @@
       const btnNext   = document.getElementById('btn-next');
       const btnSubmit = document.getElementById('btn-submit');
       const form      = document.getElementById('answer-form');
+      const choices   = document.getElementById('choices');
+      const placeholder = document.getElementById('choices-placeholder');
+      var remaining = 15;
+
+      function reveal() {
+        clearInterval(ticker);
+        placeholder.style.display = 'none';
+        choices.classList.add('visible');
+      }
+
+      placeholder.addEventListener('click', reveal);
+
+      var ticker = setInterval(function () {
+        remaining -= 1;
+          if (remaining <= 0) {
+          reveal();
+        }
+      }, 1000);
 
       const match = filename.match(/^page(\d+)\.html$/);
       if (match) {
@@ -158,7 +221,7 @@
 
       btnSubmit.addEventListener('click', function () {
         btnSubmit.disabled = true;
-        btnSubmit.textContent = '\u2026';
+        btnSubmit.textContent = '…';
 
         fetch('https://formspree.io/f/mlgabdwv', {
           method: 'POST',
@@ -167,17 +230,18 @@
         })
         .then(function (r) {
           if (r.ok) {
-            btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';
+            btnSubmit.textContent = '✓ ОТПРАВЛЕНО';
           } else {
             btnSubmit.disabled = false;
-            btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
+            btnSubmit.textContent = 'ОТПРАВИТЬ';
           }
         })
         .catch(function () {
           btnSubmit.disabled = false;
-          btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
+          btnSubmit.textContent = 'ОТПРАВИТЬ';
         });
       });
-    }());  </script>
+    }());
+  </script>
 </body>
 </html>

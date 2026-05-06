@@ -6,11 +6,7 @@
   <title>Page 10</title>
   <link rel="stylesheet" href="buttons.css">
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: #1a0e06;
@@ -29,125 +25,145 @@
       padding: 0 24px 40px;
     }
 
-    .photo-placeholder {
+    .photo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      aspect-ratio: 1;
       width: calc(100% + 48px);
       margin-left: -24px;
-      aspect-ratio: 4 / 3;
-      background: #d4cdc2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin-bottom: 20px;
     }
 
-    .photo-placeholder svg {
-      width: 48px;
-      height: 48px;
-      opacity: 0.35;
+    .grid-cell {
+      position: relative;
+      overflow: hidden;
     }
 
-    .choices {
+    .grid-cell img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cell2 img { object-position: top; }
+
+    .grid-num {
+      position: absolute;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 4px rgba(0,0,0,0.9), 0 1px 6px rgba(0,0,0,0.7);
+      line-height: 1;
+    }
+
+    /* Cluster all four numbers near the grid centre */
+    .cell1 .grid-num { bottom: 6px; right: 8px; }
+    .cell2 .grid-num { bottom: 6px; left: 8px; }
+    .cell3 .grid-num { top: 6px; right: 8px; }
+    .cell4 .grid-num { top: 6px; left: 8px; }
+
+    .form-area {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-top: 20px;
     }
 
-    .choice-label {
+    .row {
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+
+    .num-field {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      text-align: center;
+      border: 1.5px solid rgba(139,26,26,0.7);
+      border-radius: 3px;
       background: #f7f3ec;
-      border: 1px solid #c8bfb0;
-      border-left: 3px solid #8b1a1a;
-      border-radius: 2px;
-      padding: 13px 14px;
-      cursor: pointer;
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #2c1810;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .num-field::-webkit-outer-spin-button,
+    .num-field::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .row-label {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 12px;
       font-weight: 600;
       color: #2c1810;
-      transition: background 0.1s;
+      line-height: 1.35;
     }
 
-    .choice-label:has(input:checked) {
-      background: #f0e8e0;
+    .bottom {
+      margin-top: auto;
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-
-    .choice-label input[type="checkbox"] {
-      -webkit-appearance: none;
-      appearance: none;
-      flex-shrink: 0;
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(139, 26, 26, 0.65);
-      border-radius: 3px;
-      background: rgba(250, 247, 242, 0.9);
-      cursor: pointer;
-      transition: background 0.1s, border-color 0.1s;
-      position: relative;
-    }
-
-    .choice-label input[type="checkbox"]:checked {
-      background-color: #8b1a1a;
-      border-color: #8b1a1a;
-    }
-
-    .choice-label input[type="checkbox"]:checked::after {
-      content: '';
-      position: absolute;
-      left: 3px;
-      top: 0px;
-      width: 5px;
-      height: 9px;
-      border: 2px solid #faf7f2;
-      border-top: none;
-      border-left: none;
-      transform: rotate(45deg);
-    }
+    .bottom #btn-submit { margin-top: 0; }
+    .bottom #nav { margin-top: 0; padding-top: 0; }
   </style>
 </head>
 <body>
   <div class="page">
 
-    <div class="photo-placeholder">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-        <rect x="3" y="3" width="18" height="18" rx="2"/>
-        <circle cx="8.5" cy="8.5" r="1.5"/>
-        <polyline points="21,15 16,10 5,21"/>
-      </svg>
+    <div class="photo-grid">
+      <div class="grid-cell cell1">
+        <img src="assets/toy1.jpg" alt="">
+        <span class="grid-num">1</span>
+      </div>
+      <div class="grid-cell cell2">
+        <img src="assets/toy2.jpg" alt="">
+        <span class="grid-num">2</span>
+      </div>
+      <div class="grid-cell cell3">
+        <img src="assets/toy3.jpg" alt="">
+        <span class="grid-num">3</span>
+      </div>
+      <div class="grid-cell cell4">
+        <img src="assets/toy4.jpg" alt="">
+        <span class="grid-num">4</span>
+      </div>
     </div>
 
-    <form id="answer-form">
-      <div class="choices">
-        <label class="choice-label">
-          <input type="checkbox" name="answer" value="XXV-го съезда КПСС">
-          XXV-го съезда КПСС
-        </label>
-        <label class="choice-label">
-          <input type="checkbox" name="answer" value="Огненного Дракона">
-          Огненного Дракона
-        </label>
-        <label class="choice-label">
-          <input type="checkbox" name="answer" value="запуска Эппла">
-          запуска Эппла
-        </label>
-        <label class="choice-label">
-          <input type="checkbox" name="answer" value="марсианского десанта">
-          марсианского десанта
-        </label>
-        <label class="choice-label">
-          <input type="checkbox" name="answer" value="перелета на Конкорде">
-          перелета на Конкорде
-        </label>
+    <form id="page5-form" class="form-area">
+      <div class="row">
+        <input class="num-field" type="number" name="toy1_guess" min="1" max="4">
+        <span class="row-label">подарен тетей<br>на нулевой день рождения</span>
+      </div>
+      <div class="row">
+        <input class="num-field" type="number" name="toy2_guess" min="1" max="4">
+        <span class="row-label">куплен спьяну<br>на берлинском прайде</span>
+      </div>
+      <div class="row">
+        <input class="num-field" type="number" name="toy3_guess" min="1" max="4">
+        <span class="row-label">подарен первым мужем<br>на 25й день рождения</span>
+      </div>
+      <div class="row">
+        <input class="num-field" type="number" name="toy4_guess" min="1" max="4">
+        <span class="row-label">презентован авиакомпанией<br>на дальнем перелете</span>
       </div>
     </form>
 
-    <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
-
-    <nav id="nav">
-      <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
-      <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
-    </nav>
+    <div class="bottom">
+      <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
+      <nav id="nav">
+        <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
+        <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
+      </nav>
+    </div>
 
   </div>
 
@@ -157,7 +173,14 @@
       const btnBack   = document.getElementById('btn-back');
       const btnNext   = document.getElementById('btn-next');
       const btnSubmit = document.getElementById('btn-submit');
-      const form      = document.getElementById('answer-form');
+      const form      = document.getElementById('page5-form');
+
+      document.querySelectorAll('.num-field').forEach(function (field) {
+        field.addEventListener('keydown', function (e) {
+          var ctrl = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+          if (!/^[1-4]$/.test(e.key) && !ctrl.includes(e.key)) e.preventDefault();
+        });
+      });
 
       const match = filename.match(/^page(\d+)\.html$/);
       if (match) {
@@ -185,24 +208,32 @@
 
       btnSubmit.addEventListener('click', function () {
         btnSubmit.disabled = true;
-        btnSubmit.textContent = '…';
+        btnSubmit.textContent = '\u2026';
 
-        fetch('https://formspree.io/f/mlgabdwv', {
+        var guesses = [1,2,3,4].map(function (i) {
+          return parseInt(form.querySelector('[name=toy' + i + '_guess]').value, 10);
+        });
+        var correct = [4, 2, 1, 3];
+        var isCorrect = guesses.every(function (v, i) { return v === correct[i]; });
+        var payload = new FormData();
+        payload.append('result', isCorrect ? 'CORRECT' : guesses.join(' '));
+
+        fetch('https://formspree.io/f/mvzdbzyr', {
           method: 'POST',
-          body: new FormData(form),
+          body: payload,
           headers: { 'Accept': 'application/json' }
         })
         .then(function (r) {
           if (r.ok) {
-            btnSubmit.textContent = '✓ ОТПРАВЛЕНО';
+            btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';
           } else {
             btnSubmit.disabled = false;
-            btnSubmit.textContent = 'ОТПРАВИТЬ';
+            btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
           }
         })
         .catch(function () {
           btnSubmit.disabled = false;
-          btnSubmit.textContent = 'ОТПРАВИТЬ';
+          btnSubmit.textContent = '\u041e\u0422\u041f\u0420\u0410\u0412\u0418\u0422\u042c';
         });
       });
     }());
