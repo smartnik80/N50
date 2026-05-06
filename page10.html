@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page 9</title>
+  <title>Page 10</title>
   <link rel="stylesheet" href="buttons.css">
   <style>
     *, *::before, *::after {
@@ -45,35 +45,11 @@
       opacity: 0.35;
     }
 
-    .choices-area {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .choices-placeholder {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .choice-ghost {
-      height: 48px;
-      background: #d4cdc2;
-      border-radius: 2px;
-      opacity: 0.5;
-      cursor: pointer;
-    }
-
     .choices {
-      display: none;
+      display: flex;
       flex-direction: column;
       gap: 10px;
-    }
-
-    .choices.visible {
-      display: flex;
+      margin-top: 20px;
     }
 
     .choice-label {
@@ -97,23 +73,36 @@
       background: #f0e8e0;
     }
 
-    .choice-label input[type="radio"] {
+    .choice-label input[type="checkbox"] {
       -webkit-appearance: none;
       appearance: none;
       flex-shrink: 0;
       width: 18px;
       height: 18px;
       border: 2px solid rgba(139, 26, 26, 0.65);
-      border-radius: 50%;
+      border-radius: 3px;
       background: rgba(250, 247, 242, 0.9);
       cursor: pointer;
-      transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
+      transition: background 0.1s, border-color 0.1s;
+      position: relative;
     }
 
-    .choice-label input[type="radio"]:checked {
+    .choice-label input[type="checkbox"]:checked {
       background-color: #8b1a1a;
       border-color: #8b1a1a;
-      box-shadow: inset 0 0 0 3px #faf7f2;
+    }
+
+    .choice-label input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 0px;
+      width: 5px;
+      height: 9px;
+      border: 2px solid #faf7f2;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg);
     }
   </style>
 </head>
@@ -128,37 +117,30 @@
       </svg>
     </div>
 
-    <div class="choices-area">
-
-      <div class="choices-placeholder" id="choices-placeholder">
-        <div class="choice-ghost"></div>
-        <div class="choice-ghost"></div>
-        <div class="choice-ghost"></div>
-        <div class="choice-ghost"></div>
+    <form id="answer-form">
+      <div class="choices">
+        <label class="choice-label">
+          <input type="checkbox" name="answer" value="XXV-го съезда КПСС">
+          XXV-го съезда КПСС
+        </label>
+        <label class="choice-label">
+          <input type="checkbox" name="answer" value="Огненного Дракона">
+          Огненного Дракона
+        </label>
+        <label class="choice-label">
+          <input type="checkbox" name="answer" value="запуска Эппла">
+          запуска Эппла
+        </label>
+        <label class="choice-label">
+          <input type="checkbox" name="answer" value="марсианского десанта">
+          марсианского десанта
+        </label>
+        <label class="choice-label">
+          <input type="checkbox" name="answer" value="перелета на Конкорде">
+          перелета на Конкорде
+        </label>
       </div>
-
-      <form id="answer-form">
-        <div class="choices" id="choices">
-          <label class="choice-label">
-            <input type="radio" name="answer" value="丙辰年">
-            丙辰年
-          </label>
-          <label class="choice-label">
-            <input type="radio" name="answer" value="甲子年">
-            甲子年
-          </label>
-          <label class="choice-label">
-            <input type="radio" name="answer" value="庚辰年">
-            庚辰年
-          </label>
-          <label class="choice-label">
-            <input type="radio" name="answer" value="癸巳年">
-            癸巳年
-          </label>
-        </div>
-      </form>
-
-    </div>
+    </form>
 
     <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
 
@@ -176,24 +158,6 @@
       const btnNext   = document.getElementById('btn-next');
       const btnSubmit = document.getElementById('btn-submit');
       const form      = document.getElementById('answer-form');
-      const choices   = document.getElementById('choices');
-      const placeholder = document.getElementById('choices-placeholder');
-      var remaining = 15;
-
-      function reveal() {
-        clearInterval(ticker);
-        placeholder.style.display = 'none';
-        choices.classList.add('visible');
-      }
-
-      placeholder.addEventListener('click', reveal);
-
-      var ticker = setInterval(function () {
-        remaining -= 1;
-          if (remaining <= 0) {
-          reveal();
-        }
-      }, 1000);
 
       const match = filename.match(/^page(\d+)\.html$/);
       if (match) {
