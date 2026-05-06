@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>N50 — Гости</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f0804;
+      background-image:
+        radial-gradient(ellipse 80% 40% at 50% 0%,   #241408 0%, transparent 100%),
+        radial-gradient(ellipse 80% 40% at 50% 100%, #241408 0%, transparent 100%);
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 0 120px;
+      overflow-x: hidden;
+    }
+
+    /* ── heading ── */
+    .page-title {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #4a3828;
+      margin-bottom: 44px;
+      text-align: center;
+    }
+
+    /* ── decorative spindle (fixed, viewport-centred) ── */
+    .spindle {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: min(532px, 100vw);
+      height: 0;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 9000;
+    }
+
+    /* horizontal rod */
+    .spindle::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: 16px;
+      right: 16px;
+      height: 4px;
+      background: linear-gradient(180deg, #c8b88a 0%, #8a7450 40%, #c0a870 100%);
+      border-radius: 2px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.6), 0 -1px 0 rgba(255,255,255,0.12);
+      opacity: 0;  /* hidden by default — only the knobs show */
+    }
+
+    /* knob left */
+    .spindle-knob {
+      position: absolute;
+      top: -9px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 32%, #e0d0a0, #9a8050 55%, #3a2c18 100%);
+      border: 1.5px solid #1e140a;
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.65),
+        inset 0 1px 2px rgba(255,255,255,0.25);
+    }
+
+    .spindle-knob.left  { left:  -2px; }
+    .spindle-knob.right { right: -2px; }
+
+    /* ── card stack ── */
+    .stack {
+      width: 100%;
+      max-width: 500px;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── wrapper receives the 3-D transform ── */
+    .card-wrap {
+      position: relative;
+      will-change: transform, opacity;
+      transform-origin: center center;
+    }
+
+    /* ── the index card itself ── */
+    .card {
+      position: relative;
+      border-radius: 7px;
+      border: 2px solid #1c1008;
+      overflow: hidden;
+      background:
+        linear-gradient(158deg, #f8f1db 0%, #f2e8c8 45%, #ece0b8 100%);
+      box-shadow:
+        0 12px 40px rgba(0,0,0,0.5),
+        0 3px 10px  rgba(0,0,0,0.3),
+        inset 0  1px 0 rgba(255,255,255,0.55),
+        inset 0 -1px 0 rgba(0,0,0,0.08);
+    }
+
+    /* paper grain */
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='0.055'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    /* ── tab ── */
+    .card-tab {
+      position: relative;
+      background: linear-gradient(180deg, #e6d9a8 0%, #d8c888 100%);
+      border-bottom: 2px solid #1c1008;
+      padding: 0 14px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* punch holes at tab bottom */
+    .card-tab::before,
+    .card-tab::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #0f0804;
+      border: 1.5px solid #080402;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.4);
+      z-index: 10;
+    }
+
+    .card-tab::before { left: 16px; }
+    .card-tab::after  { right: 16px; }
+
+    .tab-num {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: #7a6030;
+    }
+
+    /* ruled lines decoration in tab */
+    .tab-rule {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .tab-rule span {
+      display: block;
+      height: 1.5px;
+      background: rgba(120,90,30,0.35);
+      border-radius: 1px;
+    }
+
+    .tab-rule span:nth-child(1) { width: 32px; }
+    .tab-rule span:nth-child(2) { width: 20px; }
+    .tab-rule span:nth-child(3) { width: 10px; }
+
+    /* ── card body ── */
+    .card-body {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+    }
+
+    /* ── photo column ── */
+    .photo-col {
+      flex: 0 0 150px;
+      width: 150px;
+      border-right: 2px solid #1c1008;
+      overflow: hidden;
+      background: #1c1008;
+      min-height: 190px;
+    }
+
+    @media (min-width: 440px) {
+      .photo-col { flex: 0 0 180px; width: 180px; }
+    }
+
+    .photo-col img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      filter: sepia(15%) contrast(1.07) brightness(0.98);
+    }
+
+    .placeholder-wrap {
+      width: 100%;
+      min-height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #16100a;
+    }
+
+    .placeholder-wrap svg {
+      width: 50px;
+      height: 50px;
+      opacity: 0.18;
+    }
+
+    /* ── info column ── */
+    .card-info {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 18px 18px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0;
+      position: relative;
+      overflow: hidden;
+      /* ruled lines */
+      background-image: repeating-linear-gradient(
+        transparent,
+        transparent 23px,
+        rgba(160,130,60,0.18) 23px,
+        rgba(160,130,60,0.18) 24px
+      );
+      background-position: 0 6px;
+    }
+
+    /* faint red margin line */
+    .card-info::before {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 14px;
+      width: 1.5px;
+      background: rgba(160,50,30,0.18);
+    }
+
+    /* watermark year */
+    .year-bg {
+      position: absolute;
+      right: -4px;
+      bottom: -22px;
+      font-size: 108px;
+      font-weight: 900;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #1c1008;
+      opacity: 0.14;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .info-name {
+      font-size: 30px;
+      font-weight: 700;
+      color: #1c1008;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      margin-bottom: 13px;
+    }
+
+    @media (min-width: 440px) {
+      .info-name { font-size: 34px; }
+    }
+
+    .info-year {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #8a7040;
+      margin-bottom: 6px;
+    }
+
+    .info-location {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #8b1a1a;
+    }
+  </style>
+</head>
+<body>
+  <p class="page-title">N50 &mdash; Гости</p>
+
+  <div class="spindle" aria-hidden="true">
+    <div class="spindle-knob left"></div>
+    <div class="spindle-knob right"></div>
+  </div>
+
+  <div class="stack" id="stack"></div>
+
+  <script>
+    const guests = [
+      {"ivanova":    {"short_name":"Людмила",  "year":1976, "location":"Москва"}},
+      {"kuzina":     {"short_name":"Света",    "year":1976, "location":"Москва"}},
+      {"marinin":    {"short_name":"Леша",     "year":1984, "location":"Москва"}},
+      {"bavin":      {"short_name":"Петя",     "year":1991, "location":"Бишкек"}},
+      {"dikov":      {"short_name":"Гриша",    "year":1997, "location":"Страсбург"}},
+      {"chernishova":{"short_name":"Оля",      "year":2002, "location":"Страсбург"}},
+      {"koksharov":  {"short_name":"Саша",     "year":2008, "location":"Лондон"}},
+      {"kolosov":    {"short_name":"Миша",     "year":2009, "location":"Страсбург"}},
+      {"kuznetsov":  {"short_name":"Павел",    "year":2008, "location":"Барселона"}},
+      {"ogay":       {"short_name":"Влад",     "year":2009, "location":"Барселона"}},
+      {"brilev":     {"short_name":"Илья",     "year":2009, "location":"Москва"}},
+      {"esinevich":  {"short_name":"Катя",     "year":2009, "location":"Москва"}},
+      {"inkin":      {"short_name":"Антон",    "year":2009, "location":"Москва"}},
+      {"kuzmin":     {"short_name":"Игорь",    "year":2009, "location":"Базель"}},
+      {"skorodumov": {"short_name":"Саша",     "year":2009, "location":"Базель"}},
+      {"sukhotsky":  {"short_name":"Кирилл",   "year":2009, "location":"Вашингтон"}},
+      {"tamuza":     {"short_name":"Полина",   "year":2009, "location":"Рига"}},
+      {"tamuzs":     {"short_name":"Кристапс", "year":2011, "location":"Рига"}},
+      {"baigouzov":  {"short_name":"Рома",     "year":2011, "location":"Прага"}},
+      {"feshin":     {"short_name":"Саша",     "year":2012, "location":"Порто"}},
+      {"kolosova":   {"short_name":"Марина",   "year":2013, "location":"Сергиев-Посад"}},
+      {"koryakin":   {"short_name":"Ваня",     "year":2014, "location":"Москва"}},
+      {"platon":      {"short_name":"Платон",   "year":2017, "location":"Москва"}},
+      {"sharipov":   {"short_name":"Линар",    "year":2019, "location":"Порто"}},
+      {"gusarov":    {"short_name":"Роман",    "year":2026, "location":"Москва"}}
+    ];
+
+    const placeholder = `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="22" r="13" fill="#f4ebd2"/>
+      <ellipse cx="32" cy="55" rx="22" ry="13" fill="#f4ebd2"/>
+    </svg>`;
+
+    const stack = document.getElementById('stack');
+    const wraps = [];
+
+    guests.forEach((entry, i) => {
+      const key  = Object.keys(entry)[0];
+      const data = entry[key];
+
+      const wrap = document.createElement('div');
+      wrap.className = 'card-wrap';
+
+      // card shell
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      // tab
+      const tab = document.createElement('div');
+      tab.className = 'card-tab';
+      tab.innerHTML = `<div class="tab-rule"><span></span><span></span><span></span></div>`;
+
+      // body
+      const body = document.createElement('div');
+      body.className = 'card-body';
+
+      // photo
+      const photoCol = document.createElement('div');
+      photoCol.className = 'photo-col';
+
+      const img = document.createElement('img');
+      img.alt = data.short_name;
+      img.src = `assets/guests/${key}.jpg`;
+      img.onerror = () => {
+        photoCol.innerHTML = `<div class="placeholder-wrap">${placeholder}</div>`;
+      };
+      photoCol.appendChild(img);
+
+      // info
+      const info = document.createElement('div');
+      info.className = 'card-info';
+      info.innerHTML = `
+        <div class="year-bg" aria-hidden="true">${data.year}</div>
+        <div class="info-name">${data.short_name}</div>
+        <div class="info-location">${data.location}</div>`;
+
+      body.appendChild(photoCol);
+      body.appendChild(info);
+      card.appendChild(tab);
+      card.appendChild(body);
+      wrap.appendChild(card);
+      stack.appendChild(wrap);
+      wraps.push({ wrap, card });
+    });
+
+    // ── scroll-driven barrel effect ──────────────────────────────────────────
+    function update() {
+      const vh = window.innerHeight;
+      const cx = vh * 0.5;
+
+      wraps.forEach(({ wrap, card }) => {
+        const r    = wrap.getBoundingClientRect();
+        const mid  = r.top + r.height / 2;
+        const norm = (mid - cx) / vh;           // –0.5..0.5 for visible cards
+
+        const rotX  = norm * 42;                // tilt: cards curve away from centre
+        const sc    = 1 - Math.min(Math.abs(norm), 0.5) * 0.18;
+        const op    = 1 - Math.min(Math.abs(norm), 0.6) * 0.62;
+        const shY   = Math.max(4,  Math.round(28 - Math.abs(norm) * 50));
+        const shBlur= Math.max(8,  Math.round(40 - Math.abs(norm) * 60));
+        const shOp  = Math.max(0.1, 0.5 - Math.abs(norm) * 0.4).toFixed(2);
+
+        wrap.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) scale(${sc.toFixed(4)})`;
+        wrap.style.opacity   = op.toFixed(3);
+        card.style.boxShadow = [
+          `0 ${shY}px ${shBlur}px rgba(0,0,0,${shOp})`,
+          `0 2px 6px rgba(0,0,0,0.22)`,
+          `inset 0 1px 0 rgba(255,255,255,0.55)`,
+          `inset 0 -1px 0 rgba(0,0,0,0.08)`
+        ].join(', ');
+      });
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  </script>
+</body>
+</html>
