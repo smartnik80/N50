@@ -25,47 +25,12 @@
       padding: 0 24px 40px;
     }
 
-    .photo-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      aspect-ratio: 1;
+    .headline-photo {
+      display: block;
       width: calc(100% + 48px);
       margin-left: -24px;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
-
-    .grid-cell {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .grid-cell img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .cell2 img { object-position: top; }
-
-    .grid-num {
-      position: absolute;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 20px;
-      font-weight: 900;
-      color: #fff;
-      text-shadow: 0 0 4px rgba(0,0,0,0.9), 0 1px 6px rgba(0,0,0,0.7);
-      line-height: 1;
-    }
-
-    /* Cluster all four numbers near the grid centre */
-    .cell1 .grid-num { bottom: 6px; right: 8px; }
-    .cell2 .grid-num { bottom: 6px; left: 8px; }
-    .cell3 .grid-num { top: 6px; right: 8px; }
-    .cell4 .grid-num { top: 6px; left: 8px; }
 
     .form-area {
       display: flex;
@@ -77,10 +42,14 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #2c1810;
     }
 
     .num-field {
-      width: 42px;
+      width: 52px;
       height: 42px;
       flex-shrink: 0;
       text-align: center;
@@ -97,14 +66,6 @@
     .num-field::-webkit-outer-spin-button,
     .num-field::-webkit-inner-spin-button { -webkit-appearance: none; }
 
-    .row-label {
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      color: #2c1810;
-      line-height: 1.35;
-    }
-
     .bottom {
       margin-top: auto;
       padding-top: 16px;
@@ -119,41 +80,20 @@
 <body>
   <div class="page">
 
-    <div class="photo-grid">
-      <div class="grid-cell cell1">
-        <img src="assets/toy1.jpg" alt="">
-        <span class="grid-num">1</span>
-      </div>
-      <div class="grid-cell cell2">
-        <img src="assets/toy2.jpg" alt="">
-        <span class="grid-num">2</span>
-      </div>
-      <div class="grid-cell cell3">
-        <img src="assets/toy3.jpg" alt="">
-        <span class="grid-num">3</span>
-      </div>
-      <div class="grid-cell cell4">
-        <img src="assets/toy4.jpg" alt="">
-        <span class="grid-num">4</span>
-      </div>
-    </div>
+    <img class="headline-photo" src="assets/mkl_facebook.jpg" alt="">
 
-    <form id="page5-form" class="form-area">
+    <form id="page4-form" class="form-area">
       <div class="row">
-        <input class="num-field" type="number" name="toy1_guess" min="1" max="4">
-        <span class="row-label">подарен тетей<br>на нулевой день рождения</span>
+        <input class="num-field" type="number" id="num-nikita" name="nikita" min="10" max="99">
+        <span>НИКИТА</span>
       </div>
       <div class="row">
-        <input class="num-field" type="number" name="toy2_guess" min="1" max="4">
-        <span class="row-label">куплен спьяну<br>на берлинском прайде</span>
+        <input class="num-field" type="number" id="num-petya" name="petya" min="10" max="99">
+        <span>ПЕТЯ</span>
       </div>
       <div class="row">
-        <input class="num-field" type="number" name="toy3_guess" min="1" max="4">
-        <span class="row-label">подарен первым мужем<br>на 25й день рождения</span>
-      </div>
-      <div class="row">
-        <input class="num-field" type="number" name="toy4_guess" min="1" max="4">
-        <span class="row-label">презентован авиакомпанией<br>на дальнем перелете</span>
+        <input class="num-field" type="number" id="num-krash" name="krash" min="10" max="99">
+        <span>КРАШ</span>
       </div>
     </form>
 
@@ -173,12 +113,18 @@
       const btnBack   = document.getElementById('btn-back');
       const btnNext   = document.getElementById('btn-next');
       const btnSubmit = document.getElementById('btn-submit');
-      const form      = document.getElementById('page5-form');
+      const form      = document.getElementById('page4-form');
 
       document.querySelectorAll('.num-field').forEach(function (field) {
         field.addEventListener('keydown', function (e) {
           var ctrl = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-          if (!/^[1-4]$/.test(e.key) && !ctrl.includes(e.key)) e.preventDefault();
+          if (!/^\d$/.test(e.key) && !ctrl.includes(e.key)) e.preventDefault();
+        });
+        field.addEventListener('blur', function () {
+          var v = parseInt(field.value, 10);
+          if (field.value !== '') {
+            field.value = Math.min(99, Math.max(10, isNaN(v) ? 10 : v));
+          }
         });
       });
 
@@ -210,17 +156,9 @@
         btnSubmit.disabled = true;
         btnSubmit.textContent = '\u2026';
 
-        var guesses = [1,2,3,4].map(function (i) {
-          return parseInt(form.querySelector('[name=toy' + i + '_guess]').value, 10);
-        });
-        var correct = [4, 2, 1, 3];
-        var isCorrect = guesses.every(function (v, i) { return v === correct[i]; });
-        var payload = new FormData();
-        payload.append('result', isCorrect ? 'CORRECT' : guesses.join(' '));
-
-        fetch('https://formspree.io/f/mvzdbzyr', {
+        fetch('https://formspree.io/f/xwvabybp', {
           method: 'POST',
-          body: payload,
+          body: new FormData(form),
           headers: { 'Accept': 'application/json' }
         })
         .then(function (r) {
