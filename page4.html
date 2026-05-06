@@ -172,19 +172,15 @@
       const vid       = document.getElementById('vid');
       const choices   = document.getElementById('choices');
       const placeholder = document.getElementById('choices-placeholder');
-      vid.addEventListener('canplaythrough', function handler() {
-        vid.removeEventListener('canplaythrough', handler);
-        stub.remove();
-        vid.style.display = 'block';
-        vid.play();
-      });
-
       var remaining = 15;
 
       function reveal() {
         clearInterval(ticker);
         placeholder.style.display = 'none';
         choices.classList.add('visible');
+        stub.remove();
+        vid.style.display = 'block';
+        vid.play();
       }
 
       placeholder.addEventListener('click', reveal);
