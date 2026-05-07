@@ -178,9 +178,15 @@
       transition: background 0.15s;
     }
 
-    .footer-form button:hover,
-    .footer-form button:active {
+    .footer-form button:hover:not(:disabled),
+    .footer-form button:active:not(:disabled) {
       background: #8b5e3c;
+    }
+
+    .footer-form button:disabled {
+      background: #c9b49a;
+      color: #f5f0e8;
+      cursor: not-allowed;
     }
   </style>
 </head>
@@ -196,7 +202,7 @@
 <div class="footer-form section">
   <label for="guest-name">ИМЯ</label>
   <input type="text" id="guest-name" name="guest-name" autocomplete="given-name">
-  <button type="button" id="submit-btn">ОТПРАВИТЬ</button>
+  <button type="button" id="submit-btn" disabled>ОТПРАВИТЬ</button>
   <p id="form-err" style="display:none;margin-top:14px;text-align:center;font-family:Arial,sans-serif;font-size:0.9rem;color:#8b2020;"></p>
 </div>
 
@@ -305,13 +311,18 @@ var MENU = [
   });
 }());
 
+// ─── NAME GATE ───────────────────────────────────────────────────────────────
+var nameInput = document.getElementById('guest-name');
+var submitBtn = document.getElementById('submit-btn');
+
+nameInput.addEventListener('input', function () {
+  submitBtn.disabled = this.value.trim() === '';
+});
+
 // ─── SUBMIT ──────────────────────────────────────────────────────────────────
-document.getElementById('submit-btn').addEventListener('click', function () {
-  var name = document.getElementById('guest-name').value.trim();
-  if (!name) {
-    document.getElementById('guest-name').focus();
-    return;
-  }
+submitBtn.addEventListener('click', function () {
+  var name = nameInput.value.trim();
+  if (!name) return; // belt-and-suspenders guard
 
   var checked = [];
   document.querySelectorAll('.item input[type="checkbox"]:checked').forEach(function (cb) {
@@ -323,15 +334,17 @@ document.getElementById('submit-btn').addEventListener('click', function () {
     checked.push({ ru: ru, tr: tr });
   });
 
-  var body = { name: name, selections: checked.map(function (d) { return d.tr; }).join(', ') || '(nothing selected)' };
-
   var btn = this;
   btn.disabled = true;
 
+  var fd = new FormData();
+  fd.append('name', name);
+  fd.append('selections', checked.map(function (d) { return d.tr; }).join(', ') || '(nothing selected)');
+
   fetch('https://formspree.io/f/mykodpen', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify(body)
+    headers: { 'Accept': 'application/json' },
+    body: fd
   })
   .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
   .then(function (res) {
