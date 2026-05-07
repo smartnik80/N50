@@ -504,8 +504,57 @@
 <div class="footer-form section">
   <label for="guest-name">ИМЯ</label>
   <input type="text" id="guest-name" name="guest-name" autocomplete="given-name">
-  <button type="button">ОТПРАВИТЬ</button>
+  <button type="button" id="submit-btn">ОТПРАВИТЬ</button>
+  <p id="form-msg" style="display:none;margin-top:14px;text-align:center;font-family:Arial,sans-serif;font-size:0.9rem;color:#5a4030;"></p>
 </div>
+
+<script>
+  document.getElementById('submit-btn').addEventListener('click', function () {
+    var name = document.getElementById('guest-name').value.trim();
+    if (!name) {
+      document.getElementById('guest-name').focus();
+      return;
+    }
+
+    var checked = [];
+    document.querySelectorAll('.item input[type="checkbox"]:checked').forEach(function (cb) {
+      var label = cb.closest('.item').querySelector('.item-name');
+      if (label) checked.push(label.childNodes[0].textContent.trim());
+    });
+
+    var body = { name: name, selections: checked.join(', ') || '(ничего не выбрано)' };
+
+    var btn = this;
+    btn.disabled = true;
+
+    fetch('https://formspree.io/f/mrejldlj', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(body)
+    })
+    .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+    .then(function (res) {
+      var msg = document.getElementById('form-msg');
+      msg.style.display = 'block';
+      if (res.ok) {
+        msg.style.color = '#3a6b3a';
+        msg.textContent = 'Спасибо, ' + name + '! Ваш выбор отправлен.';
+        btn.style.display = 'none';
+      } else {
+        msg.style.color = '#8b2020';
+        msg.textContent = 'Ошибка при отправке. Попробуйте ещё раз.';
+        btn.disabled = false;
+      }
+    })
+    .catch(function () {
+      var msg = document.getElementById('form-msg');
+      msg.style.display = 'block';
+      msg.style.color = '#8b2020';
+      msg.textContent = 'Ошибка соединения. Попробуйте ещё раз.';
+      btn.disabled = false;
+    });
+  });
+</script>
 
 </body>
 </html>
