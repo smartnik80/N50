@@ -505,7 +505,7 @@
   <label for="guest-name">ИМЯ</label>
   <input type="text" id="guest-name" name="guest-name" autocomplete="given-name">
   <button type="button" id="submit-btn">ОТПРАВИТЬ</button>
-  <p id="form-msg" style="display:none;margin-top:14px;text-align:center;font-family:Arial,sans-serif;font-size:0.9rem;color:#5a4030;"></p>
+  <p id="form-err" style="display:none;margin-top:14px;text-align:center;font-family:Arial,sans-serif;font-size:0.9rem;color:#8b2020;"></p>
 </div>
 
 <script>
@@ -534,26 +534,70 @@
     })
     .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
     .then(function (res) {
-      var msg = document.getElementById('form-msg');
-      msg.style.display = 'block';
       if (res.ok) {
-        msg.style.color = '#3a6b3a';
-        msg.textContent = 'Спасибо, ' + name + '! Ваш выбор отправлен.';
-        btn.style.display = 'none';
+        showConfirmation(name, checked);
       } else {
-        msg.style.color = '#8b2020';
-        msg.textContent = 'Ошибка при отправке. Попробуйте ещё раз.';
+        showError('Ошибка при отправке. Попробуйте ещё раз.');
         btn.disabled = false;
       }
     })
     .catch(function () {
-      var msg = document.getElementById('form-msg');
-      msg.style.display = 'block';
-      msg.style.color = '#8b2020';
-      msg.textContent = 'Ошибка соединения. Попробуйте ещё раз.';
+      showError('Ошибка соединения. Попробуйте ещё раз.');
       btn.disabled = false;
     });
   });
+
+  function showError(msg) {
+    var el = document.getElementById('form-err');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function showConfirmation(name, dishes) {
+    document.body.innerHTML =
+      '<div style="' +
+        'min-height:100vh;' +
+        'background:#f5f0e8;' +
+        'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+        'padding:40px 24px;' +
+        'font-family:Georgia,serif;' +
+        'color:#2c1a0e;' +
+        'text-align:center;' +
+      '">' +
+        '<div style="font-size:2.4rem;margin-bottom:24px;">✓</div>' +
+        '<div style="' +
+          'font-size:0.7rem;' +
+          'font-family:Arial,sans-serif;' +
+          'font-weight:700;' +
+          'letter-spacing:0.2em;' +
+          'text-transform:uppercase;' +
+          'color:#8b5e3c;' +
+          'margin-bottom:20px;' +
+        '">Ваш выбор</div>' +
+        (dishes.length
+          ? '<ul style="list-style:none;padding:0;margin:0 0 32px;text-align:left;max-width:360px;width:100%;">' +
+              dishes.map(function (d) {
+                return '<li style="' +
+                  'padding:10px 0;' +
+                  'border-bottom:1px solid #e0d5c4;' +
+                  'font-size:1rem;' +
+                '">' + escHtml(d) + '</li>';
+              }).join('') +
+            '</ul>'
+          : '<p style="margin-bottom:32px;font-style:italic;color:#7a5c40;">Ничего не выбрано</p>'
+        ) +
+        '<div style="' +
+          'font-size:1.15rem;' +
+          'font-weight:bold;' +
+          'letter-spacing:0.05em;' +
+          'color:#2c1a0e;' +
+        '">' + escHtml(name) + '</div>' +
+      '</div>';
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
 </script>
 
 </body>
