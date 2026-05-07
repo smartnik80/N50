@@ -518,11 +518,15 @@
 
     var checked = [];
     document.querySelectorAll('.item input[type="checkbox"]:checked').forEach(function (cb) {
-      var label = cb.closest('.item').querySelector('.item-name');
-      if (label) checked.push(label.childNodes[0].textContent.trim());
+      var nameEl = cb.closest('.item').querySelector('.item-name');
+      if (!nameEl) return;
+      var ru = nameEl.childNodes[0].textContent.trim();
+      var trEl = nameEl.querySelector('.item-name-tr');
+      var tr = trEl ? trEl.textContent.replace(/[()]/g, '').trim() : ru;
+      checked.push({ ru: ru, tr: tr });
     });
 
-    var body = { name: name, selections: checked.join(', ') || '(ничего не выбрано)' };
+    var body = { name: name, selections: checked.map(function (d) { return d.tr; }).join(', ') || '(nothing selected)' };
 
     var btn = this;
     btn.disabled = true;
@@ -577,11 +581,10 @@
         (dishes.length
           ? '<ul style="list-style:none;padding:0;margin:0 0 32px;text-align:left;max-width:360px;width:100%;">' +
               dishes.map(function (d) {
-                return '<li style="' +
-                  'padding:10px 0;' +
-                  'border-bottom:1px solid #e0d5c4;' +
-                  'font-size:1rem;' +
-                '">' + escHtml(d) + '</li>';
+                return '<li style="padding:10px 0;border-bottom:1px solid #e0d5c4;">' +
+                  '<div style="font-size:1rem;font-weight:bold;">' + escHtml(d.ru) + '</div>' +
+                  '<div style="font-size:0.85rem;color:#7a5c40;font-style:italic;">' + escHtml(d.tr) + '</div>' +
+                  '</li>';
               }).join('') +
             '</ul>'
           : '<p style="margin-bottom:32px;font-style:italic;color:#7a5c40;">Ничего не выбрано</p>'
