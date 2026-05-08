@@ -282,6 +282,7 @@ var MENU = [
       var cb = document.createElement('input');
       cb.type = 'checkbox';
       cb.id = id;
+      cb.dataset.pos = String(idCounter).padStart(2, '0');
 
       var lbl = document.createElement('label');
       lbl.className = 'item-text';
@@ -331,7 +332,8 @@ submitBtn.addEventListener('click', function () {
     var ru = nameEl.childNodes[0].textContent.trim();
     var trEl = nameEl.querySelector('.item-name-tr');
     var tr = trEl ? trEl.textContent.replace(/[()]/g, '').trim() : ru;
-    checked.push({ ru: ru, tr: tr });
+    var pos = cb.dataset.pos || '';
+    checked.push({ ru: ru, tr: pos + ' ' + tr });
   });
 
   var btn = this;
