@@ -4,36 +4,85 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page 11</title>
+  <link rel="stylesheet" href="buttons.css">
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: #1a0e06;
       display: flex;
       justify-content: center;
-      align-items: center;
       min-height: 100vh;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .page {
+      width: min(calc(100vh * 9 / 16), 430px, 100vw);
+      min-height: 100vh;
+      background: #ede8df;
+      display: flex;
+      flex-direction: column;
+      padding: 0 24px 40px;
     }
 
     .frame {
       border: 1px solid #c8bfb0;
+      margin-top: 24px;
       line-height: 0;
     }
 
-    img {
+    .frame img {
       display: block;
-      max-width: min(calc(100vh * 9 / 16), 430px, 100vw);
-      max-height: 100vh;
+      width: 100%;
     }
+
+    nav { margin-top: auto; padding-top: 16px; }
   </style>
 </head>
 <body>
-  <div class="frame">
-    <img src="assets/mkl_facebook_full.jpg" alt="">
+  <div class="page">
+
+    <div class="frame">
+      <img src="assets/mkl_facebook_full.jpg" alt="">
+    </div>
+
+    <nav id="nav">
+      <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
+      <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
+    </nav>
+
   </div>
+
+  <script>
+    (function () {
+      const filename = location.pathname.split('/').pop() || '';
+      const btnBack  = document.getElementById('btn-back');
+      const btnNext  = document.getElementById('btn-next');
+
+      const match = filename.match(/^page(\d+)\.html$/);
+      if (match) {
+        const n        = parseInt(match[1], 10);
+        const prevFile = 'page' + (n - 1) + '.html';
+        const nextFile = 'page' + (n + 1) + '.html';
+
+        btnBack.hidden = false;
+        btnNext.hidden = false;
+
+        function enableNav(file, btn) {
+          fetch(file, { method: 'HEAD' })
+            .then(function (r) {
+              if (r.ok) {
+                btn.disabled = false;
+                btn.addEventListener('click', function () { location.href = file; });
+              }
+            })
+            .catch(function () {});
+        }
+
+        enableNav(prevFile, btnBack);
+        enableNav(nextFile, btnNext);
+      }
+    }());
+  </script>
 </body>
 </html>
