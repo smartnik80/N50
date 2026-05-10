@@ -160,25 +160,25 @@ const PHOTO_BASE = 'assets/guesswho/';
 const GUEST_BASE = 'assets/guests/';
 
 const PHOTOS = [
-  'baigouzov_ivanov_kolosov',
-  'brilev_koksharov',
-  'brilev_koryakin',
-  'dikov_tamuza_esinevich',
-  'esinevich_kolosov_sukhotsky',
-  'esinevich_platon',
-  'inkin_kolosov_ivanov_kuzmin',
-  'ivanov_bavin',
-  'ivanov_dikov',
-  'ivanov_ivanova_kolosova',
-  'ivanov_marinin',
-  'ivanova_kuzina',
-  'koksharov',
-  'kolosov_esinevich',
-  'kolosov_ivanov',
-  'kuznetsov_esinevich_kolosov',
-  'skorodumov_ogay_kuznetsov',
-  'sukhotsky_esinevich_ivanov_kolosov_kuznetsov_ogay',
-  'tamuzs_tamuza_ogay',
+  '01esinevich_kolosov_sukhotsky',
+  '02kuznetsov_esinevich_kolosov',
+  '03ivanova_kuzina',
+  '04ivanov_ivanova_kolosova',
+  '05sukhotsky_esinevich_ivanov_kolosov_kuznetsov_ogay',
+  '06dikov_tamuza_esinevich',
+  '07ivanov_bavin',
+  '08kolosov_ivanov',
+  '09brilev_koksharov',
+  '10koksharov',
+  '11ivanov_marinin',
+  '12kolosov_esinevich',
+  '13skorodumov_ogay_kuznetsov',
+  '14esinevich_platon',
+  '15inkin_kolosov_ivanov_kuzmin',
+  '16baigouzov_ivanov_kolosov',
+  '17ivanov_dikov',
+  '18brilev_koryakin',
+  '19tamuzs_tamuza_ogay',
 ];
 
 const ALL_GUESTS = [
@@ -254,7 +254,7 @@ window.addEventListener('resize', () => {
 function loadPhoto(idx) {
   photoIdx = idx;
   const base = PHOTOS[idx];
-  targetNames = base.split('_');
+  targetNames = base.replace(/^\d+/, '').split('_');
   foundNames.clear();
   photoRevealed = false;
   resetPhotoZoom(false);
