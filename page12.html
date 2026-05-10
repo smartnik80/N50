@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page 12</title>
+  <link rel="stylesheet" href="buttons.css">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #1a0e06;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .page {
+      width: min(calc(100vh * 9 / 16), 430px, 100vw);
+      min-height: 100vh;
+      background: #ede8df;
+      display: flex;
+      flex-direction: column;
+      padding: 0 24px 40px;
+      gap: 0;
+    }
+
+    .photo {
+      display: block;
+      width: calc(100% + 48px);
+      margin-left: -24px;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .choice-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f7f3ec;
+      border: 1px solid #c8bfb0;
+      border-left: 3px solid #8b1a1a;
+      border-radius: 2px;
+      padding: 13px 14px;
+      cursor: pointer;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c1810;
+      transition: background 0.1s;
+    }
+
+    .choice-label:has(input:checked) {
+      background: #f0e8e0;
+    }
+
+    .choice-label input[type="radio"] {
+      -webkit-appearance: none;
+      appearance: none;
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(139, 26, 26, 0.65);
+      border-radius: 50%;
+      background: rgba(250, 247, 242, 0.9);
+      cursor: pointer;
+      transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
+    }
+
+    .choice-label input[type="radio"]:checked {
+      background-color: #8b1a1a;
+      border-color: #8b1a1a;
+      box-shadow: inset 0 0 0 3px #faf7f2;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <img class="photo" src="assets/victorina/axinya.jpg" alt="">
+
+    <form id="answer-form">
+      <div class="choices">
+        <label class="choice-label">
+          <input type="radio" name="answer" value="Маланья">
+          Маланья
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="Ефросинья">
+          Ефросинья
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="Аксинья">
+          Аксинья
+        </label>
+        <label class="choice-label">
+          <input type="radio" name="answer" value="Авдотья">
+          Авдотья
+        </label>
+      </div>
+    </form>
+
+    <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
+
+    <nav id="nav">
+      <button id="btn-back" class="btn" hidden disabled>НАЗАД</button>
+      <button id="btn-next" class="btn" hidden disabled>ВПЕРЕД</button>
+    </nav>
+
+  </div>
+
+  <script>
+    (function () {
+      const filename  = location.pathname.split('/').pop() || '';
+      const btnBack   = document.getElementById('btn-back');
+      const btnNext   = document.getElementById('btn-next');
+      const btnSubmit = document.getElementById('btn-submit');
+      const form      = document.getElementById('answer-form');
+
+      const match = filename.match(/^page(\d+)\.html$/);
+      if (match) {
+        const n        = parseInt(match[1], 10);
+        const prevFile = 'page' + (n - 1) + '.html';
+        const nextFile = 'page' + (n + 1) + '.html';
+
+        btnBack.hidden = false;
+        btnNext.hidden = false;
+
+        function enableNav(file, btn) {
+          fetch(file, { method: 'HEAD' })
+            .then(function (r) {
+              if (r.ok) {
+                btn.disabled = false;
+                btn.addEventListener('click', function () { location.href = file; });
+              }
+            })
+            .catch(function () {});
+        }
+
+        enableNav(prevFile, btnBack);
+        enableNav(nextFile, btnNext);
+      }
+
+      btnSubmit.addEventListener('click', function () {
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = '…';
+
+        fetch('https://formspree.io/f/mlgabdwv', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        })
+        .then(function (r) {
+          if (r.ok) {
+            btnSubmit.textContent = '✓ ОТПРАВЛЕНО';
+          } else {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'ОТПРАВИТЬ';
+          }
+        })
+        .catch(function () {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'ОТПРАВИТЬ';
+        });
+      });
+    }());
+  </script>
+</body>
+</html>
