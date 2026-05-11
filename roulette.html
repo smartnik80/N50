@@ -9,8 +9,8 @@
 
     html, body {
       height: 100%;
-      background: #1a0e06;
-      color: #ede8df;
+      background: #ede8df;
+      color: #2a1a0a;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       overflow: hidden;
     }
@@ -32,7 +32,7 @@
       flex-shrink: 0;
     }
 
-    /* Visual dial circle */
+    /* Visual dial circle — transparent, same background as the page */
     #dial {
       position: absolute;
       top: 50px;
@@ -40,24 +40,11 @@
       width: 260px;
       height: 260px;
       border-radius: 50%;
-      background: radial-gradient(circle at 38% 38%, #2a1808 0%, #150a03 80%);
-      border: 1.5px solid rgba(237,232,223,0.1);
-      box-shadow:
-        0 0 60px rgba(0,0,0,0.7),
-        inset 0 0 30px rgba(0,0,0,0.5),
-        inset 0 1px 0 rgba(255,255,255,0.04);
+      background: transparent;
+      border: 1.5px solid rgba(26,14,6,0.1);
     }
 
-    /* Tick marks on dial rim */
-    #dial::after {
-      content: '';
-      position: absolute;
-      inset: 6px;
-      border-radius: 50%;
-      border: 1px solid rgba(237,232,223,0.06);
-    }
-
-    /* Bottle pivot — zero-size anchor at dial center, rotated by JS */
+    /* Bottle pivot — zero-size anchor at dial centre, rotated by JS */
     #bottle-pivot {
       position: absolute;
       top: 50%;
@@ -68,15 +55,15 @@
       z-index: 5;
     }
 
-    /* Bottle SVG, offset so its visual center sits on the pivot */
+    /* Bottle SVG centred on the pivot point */
     #bottle-svg {
       position: absolute;
       width: 200px;
-      height: 70px;
+      height: 63px;
       left: -100px;
-      top: -35px;
+      top: -32px;
       overflow: visible;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+      filter: drop-shadow(0 3px 10px rgba(26,14,6,0.28));
     }
 
     /* ── Face chips ──────────────────────────────── */
@@ -86,10 +73,10 @@
       height: 52px;
       border-radius: 50%;
       overflow: hidden;
-      border: 2.5px solid rgba(237,232,223,0.55);
+      border: 2.5px solid rgba(26,14,6,0.28);
       transform: translate(-50%, -50%);
       transition: border-color 0.35s, box-shadow 0.35s, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-      background: #1e1008;
+      background: #ccc4b8;
       z-index: 2;
       cursor: default;
     }
@@ -103,7 +90,7 @@
 
     .face-chip.highlight {
       border-color: #f5c842;
-      box-shadow: 0 0 22px rgba(245,200,66,0.85), 0 0 6px rgba(245,200,66,0.5);
+      box-shadow: 0 0 20px rgba(245,200,66,0.9), 0 0 6px rgba(245,200,66,0.5);
       transform: translate(-50%, -50%) scale(1.3);
       z-index: 10;
     }
@@ -111,27 +98,31 @@
     /* ── Controls ────────────────────────────────── */
     #spin-btn {
       padding: 14px 52px;
-      background: #f5c842;
-      color: #1a0e06;
+      background: #8b1a1a;
+      color: #faf7f2;
       border: none;
-      border-radius: 32px;
-      font-size: 17px;
+      border-radius: 2px;
+      font-size: 14px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
-      transition: opacity 0.2s, transform 0.1s;
+      transition: background 0.15s, transform 0.1s;
     }
 
-    #spin-btn:active:not(:disabled) { transform: scale(0.95); }
-    #spin-btn:disabled { opacity: 0.3; cursor: default; }
+    #spin-btn:active:not(:disabled) {
+      background: #6e1515;
+      transform: scale(0.97);
+    }
+
+    #spin-btn:disabled { opacity: 0.35; cursor: default; }
 
     #status {
       font-size: 11px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: rgba(237,232,223,0.3);
+      color: #9a8e86;
       min-height: 15px;
       text-align: center;
     }
@@ -140,15 +131,15 @@
     #winner-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(20,10,2,0.97);
+      background: rgba(14,7,2,0.97);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 22px;
+      gap: 24px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.45s ease;
+      transition: opacity 0.4s ease;
       z-index: 100;
       padding: 24px;
     }
@@ -158,71 +149,32 @@
       pointer-events: all;
     }
 
-    #winner-face-wrap {
-      width: 164px;
-      height: 164px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 4px solid #f5c842;
-      box-shadow: 0 0 56px rgba(245,200,66,0.4), 0 0 18px rgba(245,200,66,0.25);
-      transform: scale(0.4);
-      opacity: 0;
-      transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease;
-    }
-
-    #winner-overlay.visible #winner-face-wrap {
-      transform: scale(1);
-      opacity: 1;
-    }
-
-    #winner-face-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    #winner-name {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #f5c842;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s;
-    }
-
-    #winner-overlay.visible #winner-name {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
     #winner-video {
-      width: min(88vw, 420px);
-      max-height: 40vh;
-      border-radius: 12px;
+      width: min(90vw, 90dvh * 16 / 9, 560px);
+      max-height: 70dvh;
+      border-radius: 6px;
       background: #000;
       display: block;
-      opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
-    #winner-video.visible {
-      opacity: 1;
-      transform: translateY(0);
+    #back-btn {
+      padding: 10px 36px;
+      background: transparent;
+      color: rgba(237,232,223,0.6);
+      border: 1px solid rgba(237,232,223,0.2);
+      border-radius: 24px;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: color 0.15s, border-color 0.15s;
     }
 
-    #skip-hint {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      color: rgba(237,232,223,0.2);
-      opacity: 0;
-      transition: opacity 0.4s ease 0.5s;
+    #back-btn:active {
+      color: rgba(237,232,223,0.9);
+      border-color: rgba(237,232,223,0.45);
     }
-
-    #winner-overlay.visible #skip-hint { opacity: 1; }
   </style>
 </head>
 <body>
@@ -231,71 +183,76 @@
     <div id="dial"></div>
 
     <div id="bottle-pivot">
-      <svg id="bottle-svg" viewBox="-80 -28 160 56" xmlns="http://www.w3.org/2000/svg">
+      <!--
+        Wine bottle lying on its side, neck pointing right (+x).
+        ViewBox "-82 -26 164 52": bottle spans x≈-80..+74, y≈-20..+20,
+        centred near the origin so the pivot coincides with the bottle's midpoint.
+      -->
+      <svg id="bottle-svg" viewBox="-82 -26 164 52" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <!-- Glass gradient: lighter on top, darker on bottom -->
-          <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#6aaa60"/>
-            <stop offset="28%"  stop-color="#2d5a27"/>
-            <stop offset="72%"  stop-color="#2a5424"/>
-            <stop offset="100%" stop-color="#1a3a16"/>
+          <linearGradient id="g-glass" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#6cb860"/>
+            <stop offset="30%"  stop-color="#2e6228"/>
+            <stop offset="70%"  stop-color="#296024"/>
+            <stop offset="100%" stop-color="#183e13"/>
           </linearGradient>
-          <!-- Label parchment gradient -->
-          <linearGradient id="label" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#d4ac5e"/>
-            <stop offset="100%" stop-color="#a07828"/>
+          <linearGradient id="g-foil" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#c02828"/>
+            <stop offset="100%" stop-color="#580e0e"/>
           </linearGradient>
-          <!-- Neck gradient -->
-          <linearGradient id="neck" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#3a6e33"/>
-            <stop offset="100%" stop-color="#1e4018"/>
+          <linearGradient id="g-label" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#dabb6c"/>
+            <stop offset="100%" stop-color="#9a7422"/>
           </linearGradient>
         </defs>
 
-        <!-- Main bottle silhouette:
-             body on the left (rounded end), shoulder tapering, neck, and cork on the right.
-             Neck tip (mouth) is the pointer end at ~x=62. -->
-        <path d="
-          M -70,-22
-          L -4,-22
-          C 8,-22 22,-10 22,-10
-          L 52,-10
-          L 52,-7
-          L 62,-7
-          L 62,7
-          L 52,7
-          L 52,10
-          C 22,10 8,22 -4,22
-          L -70,22
-          A 22,22 0 0 0 -70,-22
-          Z
-        " fill="url(#glass)" stroke="#162e12" stroke-width="1.2"/>
+        <!-- Glass body: rounded bottom (left), tapered shoulder, neck.
+             Path is perfectly symmetric about y=0. -->
+        <path fill="url(#g-glass)" stroke="#14280f" stroke-width="1.3"
+              stroke-linejoin="round"
+          d="M -60,-20
+             L 2,-20
+             C 16,-20 26,-10 30,-10
+             L 62,-10
+             L 62,10
+             L 30,10
+             C 26,10 16,20 2,20
+             L -60,20
+             A 20,20 0 0 0 -60,-20
+             Z"/>
 
-        <!-- Neck fill (slightly different shade) -->
-        <rect x="22" y="-10" width="30" height="20" fill="url(#neck)"/>
+        <!-- Foil capsule — overlaps last bit of neck + extends past the glass tip.
+             Slightly taller than the neck (±12 vs ±10) to show the capsule ridge. -->
+        <rect x="54" y="-12" width="20" height="24" rx="1.5"
+              fill="url(#g-foil)" stroke="#3a0808" stroke-width="0.9"/>
+        <!-- Foil highlight band at the top -->
+        <rect x="54" y="-12" width="20" height="5" rx="1.5"
+              fill="rgba(255,255,255,0.14)"/>
+        <!-- Foil lower crease line -->
+        <line x1="54" y1="4" x2="74" y2="4"
+              stroke="rgba(0,0,0,0.25)" stroke-width="0.8"/>
 
-        <!-- Label -->
-        <rect x="-52" y="-14" width="46" height="28" rx="4" fill="url(#label)"/>
+        <!-- Label on body -->
+        <rect x="-50" y="-13" width="42" height="26" rx="3.5"
+              fill="url(#g-label)"/>
 
-        <!-- Glass specular highlight (top of body) -->
-        <path d="M -62,-18 Q -30,-20 -4,-18 C 4,-18 10,-13 12,-10"
-              fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Specular highlight — curved streak along top of body -->
+        <path d="M -55,-17 L -4,-17 C 8,-17 17,-11 19,-10"
+              fill="none" stroke="rgba(255,255,255,0.3)"
+              stroke-width="2.5" stroke-linecap="round"/>
 
-        <!-- Shoulder line -->
-        <line x1="22" y1="-10" x2="22" y2="10"
-              stroke="#162e12" stroke-width="1"/>
-
-        <!-- Cork / rim -->
-        <rect x="52" y="-7" width="11" height="14" rx="2.5"
-              fill="#5a3010" stroke="#3a1e08" stroke-width="0.8"/>
-
-        <!-- Cork highlight -->
-        <rect x="53.5" y="-5.5" width="3" height="11" rx="1.5"
-              fill="rgba(255,255,255,0.12)"/>
+        <!-- Secondary softer highlight lower on body -->
+        <path d="M -55,-13 L -8,-13 C 2,-13 9,-11 11,-10"
+              fill="none" stroke="rgba(255,255,255,0.1)"
+              stroke-width="1.5" stroke-linecap="round"/>
 
         <!-- Neck specular -->
-        <line x1="25" y1="-8" x2="25" y2="8"
-              stroke="rgba(255,255,255,0.1)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="32" y1="-7.5" x2="52" y2="-7.5"
+              stroke="rgba(255,255,255,0.13)" stroke-width="1.2" stroke-linecap="round"/>
+
+        <!-- Shoulder crease line (where glass body meets shoulder) -->
+        <line x1="2" y1="-20" x2="2" y2="20"
+              stroke="rgba(0,0,0,0.18)" stroke-width="0.8"/>
       </svg>
     </div>
   </div>
@@ -303,46 +260,43 @@
   <div id="status"></div>
   <button id="spin-btn" disabled>Крутить</button>
 
-  <!-- ── Winner overlay ──────────────────────────────── -->
+  <!-- ── Winner overlay: video only ───────────────── -->
   <div id="winner-overlay">
-    <div id="winner-face-wrap">
-      <img id="winner-img" src="" alt="">
-    </div>
-    <div id="winner-name"></div>
     <video id="winner-video" playsinline webkit-playsinline></video>
-    <div id="skip-hint">нажмите чтобы пропустить</div>
+    <button id="back-btn">назад</button>
   </div>
 
   <script>
-    // Bottle neck points RIGHT (+x). Face at angle 0° sits at the right of the dial.
-    // A bottle rotation of θ° aims the neck at the face at angle θ°.
-    // Angles increase clockwise (CSS convention, y-axis down).
+    // Neck points RIGHT (+x). Face at angle θ° sits at bearing θ° clockwise from right.
+    // Rotating the bottle by θ° aims the neck at that face.
 
-    const DIAL_CENTER  = 180;   // px — center of #roulette container
-    const FACE_RADIUS  = 142;   // px — distance from center to face chip center
-    const SPIN_MS      = 15000; // ms — spin duration
-    const ROTS_MIN     = 8;
-    const ROTS_MAX     = 13;
+    const DIAL_CENTER = 180;
+    const FACE_RADIUS = 142;
+    const SPIN_MS     = 15000;
+    const ROTS_MIN    = 8;
+    const ROTS_MAX    = 13;
 
-    let guests        = [];           // { name, videoFile, angle, el }
-    let eliminated    = new Set();
-    let currentAngle  = 0;            // accumulated bottle rotation (degrees)
-    let spinning      = false;
+    let guests       = [];
+    let eliminated   = new Set();
+    let currentAngle = 0;
+    let spinning     = false;
     let pendingWinner = null;
 
-    const bottlePivot   = document.getElementById('bottle-pivot');
-    const roulette      = document.getElementById('roulette');
-    const spinBtn       = document.getElementById('spin-btn');
-    const statusEl      = document.getElementById('status');
-    const overlay       = document.getElementById('winner-overlay');
-    const winnerImg     = document.getElementById('winner-img');
-    const winnerNameEl  = document.getElementById('winner-name');
-    const winnerVideo   = document.getElementById('winner-video');
+    const bottlePivot = document.getElementById('bottle-pivot');
+    const roulette    = document.getElementById('roulette');
+    const spinBtn     = document.getElementById('spin-btn');
+    const statusEl    = document.getElementById('status');
+    const overlay     = document.getElementById('winner-overlay');
+    const winnerVideo = document.getElementById('winner-video');
+    const backBtn     = document.getElementById('back-btn');
 
-    // ── Easing ────────────────────────────────────────
-    function easeOutQuint(t) {
-      return 1 - Math.pow(1 - t, 5);
+    function rng() {
+      const a = new Uint32Array(1);
+      crypto.getRandomValues(a);
+      return a[0] / 0x100000000;
     }
+
+    function easeOutQuint(t) { return 1 - Math.pow(1 - t, 5); }
 
     // ── Init ──────────────────────────────────────────
     async function init() {
@@ -366,12 +320,10 @@
     }
 
     function setStatus(msg) { statusEl.textContent = msg; }
-
+    function getActive() { return guests.filter(g => !eliminated.has(g.name)); }
     function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
-    function getActive() { return guests.filter(g => !eliminated.has(g.name)); }
-
-    // ── Dial rendering ────────────────────────────────
+    // ── Dial ──────────────────────────────────────────
     function renderDial() {
       roulette.querySelectorAll('.face-chip').forEach(el => el.remove());
 
@@ -393,15 +345,12 @@
       active.forEach((g, i) => {
         const deg = (i / N) * 360;
         g.angle = deg;
-
         const rad = deg * (Math.PI / 180);
-        const x   = DIAL_CENTER + FACE_RADIUS * Math.cos(rad);
-        const y   = DIAL_CENTER + FACE_RADIUS * Math.sin(rad);
 
         const chip = document.createElement('div');
         chip.className = 'face-chip';
-        chip.style.left = x + 'px';
-        chip.style.top  = y + 'px';
+        chip.style.left = (DIAL_CENTER + FACE_RADIUS * Math.cos(rad)) + 'px';
+        chip.style.top  = (DIAL_CENTER + FACE_RADIUS * Math.sin(rad)) + 'px';
         chip.dataset.name = g.name;
 
         const img = document.createElement('img');
@@ -423,18 +372,25 @@
       const active = getActive();
       if (!active.length) return;
 
-      const winner = active[Math.floor(Math.random() * active.length)];
+      const winner = active[Math.floor(rng() * active.length)];
+
+      // Preload the video immediately, while the bottle is still spinning.
+      // On iOS, calling play()+pause() inside the gesture handler unlocks
+      // autoplay for the subsequent play() call after the spin finishes.
+      winnerVideo.src = `assets/circles/${winner.videoFile}`;
+      winnerVideo.preload = 'auto';
+      const primePlay = winnerVideo.play();
+      if (primePlay) primePlay.then(() => { winnerVideo.pause(); winnerVideo.currentTime = 0; }).catch(() => {});
 
       spinning = true;
       spinBtn.disabled = true;
       setStatus('');
 
-      // Calculate final angle so bottle lands exactly on winner
       const norm  = ((currentAngle % 360) + 360) % 360;
       let delta   = winner.angle - norm;
-      if (delta <= 0) delta += 360; // always spin forward at least one turn
+      if (delta <= 0) delta += 360;
 
-      const extraRots = ROTS_MIN + Math.floor(Math.random() * (ROTS_MAX - ROTS_MIN + 1));
+      const extraRots  = ROTS_MIN + Math.floor(rng() * (ROTS_MAX - ROTS_MIN + 1));
       const totalDelta = extraRots * 360 + delta;
       const startAngle = currentAngle;
       const startTime  = performance.now();
@@ -466,28 +422,13 @@
 
     function showOverlay(winner) {
       pendingWinner = winner;
-
-      winnerImg.src = `assets/guests/${winner.name}.jpg`;
-      winnerNameEl.textContent = capitalize(winner.name);
-      winnerVideo.src = '';
-      winnerVideo.classList.remove('visible');
-
       overlay.classList.add('visible');
-
-      // Load and play video after 2 seconds of face reveal
-      setTimeout(() => {
-        winnerVideo.src = `assets/circles/${winner.videoFile}`;
-        winnerVideo.classList.add('visible');
-        winnerVideo.play().catch(() => {});
-      }, 2000);
+      // Video is already preloaded; currentTime was reset to 0
+      winnerVideo.play().catch(() => {});
     }
 
     winnerVideo.addEventListener('ended', closeOverlay);
-
-    overlay.addEventListener('click', () => {
-      // Only allow skip once the video is showing
-      if (winnerVideo.classList.contains('visible')) closeOverlay();
-    });
+    backBtn.addEventListener('click', closeOverlay);
 
     function closeOverlay() {
       if (!pendingWinner) return;
@@ -499,11 +440,10 @@
 
       setTimeout(() => {
         winnerVideo.src = '';
-        winnerVideo.classList.remove('visible');
         if (winner.el) winner.el.classList.remove('highlight');
         eliminated.add(winner.name);
         renderDial();
-      }, 500);
+      }, 450);
     }
 
     init();
