@@ -218,7 +218,7 @@
              L 30,10
              C 26,10 16,20 2,20
              L -60,20
-             A 20,20 0 0 0 -60,-20
+             A 20,20 0 0 1 -60,-20
              Z"/>
 
         <!-- Foil capsule — overlaps last bit of neck + extends past the glass tip.
@@ -276,10 +276,11 @@
     const ROTS_MIN    = 8;
     const ROTS_MAX    = 13;
 
-    let guests       = [];
-    let eliminated   = new Set();
-    let currentAngle = 0;
-    let spinning     = false;
+    let guests        = [];
+    let eliminated    = new Set();
+    let pickIndex     = 0;   // next guest to pick, by manifest order
+    let currentAngle  = 0;
+    let spinning      = false;
     let pendingWinner = null;
 
     const bottlePivot = document.getElementById('bottle-pivot');
@@ -333,6 +334,7 @@
         spinBtn.disabled = true;
         setTimeout(() => {
           eliminated.clear();
+          pickIndex = 0;
           setStatus('');
           currentAngle = 0;
           bottlePivot.style.transform = 'rotate(0deg)';
@@ -372,7 +374,8 @@
       const active = getActive();
       if (!active.length) return;
 
-      const winner = active[Math.floor(rng() * active.length)];
+      const winner = guests[pickIndex % guests.length];
+      pickIndex++;
 
       // Preload the video immediately, while the bottle is still spinning.
       // On iOS, calling play()+pause() inside the gesture handler unlocks
