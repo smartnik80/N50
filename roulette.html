@@ -477,7 +477,6 @@
       // Load and play video after 2 seconds of face reveal
       setTimeout(() => {
         winnerVideo.src = `assets/circles/${winner.videoFile}`;
-        winnerVideo.load();
         winnerVideo.classList.add('visible');
         winnerVideo.play().catch(() => {});
       }, 2000);
