@@ -419,7 +419,7 @@
     // ── Post-spin ─────────────────────────────────────
     function onSpinEnd(winner) {
       if (winner.el) winner.el.classList.add('highlight');
-      setTimeout(() => showOverlay(winner), 1200);
+      setTimeout(() => showOverlay(winner), 100);
     }
 
     function showOverlay(winner) {
