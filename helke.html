@@ -254,7 +254,8 @@ var nameInput = document.getElementById('guest-name');
 var submitBtn = document.getElementById('submit-btn');
 
 // One selected element per category index
-var selected = new Array(MENU.length).fill(null);
+var selected  = new Array(MENU.length).fill(null);
+var posCounter = 0;
 
 MENU.forEach(function (section, sIdx) {
   var h2 = document.createElement('h2');
@@ -263,10 +264,12 @@ MENU.forEach(function (section, sIdx) {
   root.appendChild(h2);
 
   section.items.forEach(function (item) {
+    posCounter++;
     var div = document.createElement('div');
     div.className = 'choice-option';
     div.dataset.ru   = item.ru;
     div.dataset.tr   = item.tr;
+    div.dataset.pos  = String(posCounter).padStart(2, '0');
     div.dataset.sidx = sIdx;
 
     var dot = document.createElement('div');
@@ -326,7 +329,7 @@ submitBtn.addEventListener('click', function () {
   MENU.forEach(function (section, idx) {
     var el = selected[idx];
     if (el) {
-      fd.append(section.category, el.dataset.tr);
+      fd.append(section.category, el.dataset.pos + ' ' + el.dataset.tr);
       picks.push({ category: section.category, ru: el.dataset.ru, tr: el.dataset.tr });
     }
   });
