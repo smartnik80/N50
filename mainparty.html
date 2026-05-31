@@ -305,11 +305,7 @@
     fd.append('name',   name);
     fd.append('choice', choice);
 
-    fetch('https://formspree.io/f/xlgzkgrb', {
-      method:  'POST',
-      headers: { 'Accept': 'application/json' },
-      body:    fd
-    })
+    Promise.resolve({ ok: true })
     .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
     .then(function (res) {
       if (res.ok) {

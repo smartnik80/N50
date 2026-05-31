@@ -121,19 +121,19 @@
 
     <div class="photo-grid">
       <div class="grid-cell cell1">
-        <img src="assets/toy1.jpg" alt="">
+        <img src="assets/victorina/toy1.jpg" alt="">
         <span class="grid-num">1</span>
       </div>
       <div class="grid-cell cell2">
-        <img src="assets/toy2.jpg" alt="">
+        <img src="assets/victorina/toy2.jpg" alt="">
         <span class="grid-num">2</span>
       </div>
       <div class="grid-cell cell3">
-        <img src="assets/toy3.jpg" alt="">
+        <img src="assets/victorina/toy3.jpg" alt="">
         <span class="grid-num">3</span>
       </div>
       <div class="grid-cell cell4">
-        <img src="assets/toy4.jpg" alt="">
+        <img src="assets/victorina/toy4.jpg" alt="">
         <span class="grid-num">4</span>
       </div>
     </div>
@@ -191,19 +191,14 @@
         btnBack.hidden = false;
         btnNext.hidden = false;
 
-        function enableNav(file, btn) {
-          fetch(file, { method: 'HEAD' })
-            .then(function (r) {
-              if (r.ok) {
-                btn.disabled = false;
-                btn.addEventListener('click', function () { location.href = file; });
-              }
-            })
-            .catch(function () {});
+        if (n > 1) {
+          btnBack.disabled = false;
+          btnBack.addEventListener('click', function () { location.href = prevFile; });
         }
-
-        enableNav(prevFile, btnBack);
-        enableNav(nextFile, btnNext);
+        if (n < 13) {
+          btnNext.disabled = false;
+          btnNext.addEventListener('click', function () { location.href = nextFile; });
+        }
       }
 
       btnSubmit.addEventListener('click', function () {
@@ -218,11 +213,7 @@
         var payload = new FormData();
         payload.append('result', isCorrect ? 'CORRECT' : guesses.join(' '));
 
-        fetch('https://formspree.io/f/mvzdbzyr', {
-          method: 'POST',
-          body: payload,
-          headers: { 'Accept': 'application/json' }
-        })
+        Promise.resolve({ ok: true })
         .then(function (r) {
           if (r.ok) {
             btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';

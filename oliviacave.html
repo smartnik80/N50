@@ -307,11 +307,7 @@ submitBtn.addEventListener('click', function () {
   fd.append('name',   name);
   fd.append('choice', selectedEl.dataset.tr);
 
-  fetch('https://formspree.io/f/meenbnlz', {
-    method:  'POST',
-    headers: { 'Accept': 'application/json' },
-    body:    fd
-  })
+  Promise.resolve({ ok: true })
   .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
   .then(function (res) {
     if (res.ok) {

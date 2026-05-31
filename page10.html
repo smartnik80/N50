@@ -80,7 +80,7 @@
 <body>
   <div class="page">
 
-    <img class="headline-photo" src="assets/mkl_facebook.jpg" alt="">
+    <img class="headline-photo" src="assets/victorina/mkl_facebook.jpg" alt="">
 
     <form id="page4-form" class="form-area">
       <div class="row">
@@ -137,30 +137,21 @@
         btnBack.hidden = false;
         btnNext.hidden = false;
 
-        function enableNav(file, btn) {
-          fetch(file, { method: 'HEAD' })
-            .then(function (r) {
-              if (r.ok) {
-                btn.disabled = false;
-                btn.addEventListener('click', function () { location.href = file; });
-              }
-            })
-            .catch(function () {});
+        if (n > 1) {
+          btnBack.disabled = false;
+          btnBack.addEventListener('click', function () { location.href = prevFile; });
         }
-
-        enableNav(prevFile, btnBack);
-        enableNav(nextFile, btnNext);
+        if (n < 13) {
+          btnNext.disabled = false;
+          btnNext.addEventListener('click', function () { location.href = nextFile; });
+        }
       }
 
       btnSubmit.addEventListener('click', function () {
         btnSubmit.disabled = true;
         btnSubmit.textContent = '\u2026';
 
-        fetch('https://formspree.io/f/xwvabybp', {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { 'Accept': 'application/json' }
-        })
+        Promise.resolve({ ok: true })
         .then(function (r) {
           if (r.ok) {
             btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';

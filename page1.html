@@ -121,9 +121,9 @@
   <div class="page">
 
     <div class="stork-stage">
-      <img class="stork-img stork1" src="assets/storck1.jpg" alt="">
-      <img class="stork-img stork2" src="assets/storck2.jpg" alt="">
-      <img class="stork-img stork3" src="assets/storck3.jpg" alt="">
+      <img class="stork-img stork1" src="assets/victorina/storck1.jpg" alt="">
+      <img class="stork-img stork2" src="assets/victorina/storck2.jpg" alt="">
+      <img class="stork-img stork3" src="assets/victorina/storck3.jpg" alt="">
     </div>
 
     <form id="page3-form" class="form-area">
@@ -191,19 +191,14 @@
         btnBack.hidden = false;
         btnNext.hidden = false;
 
-        function enableNav(file, btn) {
-          fetch(file, { method: 'HEAD' })
-            .then(function (r) {
-              if (r.ok) {
-                btn.disabled = false;
-                btn.addEventListener('click', function () { location.href = file; });
-              }
-            })
-            .catch(function () {});
+        if (n > 1) {
+          btnBack.disabled = false;
+          btnBack.addEventListener('click', function () { location.href = prevFile; });
         }
-
-        enableNav(prevFile, btnBack);
-        enableNav(nextFile, btnNext);
+        if (n < 13) {
+          btnNext.disabled = false;
+          btnNext.addEventListener('click', function () { location.href = nextFile; });
+        }
       }
 
       btnSubmit.addEventListener('click', function () {
@@ -222,11 +217,7 @@
         payload.append('stork2', names[2] || '');
         payload.append('stork3', names[3] || '');
 
-        fetch('https://formspree.io/f/xpqkrkyq', {
-          method: 'POST',
-          body: payload,
-          headers: { 'Accept': 'application/json' }
-        })
+        Promise.resolve({ ok: true })
         .then(function (r) {
           if (r.ok) {
             btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';

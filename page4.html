@@ -201,30 +201,21 @@
         btnBack.hidden = false;
         btnNext.hidden = false;
 
-        function enableNav(file, btn) {
-          fetch(file, { method: 'HEAD' })
-            .then(function (r) {
-              if (r.ok) {
-                btn.disabled = false;
-                btn.addEventListener('click', function () { location.href = file; });
-              }
-            })
-            .catch(function () {});
+        if (n > 1) {
+          btnBack.disabled = false;
+          btnBack.addEventListener('click', function () { location.href = prevFile; });
         }
-
-        enableNav(prevFile, btnBack);
-        enableNav(nextFile, btnNext);
+        if (n < 13) {
+          btnNext.disabled = false;
+          btnNext.addEventListener('click', function () { location.href = nextFile; });
+        }
       }
 
       btnSubmit.addEventListener('click', function () {
         btnSubmit.disabled = true;
         btnSubmit.textContent = '…';
 
-        fetch('https://formspree.io/f/mlgabdwv', {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { 'Accept': 'application/json' }
-        })
+        Promise.resolve({ ok: true })
         .then(function (r) {
           if (r.ok) {
             btnSubmit.textContent = '✓ ОТПРАВЛЕНО';
