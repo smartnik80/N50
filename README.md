@@ -1,104 +1,79 @@
-# N50 — Interactive Quiz Application
+# N50
 
-A Russian-language, mobile-first multi-page interactive quiz delivered as static HTML.
-Each page presents a distinct interaction (name selection, multiple choice, number entry, toy matching),
-with responses collected via Formspree.
+A Russian-language, mobile-first static web app built for a 50th birthday celebration in Göreme, Cappadocia. Delivered as plain HTML/CSS/JS — no build step, no server required. Works locally via `file://` or hosted on GitHub Pages at `https://smartnik80.github.io/N50/`.
 
 ---
 
-## Pages
+## Sections
 
-| File | Purpose |
-|------|---------|
-| `start.html` | Welcome screen with looping video background |
-| `page1.html` | Name selection — checkboxes + free-text fallback |
-| `page2.html` | Multiple-choice question about Adolf Szabad |
-| `page3.html` | Animated stork identification and naming |
-| `page4.html` | Three two-digit number guessing game |
-| `page5.html` | 2×2 toy-matching quiz |
-| `template.html` | Development reference — not part of the user flow |
+### Landing — `index.html`
 
-Navigation is linear: each page resolves adjacent files via a `HEAD` fetch and enables
-Back / Forward buttons only when those files exist.
+Entry point. Shows a headline photo and five navigation buttons:
 
----
-
-## Layout Constraints
-
-- **Viewport:** mobile-first, 9:16 portrait ratio
-- **Page width:** `min(calc(100vh × 9/16), 430px, 100vw)` — scales with viewport height, caps at 430 px
-- **Min height:** `100vh`
-- **Padding:** `32px 24px 40px` (top / horizontal / bottom); pages with full-bleed images use `0 24px 40px`
-- **Full-bleed images:** `width: calc(100% + 48px); margin-left: -24px` — images extend to the page edge, overriding horizontal padding
-- **Body:** `display: flex; justify-content: center` — centres the page frame on larger screens
+| Button | Destination |
+|--------|-------------|
+| КТО ЗДЕСЬ | `rolodex.html` |
+| ВИКТОРИНА | `page1.html` |
+| УГАДАЙ КТО | `guesswho.html` |
+| ГАЛЕРЕЯ | `gallery.html` |
+| МЕНЮ | `menu.html` |
 
 ---
 
-## Colour Palette
+### Rolodex — `rolodex.html`
 
-### Background colours
-
-| Role | Hex | RGB |
-|------|-----|-----|
-| Page background (parchment) | `#ede8df` | `rgb(237, 232, 223)` |
-| Body surround (espresso) | `#1a0e06` | `rgb(26, 14, 6)` |
-| Form field background | `#f7f3ec` | `rgb(247, 243, 236)` |
-| Checked choice background | `#f0e8e0` | `rgb(240, 232, 224)` |
-
-### Interactive / accent colours
-
-| Role | Hex | RGB |
-|------|-----|-----|
-| Primary action (maroon) | `#8b1a1a` | `rgb(139, 26, 26)` |
-| Active / pressed state | `#6e1515` | `rgb(110, 21, 21)` |
-| Disabled button | `#c4b8ae` | `rgb(196, 184, 174)` |
-
-### Text colours
-
-| Role | Hex | RGB |
-|------|-----|-----|
-| Primary text | `#2c1810` | `rgb(44, 24, 16)` |
-| Button / label text | `#faf7f2` | `rgb(250, 247, 242)` |
-| Placeholder / secondary | `#9a8c82` | `rgb(154, 140, 130)` |
-| Borders / rules | `#c8bfb0` | `rgb(200, 191, 176)` |
+Guest list. Displays a card for each attendee with their photo and name, loaded from `assets/guests/`.
 
 ---
 
-## Typography
+### Викторина (Quiz) — `page1.html` … `page13.html`
 
-| Stack | Usage |
-|-------|-------|
-| `Georgia, 'Times New Roman', serif` | Body / page text |
-| `'Segoe UI', Roboto, Helvetica, Arial, sans-serif` | Form inputs, labels, UI numbers |
+A 13-question linear quiz about the birthday person. Each page is self-contained and presents a distinct interaction type:
 
-Font sizes: 12–20 px. Font weights: 400 (body), 600–700 (labels/buttons), 900 (grid numbers).
-Button letter-spacing: `0.14em`.
+| Pages | Interaction |
+|-------|-------------|
+| page1 | Name stork identification — three overlapping images, tap to reveal choices |
+| page2 | Name selection — checkboxes for each attendee |
+| page3 | Multiple choice — photo of Adolf Szabad |
+| page4 | Animated image reveal — tongue-in/out photo sequence |
+| page5 | Multiple choice with photo |
+| page6 | Multiple choice with photo |
+| page7 | Multiple choice with photo |
+| page8 | Multiple choice with photo (Lodina family) |
+| page9 | 2×2 toy-matching grid — number inputs, order the toys |
+| page10 | Multiple choice with photo (MKL Facebook) |
+| page11 | Multiple choice with full-width photo |
+| page12 | Multiple choice |
+| page13 | Multiple choice |
+
+Navigation is linear. НАЗАД / ВПЕРЕД buttons are enabled based on page number (back if `n > 1`, forward if `n < 13`). Form submissions are accepted silently — no data is sent anywhere.
 
 ---
 
-## Shared Stylesheet — `buttons.css`
+### Угадай кто (Guess Who) — `guesswho.html`
 
-Covers all interactive controls used across every page:
-
-- `#nav` — flex navigation bar, `gap: 10px`, pinned to bottom via `margin-top: auto`
-- `.btn` — Back / Forward navigation buttons (maroon fill, 17 px padding, 0.15 s transition)
-- `#btn-submit` — outline-style submit button (transparent background, maroon border/text)
-- Disabled and active states for both button types
+Photo guessing game. Shows cropped or obscured portraits from `assets/guesswho/` and asks players to identify the person.
 
 ---
 
-## Form Submissions
+### Галерея (Gallery) — `gallery.html`
 
-All forms `POST` to [Formspree](https://formspree.io) with `Accept: application/json`.
-The submit button shows `…` while in flight, then `✓ ОТПРАВЛЕНО` on success.
+Photo gallery. Loads 191 images from `assets/gallery/`.
 
-| Page | Endpoint | Key fields |
-|------|----------|-----------|
-| page1 | `mvzdbzyr`→`meevgjbz` | `name` (multi-checkbox), `custom_name` |
-| page2 | `mlgabdwv` | `answer` (radio) |
-| page3 | `xpqkrkyq` | `stork1_num`, `stork2_num`, `stork3_num`, `stork2_name`, `stork3_name` |
-| page4 | `xwvabybp` | `nikita`, `petya`, `krash` (integers 10–99) |
-| page5 | `mvzdbzyr` | `toy1_guess`–`toy4_guess` (integers 1–4); submits `CORRECT` or the guess sequence |
+---
+
+### Меню (Restaurant Menu) — `menu.html`
+
+Navigation page linking to the four restaurant menus, in chronological order:
+
+| Restaurant | Meal | Date |
+|------------|------|------|
+| Happena Cappadocia | Ужин | 14 мая |
+| Turkish Ravioli | Обед | 15 мая |
+| Olivia Cave | Ужин | 15 мая |
+| Helke | Ужин | 16 мая |
+
+Each restaurant page (`happena.html`, `ravioli.html`, `oliviacave.html`, `helke.html`) renders a full menu with sections and dishes. Olivia Cave additionally lets guests select their main course.
 
 ---
 
@@ -106,21 +81,41 @@ The submit button shows `…` while in flight, then `✓ ОТПРАВЛЕНО` o
 
 ```
 assets/
-  Video_Background_Color_Changed.mp4   start.html background video
-  Bear_Greeting_Video.mp4              present in repo, not currently used
-  name_select.jpg                      page1 photo overlay
-  adolf_szabad.jpg                     page2 context image
-  adolf_szabad_txt.jpg                 page2 text hint
-  storck1–3.jpg                        page3 animated stork images
-  mkl_facebook.jpg                     page4 hero image
-  toy1–4.jpg                           page5 2×2 quiz grid
+  glava-L.jpg                     Headline photo on the landing page
+  Bear_Greeting_Video.mp4         Not currently referenced
+  Video_Background_Color_Changed.mp4  Not currently referenced
+
+  gallery/        191 photos — loaded by gallery.html
+  guesswho/        38 photos — loaded by guesswho.html
+  guests/          24 guest profile photos — loaded by rolodex.html
+  victorina/       Images and videos for the quiz pages (page1–page13)
+  circles/         Per-person video clips used by the (now removed) roulette page
 ```
 
 ---
 
-## Key Implementation Notes
+## Shared Stylesheet — `buttons.css`
 
-- Images that bleed to the page edge use negative left margin to cancel padding; their container keeps `overflow: hidden`.
-- The page5 photo grid uses `aspect-ratio: 1` on `.photo-grid` with `grid-template-rows: 1fr 1fr` to enforce equal square cells regardless of source image proportions. Each image is `position: absolute; object-fit: cover`; `toy2.jpg` additionally uses `object-position: top` to keep the subject's head in frame.
-- Navigation buttons are rendered but hidden/disabled on load; JavaScript enables them only after confirming the target file exists.
-- Number inputs on page5 are restricted to digits 1–4 via a `keydown` guard; the `<input type="number">` spinner is hidden with `-webkit-appearance: none` / `-moz-appearance: textfield`.
+Provides the НАЗАД / ВПЕРЕД navigation buttons and the ОТПРАВИТЬ submit button used across all quiz pages.
+
+---
+
+## Layout
+
+All pages use the same mobile-first card layout:
+
+- **Width:** `min(calc(100vh × 9/16), 430px, 100vw)` — portrait 9:16, max 430 px
+- **Background:** parchment `#ede8df` on espresso surround `#1a0e06`
+- **Full-bleed images:** `width: calc(100% + 48px); margin-left: -24px`
+
+---
+
+## Running Locally
+
+Open `index.html` directly in a browser, or serve with:
+
+```bash
+python3 -m http.server 8000
+```
+
+then visit `http://localhost:8000`.
