@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>N50</title>
+  <title>Меню — N50</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -27,9 +27,15 @@
       gap: 16px;
     }
 
-    .headline-photo {
-      width: 100%;
-      display: block;
+    h1 {
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #9a8e86;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin-bottom: 8px;
+      text-align: center;
     }
 
     a.item {
@@ -58,22 +64,53 @@
       letter-spacing: 0;
       opacity: 0.7;
     }
+
+    a.item span.sub {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      opacity: 0.65;
+      display: block;
+      margin-top: 3px;
+      text-transform: uppercase;
+    }
+
+    .item-label {
+      display: flex;
+      flex-direction: column;
+    }
   </style>
 </head>
 <body>
   <div class="card">
-    <img class="headline-photo" src="assets/glava-L.jpg" alt="">
-    <a class="item" href="rolodex.html">
-      Кто здесь <span class="arrow">&#8594;</span>
+    <h1>Меню</h1>
+    <a class="item" href="happena.html">
+      <div class="item-label">
+        Happena
+        <span class="sub">Ужин 14 мая</span>
+      </div>
+      <span class="arrow">&#8594;</span>
     </a>
-    <a class="item" href="page1.html">
-      Викторина <span class="arrow">&#8594;</span>
+    <a class="item" href="ravioli.html">
+      <div class="item-label">
+        Ravioli
+        <span class="sub">Обед 15 мая</span>
+      </div>
+      <span class="arrow">&#8594;</span>
     </a>
-    <a class="item" href="guesswho.html">
-      Угадай кто <span class="arrow">&#8594;</span>
+    <a class="item" href="oliviacave.html">
+      <div class="item-label">
+        Olivia Cave
+        <span class="sub">Ужин 15 мая</span>
+      </div>
+      <span class="arrow">&#8594;</span>
     </a>
-    <a class="item" href="gallery.html">
-      Галерея <span class="arrow">&#8594;</span>
+    <a class="item" href="helke.html">
+      <div class="item-label">
+        Helke
+        <span class="sub">Ужин 16 мая</span>
+      </div>
+      <span class="arrow">&#8594;</span>
     </a>
   </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>N50 — Links</title>
+  <title>N50</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -13,7 +13,7 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: Georgia, 'Times New Roman', serif;
     }
 
     .card {
@@ -24,36 +24,25 @@
       flex-direction: column;
       justify-content: center;
       padding: 48px 32px;
-      gap: 12px;
+      gap: 16px;
     }
 
-    h1 {
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: #9a8e86;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .row {
-      display: flex;
-      gap: 8px;
-      align-items: stretch;
+    .headline-photo {
+      width: 100%;
+      display: block;
     }
 
     a.item {
-      flex: 1;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 18px;
+      padding: 18px 20px;
       background: #8b1a1a;
       color: #faf7f2;
       text-decoration: none;
       border-radius: 2px;
-      font-size: 14px;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
       font-weight: 700;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -64,120 +53,31 @@
     a.item:active { background: #6e1515; }
 
     a.item span.arrow {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 300;
       letter-spacing: 0;
       opacity: 0.7;
-    }
-
-    button.copy {
-      flex-shrink: 0;
-      width: 48px;
-      background: #3b2a1a;
-      color: #c4a882;
-      border: none;
-      border-radius: 2px;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s, color 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button.copy:active { background: #2a1d10; }
-
-    button.copy.copied {
-      background: #2a4a2a;
-      color: #7ec97e;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>N50 — ссылки</h1>
-
-    <div class="row">
-      <a class="item" href="start.html">Start <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/start.html" title="Копировать ссылку">&#128279;</button>
-    </div>
-
-    <div class="row">
-      <a class="item" href="rolodex.html">Rolodex <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/rolodex.html" title="Копировать ссылку">&#128279;</button>
-    </div>
-
-    <div class="row">
-      <a class="item" href="page1.html">Page1 <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/page1.html" title="Копировать ссылку">&#128279;</button>
-    </div>
-
-    <div class="row">
-      <a class="item" href="guesswho.html">Guesswho <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/guesswho.html" title="Копировать ссылку">&#128279;</button>
-    </div>
-
-    <div class="row">
-      <a class="item" href="gallery.html">Gallery <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/gallery.html" title="Копировать ссылку">&#128279;</button>
-    </div>
-
-    <div class="row">
-      <a class="item" href="happena.html">Happena <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/happena.html" title="Копировать ссылку">&#128279;</button>
-    </div>
-
-    <div class="row">
-      <a class="item" href="ravioli.html">Ravioli <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/ravioli.html" title="Копировать ссылку">&#128279;</button>
-    </div>
-
-    <div class="row">
-      <a class="item" href="roulette.html">Roulette <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/roulette.html" title="Копировать ссылку">&#128279;</button>
-    </div>
-
-    <div class="row">
-      <a class="item" href="mainparty.html">Mainparty <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/mainparty.html" title="Копировать ссылку">&#128279;</button>
-    </div>
-
-    <div class="row">
-      <a class="item" href="oliviacave.html">Olivia Cave <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/oliviacave.html" title="Копировать ссылку">&#128279;</button>
-    </div>
-
-    <div class="row">
-      <a class="item" href="helke.html">Helke <span class="arrow">&#8594;</span></a>
-      <button class="copy" data-url="https://smartnik80.github.io/N50/helke.html" title="Копировать ссылку">&#128279;</button>
-    </div>
+    <img class="headline-photo" src="assets/glava-L.jpg" alt="">
+    <a class="item" href="rolodex.html">
+      Кто здесь <span class="arrow">&#8594;</span>
+    </a>
+    <a class="item" href="page1.html">
+      Викторина <span class="arrow">&#8594;</span>
+    </a>
+    <a class="item" href="guesswho.html">
+      Угадай кто <span class="arrow">&#8594;</span>
+    </a>
+    <a class="item" href="gallery.html">
+      Галерея <span class="arrow">&#8594;</span>
+    </a>
+    <a class="item" href="menu.html">
+      Меню <span class="arrow">&#8594;</span>
+    </a>
   </div>
-
-  <script>
-    document.querySelectorAll('button.copy').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const url = btn.dataset.url;
-        try {
-          await navigator.clipboard.writeText(url);
-        } catch {
-          const ta = document.createElement('textarea');
-          ta.value = url;
-          ta.style.position = 'fixed';
-          ta.style.opacity = '0';
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          document.body.removeChild(ta);
-        }
-        btn.classList.add('copied');
-        btn.textContent = '✓';
-        setTimeout(() => {
-          btn.classList.remove('copied');
-          btn.innerHTML = '&#128279;';
-        }, 1500);
-      });
-    });
-  </script>
 </body>
 </html>
