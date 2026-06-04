@@ -3,22 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page 1</title>
+  <title>Page 4</title>
   <link rel="stylesheet" href="buttons.css">
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      background: #1a0e06;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      font-family: Georgia, serif;
-    }
+    body { background: #1a0e06; display: flex; justify-content: center; min-height: 100vh; }
 
     .page {
       width: min(calc(100vh * 9 / 16), 430px, 100vw);
@@ -27,106 +17,102 @@
       display: flex;
       flex-direction: column;
       padding: 32px 24px 40px;
-      gap: 0;
     }
 
-    .photo-area {
+    .stork-stage {
       position: relative;
-      width: 100%;
+      flex: 0 0 76vh;
+      width: calc(100% + 48px);
+      margin-left: -24px;
+      overflow: hidden;
     }
 
-    .photo {
-      width: 100%;
-      display: block;
-      border-radius: 2px;
-    }
-
-    .overlay {
+    .stork-img {
       position: absolute;
-      top: 0;
-      right: 0;
-      width: 45%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
+      width: 220px;
+      height: auto;
     }
 
-    .names-list {
-      flex: 0 0 95%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
-      padding: 2% 5% 0%;
+    .stork1 { top: 0; left: 0; animation: wobble1 4.0s ease-in-out infinite; }
+    @keyframes wobble1 {
+      0%,100% { transform: translate(0px,   0px); }
+      30%     { transform: translate(12px, -16px); }
+      65%     { transform: translate(-7px,  -9px); }
     }
 
-    .name-row,
-    .custom-row {
+    .stork2 { top: 32%; right: 0; animation: wobble2 5.4s ease-in-out infinite; }
+    @keyframes wobble2 {
+      0%,100% { transform: translate(0px,   0px); }
+      35%     { transform: translate(10px, -18px); }
+      70%     { transform: translate(-9px, -11px); }
+    }
+
+    .stork3 { top: 55%; left: 0; animation: wobble3 3.7s ease-in-out infinite; }
+    @keyframes wobble3 {
+      0%,100% { transform: translate(0px,   0px); }
+      40%     { transform: translate(9px,  -14px); }
+      75%     { transform: translate(-10px, -7px); }
+    }
+
+    .form-area {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .row {
       display: flex;
       align-items: center;
-      gap: 7px;
-      background: rgba(237, 232, 223, 0.82);
-      padding: 3px 8px 3px 5px;
-      border-radius: 3px;
-    }
-
-    .name-row { cursor: pointer; }
-
-    .name-row input[type="checkbox"] {
-      -webkit-appearance: none;
-      appearance: none;
-      flex-shrink: 0;
-      width: 15px;
-      height: 15px;
-      border: 1.5px solid rgba(139, 26, 26, 0.85);
-      border-radius: 3px;
-      background: rgba(250, 247, 242, 0.9);
-      cursor: pointer;
-      transition: background 0.1s, border-color 0.1s;
-    }
-
-    .name-row input[type="checkbox"]:checked {
-      background-color: #8b1a1a;
-      border-color: #8b1a1a;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpolyline points='1.5,6 4.5,9.5 10.5,2.5' fill='none' stroke='%23faf7f2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: 82%;
-    }
-
-    .name-text {
+      gap: 8px;
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 15px;
+      font-weight: 600;
       color: #2c1810;
     }
 
-    .custom-row input {
-      flex: 1;
-      min-width: 0;
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid rgba(139, 26, 26, 0.45);
-      padding: 0 2px;
+    .row-label { white-space: nowrap; }
+
+    .num-field {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      text-align: center;
+      border: 1.5px solid rgba(139,26,26,0.7);
+      border-radius: 3px;
+      background: #f7f3ec;
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 18px;
+      font-size: 15px;
       font-weight: 700;
+      color: #2c1810;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .num-field::-webkit-outer-spin-button,
+    .num-field::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .name-static { font-weight: 700; }
+
+    .name-field {
+      flex: 1;
+      height: 42px;
+      padding: 0 10px;
+      border: 1.5px solid rgba(139,26,26,0.7);
+      border-radius: 3px;
+      background: #f7f3ec;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
       color: #2c1810;
       outline: none;
     }
 
-    .custom-row input::placeholder {
-      font-weight: 400;
-      font-style: italic;
-      color: #9a8c82;
-    }
-
     .bottom {
       margin-top: auto;
+      padding-top: 16px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
-
     .bottom #btn-submit { margin-top: 0; }
     .bottom #nav { margin-top: 0; padding-top: 0; }
   </style>
@@ -134,33 +120,29 @@
 <body>
   <div class="page">
 
-    <div class="photo-area">
-      <img class="photo" src="assets/name_select.png" alt="">
-
-      <form id="name-form" class="overlay">
-        <div class="names-list">
-
-          <label class="name-row"><input type="checkbox" name="name" value="Павел"><span class="name-text">Павел</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Константин"><span class="name-text">Константин</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Илья"><span class="name-text">Илья</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Дмитрий"><span class="name-text">Дмитрий</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Владимир"><span class="name-text">Владимир</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Виктор"><span class="name-text">Виктор</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Андрей"><span class="name-text">Андрей</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Вадим"><span class="name-text">Вадим</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Никита"><span class="name-text">Никита</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Вячеслав"><span class="name-text">Вячеслав</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Олег"><span class="name-text">Олег</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Саша"><span class="name-text">Саша</span></label>
-          <label class="name-row"><input type="checkbox" name="name" value="Юрий"><span class="name-text">Юрий</span></label>
-
-          <div class="custom-row">
-            <input type="text" name="custom_name" placeholder="Мой вариант">
-          </div>
-
-        </div>
-      </form>
+    <div class="stork-stage">
+      <img class="stork-img stork1" src="assets/victorina/storck1.jpg" alt="">
+      <img class="stork-img stork2" src="assets/victorina/storck2.jpg" alt="">
+      <img class="stork-img stork3" src="assets/victorina/storck3.jpg" alt="">
     </div>
+
+    <form id="page3-form" class="form-area">
+      <div class="row">
+        <span class="row-label">Аист №</span>
+        <input class="num-field" type="number" id="stork1-num" name="stork1_num" min="1" max="3">
+        <span class="name-static">НИКИТА</span>
+      </div>
+      <div class="row">
+        <span class="row-label">Аист №</span>
+        <input class="num-field" type="number" id="stork2-num" name="stork2_num" min="1" max="3" readonly>
+        <input class="name-field" type="text" name="stork2_name">
+      </div>
+      <div class="row">
+        <span class="row-label">Аист №</span>
+        <input class="num-field" type="number" id="stork3-num" name="stork3_num" min="1" max="3" readonly>
+        <input class="name-field" type="text" name="stork3_name">
+      </div>
+    </form>
 
     <div class="bottom">
       <button id="btn-submit" type="button">ОТПРАВИТЬ</button>
@@ -178,7 +160,27 @@
       const btnBack   = document.getElementById('btn-back');
       const btnNext   = document.getElementById('btn-next');
       const btnSubmit = document.getElementById('btn-submit');
-      const form      = document.getElementById('name-form');
+      const form      = document.getElementById('page3-form');
+      const num1      = document.getElementById('stork1-num');
+      const num2      = document.getElementById('stork2-num');
+      const num3      = document.getElementById('stork3-num');
+
+      num1.addEventListener('keydown', function (e) {
+        var allowed = ['1','2','3','Backspace','Delete','Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+        if (!allowed.includes(e.key)) e.preventDefault();
+      });
+
+      num1.addEventListener('input', function () {
+        var v = parseInt(num1.value, 10);
+        if (v >= 1 && v <= 3) {
+          var rest = [1, 2, 3].filter(function (n) { return n !== v; });
+          num2.value = rest[0];
+          num3.value = rest[1];
+        } else {
+          num2.value = '';
+          num3.value = '';
+        }
+      });
 
       const match = filename.match(/^page(\d+)\.html$/);
       if (match) {
@@ -189,30 +191,33 @@
         btnBack.hidden = false;
         btnNext.hidden = false;
 
-        function enableNav(file, btn) {
-          fetch(file, { method: 'HEAD' })
-            .then(function (r) {
-              if (r.ok) {
-                btn.disabled = false;
-                btn.addEventListener('click', function () { location.href = file; });
-              }
-            })
-            .catch(function () {});
+        if (n > 1) {
+          btnBack.disabled = false;
+          btnBack.addEventListener('click', function () { location.href = prevFile; });
         }
-
-        enableNav(prevFile, btnBack);
-        enableNav(nextFile, btnNext);
+        if (n < 13) {
+          btnNext.disabled = false;
+          btnNext.addEventListener('click', function () { location.href = nextFile; });
+        }
       }
 
       btnSubmit.addEventListener('click', function () {
         btnSubmit.disabled = true;
         btnSubmit.textContent = '\u2026';
 
-        fetch('https://formspree.io/f/meevgjbz', {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { 'Accept': 'application/json' }
-        })
+        var n1 = parseInt(num1.value, 10);
+        var n2 = parseInt(num2.value, 10);
+        var n3 = parseInt(num3.value, 10);
+        var names = {};
+        names[n1] = '\u041d\u0418\u041a\u0418\u0422\u0410';
+        names[n2] = form.querySelector('[name=stork2_name]').value;
+        names[n3] = form.querySelector('[name=stork3_name]').value;
+        var payload = new FormData();
+        payload.append('stork1', names[1] || '');
+        payload.append('stork2', names[2] || '');
+        payload.append('stork3', names[3] || '');
+
+        Promise.resolve({ ok: true })
         .then(function (r) {
           if (r.ok) {
             btnSubmit.textContent = '\u2713 \u041e\u0422\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u041e';
@@ -230,3 +235,4 @@
   </script>
 </body>
 </html>
+

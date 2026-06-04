@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Меню — N50</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a0e06;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .card {
+      width: min(calc(100vh * 9 / 16), 430px, 100vw);
+      min-height: 100vh;
+      background: #ede8df;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px 32px;
+      gap: 16px;
+    }
+
+    h1 {
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #9a8e86;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    a.item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: #8b1a1a;
+      color: #faf7f2;
+      text-decoration: none;
+      border-radius: 2px;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a.item:active { background: #6e1515; }
+
+    a.item span.arrow {
+      font-size: 18px;
+      font-weight: 300;
+      letter-spacing: 0;
+      opacity: 0.7;
+    }
+
+    a.item span.sub {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      opacity: 0.65;
+      display: block;
+      margin-top: 3px;
+      text-transform: uppercase;
+    }
+
+    .item-label {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Меню</h1>
+    <a class="item" href="happena.html">
+      <div class="item-label">
+        Happena Cappadocia
+        <span class="sub">Ужин 14 мая</span>
+      </div>
+      <span class="arrow">&#8594;</span>
+    </a>
+    <a class="item" href="ravioli.html">
+      <div class="item-label">
+        Turkish Ravioli
+        <span class="sub">Обед 15 мая</span>
+      </div>
+      <span class="arrow">&#8594;</span>
+    </a>
+    <a class="item" href="oliviacave.html">
+      <div class="item-label">
+        Olivia Cave
+        <span class="sub">Ужин 15 мая</span>
+      </div>
+      <span class="arrow">&#8594;</span>
+    </a>
+    <a class="item" href="helke.html">
+      <div class="item-label">
+        Helke
+        <span class="sub">Ужин 16 мая</span>
+      </div>
+      <span class="arrow">&#8594;</span>
+    </a>
+  </div>
+</body>
+</html>

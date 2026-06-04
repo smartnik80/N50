@@ -6,7 +6,11 @@
   <title>Page 3</title>
   <link rel="stylesheet" href="buttons.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       background: #1a0e06;
@@ -21,95 +25,39 @@
       background: #ede8df;
       display: flex;
       flex-direction: column;
-      padding: 32px 24px 40px;
-      overflow: hidden;
-      position: relative;
+      align-items: center;
+      padding: 40px 0 40px;
     }
 
-    /* Wrapper bobs gently up and down while stork flies across */
-    .stork-wrap {
-      position: absolute;
-      top: 38%;
-      left: 0;
+    .frame {
+      margin: 0 20px;
+      padding: 10px;
+      border: 2px solid #8b1a1a;
+      box-shadow:
+        0 0 0 1px #c4a882,
+        inset 0 0 0 1px #c4a882,
+        0 8px 28px rgba(0, 0, 0, 0.35);
+      background: #f7f3ec;
+    }
+
+    .photo {
+      display: block;
       width: 100%;
-      pointer-events: none;
-      animation: bob 2.2s ease-in-out infinite;
     }
 
-    @keyframes bob {
-      0%, 100% { transform: translateY(0);     }
-      50%       { transform: translateY(-18px); }
-    }
-
-    /* Stork translates left → right inside the wrapper */
-    .stork {
-      position: absolute;
-      animation: fly 7s linear infinite;
-    }
-
-    @keyframes fly {
-      from { left: -260px; }
-      to   { left: calc(100% + 60px); }
-    }
-
-    /* Wing flaps around its body-attachment point (bottom-right of its bounding box) */
-    .wing {
-      transform-box: fill-box;
-      transform-origin: right bottom;
-      animation: flap 0.42s ease-in-out infinite alternate;
-    }
-
-    @keyframes flap {
-      from { transform: rotate(2deg);   }
-      to   { transform: rotate(-24deg); }
+    #nav {
+      margin-top: auto;
+      width: 100%;
+      padding-left: 24px;
+      padding-right: 24px;
     }
   </style>
 </head>
 <body>
   <div class="page">
 
-    <div class="stork-wrap">
-      <svg class="stork" xmlns="http://www.w3.org/2000/svg"
-           viewBox="0 0 245 110" width="245" height="110">
-
-        <!-- Beak -->
-        <line x1="216" y1="31" x2="244" y2="26"
-              stroke="#3d2010" stroke-width="2.5" stroke-linecap="round"/>
-
-        <!-- Head -->
-        <ellipse cx="208" cy="34" rx="9" ry="7"
-                 stroke="#3d2010" fill="none" stroke-width="2"/>
-
-        <!-- Neck -->
-        <path d="M 200,40 Q 188,47 178,52"
-              stroke="#3d2010" fill="none" stroke-width="2.5"
-              stroke-linecap="round"/>
-
-        <!-- Body -->
-        <path d="M 143,55 Q 159,45 178,49 Q 197,53 201,60
-                 Q 197,71 175,72 Q 153,74 138,69 Q 128,64 131,58 Q 135,54 143,55 Z"
-              stroke="#3d2010" fill="none" stroke-width="2"/>
-
-        <!-- Wing (animated — rotates around where it meets the body) -->
-        <path class="wing"
-              d="M 157,51 Q 135,27 94,13 Q 64,3 24,17 Q 14,22 18,31
-                 Q 46,20 80,29 Q 118,39 150,53"
-              stroke="#3d2010" fill="none" stroke-width="2.5"
-              stroke-linejoin="round" stroke-linecap="round"/>
-
-        <!-- Tail feathers -->
-        <path d="M 133,63 Q 115,61 102,66 Q 93,70 98,76"
-              stroke="#3d2010" fill="none" stroke-width="2" stroke-linecap="round"/>
-
-        <!-- Leg 1 -->
-        <path d="M 153,71 L 132,103 L 118,103"
-              stroke="#3d2010" fill="none" stroke-width="2" stroke-linecap="round"/>
-
-        <!-- Leg 2 -->
-        <path d="M 163,72 L 145,100 L 131,100"
-              stroke="#3d2010" fill="none" stroke-width="2" stroke-linecap="round"/>
-
-      </svg>
+    <div class="frame">
+      <img class="photo" src="assets/victorina/namecard_unmasked.jpg" alt="">
     </div>
 
     <nav id="nav">
@@ -126,28 +74,23 @@
       const btnNext  = document.getElementById('btn-next');
 
       const match = filename.match(/^page(\d+)\.html$/);
-      if (!match) return;
+      if (match) {
+        const n        = parseInt(match[1], 10);
+        const prevFile = 'page' + (n - 1) + '.html';
+        const nextFile = 'page' + (n + 1) + '.html';
 
-      const n        = parseInt(match[1], 10);
-      const prevFile = 'page' + (n - 1) + '.html';
-      const nextFile = 'page' + (n + 1) + '.html';
+        btnBack.hidden = false;
+        btnNext.hidden = false;
 
-      btnBack.hidden = false;
-      btnNext.hidden = false;
-
-      function enableNav(file, btn) {
-        fetch(file, { method: 'HEAD' })
-          .then(function (r) {
-            if (r.ok) {
-              btn.disabled = false;
-              btn.addEventListener('click', function () { location.href = file; });
-            }
-          })
-          .catch(function () {});
+        if (n > 1) {
+          btnBack.disabled = false;
+          btnBack.addEventListener('click', function () { location.href = prevFile; });
+        }
+        if (n < 13) {
+          btnNext.disabled = false;
+          btnNext.addEventListener('click', function () { location.href = nextFile; });
+        }
       }
-
-      enableNav(prevFile, btnBack);
-      enableNav(nextFile, btnNext);
     }());
   </script>
 </body>

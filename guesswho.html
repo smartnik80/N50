@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Guess Who</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: #ede8df;
+      color: #2a1a0a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow: hidden;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+    }
+
+    /* ── Photo section ─────────────────────────── */
+    #photo-section {
+      flex: 1;
+      min-height: 0;
+      background: #ede8df;
+      overflow: hidden;
+      position: relative;
+      cursor: default;
+    }
+
+    #photo-section.zoomed { cursor: grab; }
+    #photo-section.zoomed:active { cursor: grabbing; }
+
+    #photo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      transform-origin: center center;
+      transition: opacity 0.5s ease;
+      will-change: transform;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    #photo-img.fade { opacity: 0; }
+
+    /* ── Belt section ──────────────────────────── */
+    #belt-section {
+      height: 148px;
+      background: #ede8df;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+      flex-shrink: 0;
+      border-top: 1px solid #cfc8bc;
+      border-bottom: 1px solid #cfc8bc;
+    }
+
+    #belt-section:active { cursor: grabbing; }
+
+    .face {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 112px;
+      height: 112px;
+      border-radius: 14px;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: pointer;
+    }
+
+    .face img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+      -webkit-user-drag: none;
+    }
+
+    @keyframes wobble {
+      0%   { transform: translateY(-50%) scale(1)    rotate(0deg); }
+      10%  { transform: translateY(-50%) scale(1.22) rotate(-10deg); }
+      22%  { transform: translateY(-50%) scale(1.22) rotate(10deg); }
+      34%  { transform: translateY(-50%) scale(1.17) rotate(-7deg); }
+      46%  { transform: translateY(-50%) scale(1.17) rotate(7deg); }
+      58%  { transform: translateY(-50%) scale(1.12) rotate(-4deg); }
+      70%  { transform: translateY(-50%) scale(1.12) rotate(4deg); }
+      84%  { transform: translateY(-50%) scale(1.06) rotate(-1deg); }
+      100% { transform: translateY(-50%) scale(1)    rotate(0deg); }
+    }
+
+    .face.wobble {
+      animation: wobble 0.85s cubic-bezier(.36,.07,.19,.97) both;
+      z-index: 15;
+    }
+
+    .face.removing {
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    /* ── Navigation ────────────────────────────── */
+    #nav {
+      height: 50px;
+      background: #e0dbd1;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .nav-arrow {
+      flex: 1;
+      height: 36px;
+      background: #8b1a1a;
+      border: none;
+      border-radius: 6px;
+      color: #faf7f2;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      outline: none;
+    }
+
+    .nav-arrow:not(:disabled):active { background: #6e1515; color: #fff; }
+    .nav-arrow:disabled { opacity: 0.25; cursor: default; }
+
+    #counter { display: none; }
+  </style>
+</head>
+<body>
+
+<div id="photo-section">
+  <img id="photo-img" alt="">
+</div>
+
+<div id="belt-section"></div>
+
+<nav id="nav">
+  <button class="nav-arrow" id="btn-prev">&#8592;</button>
+  <span id="counter"></span>
+  <button class="nav-arrow" id="btn-next">&#8594;</button>
+</nav>
+
+<script>
+const PHOTO_BASE = 'assets/guesswho/';
+const GUEST_BASE = 'assets/guests/';
+
+const PHOTOS = [
+  '01esinevich_kolosov_sukhotsky',
+  '02kuznetsov_esinevich_kolosov',
+  '03ivanova_kuzina',
+  '04ivanov_ivanova_kolosova',
+  '05sukhotsky_esinevich_ivanov_kolosov_kuznetsov_ogay',
+  '06dikov_tamuza_esinevich',
+  '07ivanov_bavin',
+  '08kolosov_ivanov',
+  '09brilev_koksharov',
+  '10koksharov',
+  '11ivanov_marinin',
+  '12kolosov_esinevich',
+  '13skorodumov_ogay_kuznetsov',
+  '14esinevich_platon',
+  '15inkin_kolosov_ivanov_kuzmin',
+  '16baigouzov_ivanov_kolosov',
+  '17ivanov_dikov',
+  '18brilev_koryakin',
+  '19tamuzs_tamuza_ogay',
+];
+
+const ALL_GUESTS = [
+  'baigouzov','bavin','brilev','chernishova','dikov',
+  'esinevich','gusarov','inkin','ivanov','ivanova',
+  'koksharov','kolosov','kolosova','koryakin','kuzina','kuzmin',
+  'kuznetsov','marinin','ogay','platon',
+  'skorodumov','sukhotsky','tamuza','tamuzs',
+];
+
+const FACE_W = 112;
+const GAP    = 16;
+const STRIDE = FACE_W + GAP;
+const BASE_SPEED = 0.55;
+const MAX_SPEED  = 8;
+
+// ─── Game state ──────────────────────────────────
+let photoIdx     = 0;
+let targetNames  = [];
+let foundNames   = new Set();
+let removedGuests = new Set();
+let photoRevealed = false;
+
+// ─── Belt state ──────────────────────────────────
+// Each slot: { name, slotIndex, slotOffset }
+// Position on screen = (slotIndex * STRIDE + beltOffset) % loopWidth + slotOffset
+// beltOffset advances by speed each frame; wraps within [0, loopWidth).
+// slotOffset is a visual lag that decays toward 0 to animate gap closing.
+let slots      = [];
+let faceElMap  = {};
+let beltOffset = 0;
+let loopWidth  = 0;
+let speed      = BASE_SPEED;
+let beltWidth  = 0;
+
+// Belt drag
+let beltDragActive   = false;
+let beltDragStartX   = 0;
+let beltDragLastX    = 0;
+let beltDragLastTime = 0;
+let beltDragVelocity = 0;
+let beltDidDrag      = false;
+
+// ─── Photo zoom state ────────────────────────────
+let pz = { scale: 1, tx: 0, ty: 0 };
+let pinchStartDist = 0;
+let pinchLastMidX = 0, pinchLastMidY = 0;
+let panStartX = 0, panStartY = 0;
+let panStartTx = 0, panStartTy = 0;
+let photoPanning = false;
+let lastTapTime  = 0;
+let mouseZooming = false;
+let mouseZoomStartX = 0, mouseZoomStartY = 0;
+let mouseZoomStartTx = 0, mouseZoomStartTy = 0;
+
+// ─── Boot ────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  beltWidth = document.getElementById('belt-section').offsetWidth || window.innerWidth;
+  loadPhoto(0);
+  buildBelt();
+  startLoop();
+  bindBeltEvents();
+  bindPhotoEvents();
+  bindNavEvents();
+  updateNav();
+});
+
+window.addEventListener('resize', () => {
+  beltWidth = document.getElementById('belt-section').offsetWidth || window.innerWidth;
+});
+
+// ─── Photo ───────────────────────────────────────
+function loadPhoto(idx) {
+  photoIdx = idx;
+  const base = PHOTOS[idx];
+  targetNames = base.replace(/^\d+/, '').split('_');
+  foundNames.clear();
+  photoRevealed = false;
+  resetPhotoZoom(false);
+  document.getElementById('belt-section').style.display = '';
+
+  const img = document.getElementById('photo-img');
+  img.classList.add('fade');
+  setTimeout(() => {
+    img.src = PHOTO_BASE + base + '01.jpg';
+    img.classList.remove('fade');
+  }, 280);
+
+  // Preload the reveal image so revealPhoto() has no loading flicker
+  const pre = new Image();
+  pre.src = PHOTO_BASE + base + '02.jpg';
+
+  document.getElementById('counter').textContent = `${idx + 1} / ${PHOTOS.length}`;
+}
+
+function revealPhoto() {
+  const img = document.getElementById('photo-img');
+  img.classList.add('fade');
+  resetPhotoZoom(false);
+  setTimeout(() => {
+    img.src = PHOTO_BASE + PHOTOS[photoIdx] + '02.jpg';
+    img.classList.remove('fade');
+  }, 380);
+  document.getElementById('belt-section').style.display = 'none';
+  photoRevealed = true;
+  updateNav();
+}
+
+// ─── Photo zoom ──────────────────────────────────
+function applyPhotoZoom(animated) {
+  const img     = document.getElementById('photo-img');
+  const section = document.getElementById('photo-section');
+  const maxTx = Math.max(0, section.offsetWidth  * (pz.scale - 1) / 2);
+  const maxTy = Math.max(0, section.offsetHeight * (pz.scale - 1) / 2);
+  pz.tx = Math.max(-maxTx, Math.min(maxTx, pz.tx));
+  pz.ty = Math.max(-maxTy, Math.min(maxTy, pz.ty));
+  if (animated) {
+    img.style.transition = 'opacity 0.5s ease, transform 0.28s ease';
+    setTimeout(() => { img.style.transition = 'opacity 0.5s ease'; }, 290);
+  }
+  img.style.transform = `translate(${pz.tx}px, ${pz.ty}px) scale(${pz.scale})`;
+  section.classList.toggle('zoomed', pz.scale > 1.01);
+}
+
+function resetPhotoZoom(animated) {
+  pz.scale = 1; pz.tx = 0; pz.ty = 0;
+  applyPhotoZoom(animated);
+}
+
+function pinchDist(t1, t2) {
+  return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+}
+
+function bindPhotoEvents() {
+  const section = document.getElementById('photo-section');
+
+  section.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      photoPanning = false;
+      pinchStartDist = pinchDist(e.touches[0], e.touches[1]);
+      pinchLastMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      pinchLastMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    } else if (e.touches.length === 1) {
+      const t = e.touches[0];
+      if (pz.scale > 1.01) {
+        panStartX = t.clientX; panStartY = t.clientY;
+        panStartTx = pz.tx;   panStartTy = pz.ty;
+        photoPanning = true;
+      }
+      const now = Date.now();
+      if (now - lastTapTime < 280 && pz.scale > 1.01) resetPhotoZoom(true);
+      lastTapTime = now;
+    }
+  }, { passive: true });
+
+  section.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const rect = section.getBoundingClientRect();
+    if (e.touches.length === 2) {
+      photoPanning = false;
+      const d    = pinchDist(e.touches[0], e.touches[1]);
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      const newScale = Math.max(1, Math.min(6, pz.scale * (d / pinchStartDist)));
+      const cx = midX - rect.left - rect.width  / 2;
+      const cy = midY - rect.top  - rect.height / 2;
+      const ratio = newScale / pz.scale;
+      pz.tx = cx + (pz.tx - cx) * ratio + (midX - pinchLastMidX);
+      pz.ty = cy + (pz.ty - cy) * ratio + (midY - pinchLastMidY);
+      pz.scale = newScale;
+      pinchStartDist = d; pinchLastMidX = midX; pinchLastMidY = midY;
+      applyPhotoZoom(false);
+    } else if (e.touches.length === 1 && photoPanning) {
+      pz.tx = panStartTx + (e.touches[0].clientX - panStartX);
+      pz.ty = panStartTy + (e.touches[0].clientY - panStartY);
+      applyPhotoZoom(false);
+    }
+  }, { passive: false });
+
+  section.addEventListener('touchend', e => {
+    if (e.touches.length === 1 && pz.scale > 1.01) {
+      const t = e.touches[0];
+      panStartX = t.clientX; panStartY = t.clientY;
+      panStartTx = pz.tx; panStartTy = pz.ty;
+      photoPanning = true;
+    }
+    if (e.touches.length === 0) {
+      photoPanning = false;
+      if (pz.scale < 1.05) resetPhotoZoom(true);
+    }
+  }, { passive: true });
+
+  section.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect   = section.getBoundingClientRect();
+    const cx     = e.clientX - rect.left - rect.width  / 2;
+    const cy     = e.clientY - rect.top  - rect.height / 2;
+    const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+    const newScale = Math.max(1, Math.min(6, pz.scale * factor));
+    const ratio  = newScale / pz.scale;
+    pz.tx = cx + (pz.tx - cx) * ratio;
+    pz.ty = cy + (pz.ty - cy) * ratio;
+    pz.scale = newScale;
+    if (pz.scale <= 1) { pz.tx = 0; pz.ty = 0; }
+    applyPhotoZoom(false);
+  }, { passive: false });
+
+  section.addEventListener('mousedown', e => {
+    if (pz.scale > 1.01) {
+      mouseZooming = true;
+      mouseZoomStartX = e.clientX; mouseZoomStartY = e.clientY;
+      mouseZoomStartTx = pz.tx; mouseZoomStartTy = pz.ty;
+      e.preventDefault();
+    }
+  });
+  window.addEventListener('mousemove', e => {
+    if (!mouseZooming) return;
+    pz.tx = mouseZoomStartTx + (e.clientX - mouseZoomStartX);
+    pz.ty = mouseZoomStartTy + (e.clientY - mouseZoomStartY);
+    applyPhotoZoom(false);
+  });
+  window.addEventListener('mouseup', () => { mouseZooming = false; });
+  section.addEventListener('dblclick', () => { if (pz.scale > 1.01) resetPhotoZoom(true); });
+}
+
+// ─── Belt ────────────────────────────────────────
+function buildBelt() {
+  Object.values(faceElMap).forEach(el => el.remove());
+  faceElMap  = {};
+  slots      = [];
+  beltOffset = 0;
+
+  const belt   = document.getElementById('belt-section');
+  const active = ALL_GUESTS.filter(g => !removedGuests.has(g));
+  if (!active.length) return;
+
+  loopWidth = active.length * STRIDE;
+
+  active.forEach((name, i) => {
+    const el  = document.createElement('div');
+    el.className = 'face';
+    el.dataset.name = name;
+    const img = document.createElement('img');
+    img.src   = GUEST_BASE + name + '.jpg';
+    el.appendChild(img);
+    belt.appendChild(el);
+    faceElMap[name] = el;
+    slots.push({ name, slotIndex: i, slotOffset: 0 });
+  });
+}
+
+function stepBelt() {
+  if (!slots.length || !loopWidth) return;
+  beltOffset = ((beltOffset + speed) % loopWidth + loopWidth) % loopWidth;
+
+  slots.forEach(s => {
+    // Decay visual lag (gap closing animation)
+    if (s.slotOffset) {
+      s.slotOffset *= 0.84;
+      if (Math.abs(s.slotOffset) < 0.3) s.slotOffset = 0;
+    }
+    const loopPos = ((s.slotIndex * STRIDE + beltOffset) % loopWidth + loopWidth) % loopWidth;
+    const el = faceElMap[s.name];
+    if (el && !el.classList.contains('removing')) el.style.left = (loopPos - FACE_W + s.slotOffset) + 'px';
+  });
+}
+
+function startLoop() {
+  (function loop() {
+    stepBelt();
+    if (!beltDragActive) speed += (BASE_SPEED - speed) * 0.006;
+    requestAnimationFrame(loop);
+  })();
+}
+
+function removeSlot(name, withZoomOut) {
+  const s = slots.find(sl => sl.name === name);
+  if (!s) {
+    const el = faceElMap[name];
+    if (el) { el.remove(); delete faceElMap[name]; }
+    return;
+  }
+  const removedIdx = s.slotIndex;
+
+  // Snapshot canonical loop positions of all remaining slots BEFORE state changes.
+  const cpBefore = {};
+  slots.forEach(sl => {
+    if (sl.name === name) return;
+    cpBefore[sl.name] = ((sl.slotIndex * STRIDE + beltOffset) % loopWidth + loopWidth) % loopWidth;
+  });
+
+  slots = slots.filter(sl => sl.name !== name);
+  const newLoopWidth = Math.max(STRIDE, loopWidth - STRIDE);
+  beltOffset = ((beltOffset % newLoopWidth) + newLoopWidth) % newLoopWidth;
+  loopWidth  = newLoopWidth;
+
+  // Reindex and compensate: slotOffset absorbs the exact position jump so
+  // the visual position is continuous. It then decays to 0 over ~40 frames.
+  slots.forEach(sl => {
+    if (sl.slotIndex > removedIdx) sl.slotIndex -= 1;
+    const cpAfter = ((sl.slotIndex * STRIDE + beltOffset) % loopWidth + loopWidth) % loopWidth;
+    sl.slotOffset += cpBefore[sl.name] - cpAfter;
+  });
+
+  const el = faceElMap[name];
+  if (el) {
+    if (withZoomOut) {
+      el.classList.add('removing');
+      // stepBelt no longer moves this element; slide it off the right edge
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        el.style.transition = 'left 0.35s ease-in, opacity 0.25s ease-in 0.12s';
+        el.style.left = (beltWidth + FACE_W) + 'px';
+        el.style.opacity = '0';
+      }));
+      setTimeout(() => { el.remove(); delete faceElMap[name]; }, 480);
+    } else {
+      el.remove();
+      delete faceElMap[name];
+    }
+  }
+}
+
+// ─── Identification ──────────────────────────────
+function identifyFace(name) {
+  if (!name) return;
+  if (foundNames.has(name)) return;
+  const el = faceElMap[name];
+  if (!el || el.classList.contains('removing') || el.classList.contains('wobble')) return;
+
+  if (targetNames.includes(name)) {
+    foundNames.add(name);
+    el.classList.add('wobble');
+    el.addEventListener('animationend', () => {
+      flyFaceToPhoto(name);
+      const allFound = targetNames.every(n => foundNames.has(n));
+      if (allFound && !photoRevealed) setTimeout(revealPhoto, 800);
+    }, { once: true });
+  } else {
+    removedGuests.add(name);
+    removeSlot(name, true);
+  }
+}
+
+function flyFaceToPhoto(name) {
+  const el = faceElMap[name];
+  if (!el) return;
+
+  const faceRect  = el.getBoundingClientRect();
+  const photoRect = document.getElementById('photo-section').getBoundingClientRect();
+
+  // Hide the belt element; a fixed clone does the animation
+  el.style.visibility = 'hidden';
+
+  const clone = document.createElement('div');
+  clone.style.cssText =
+    `position:fixed;left:${faceRect.left}px;top:${faceRect.top}px;` +
+    `width:${faceRect.width}px;height:${faceRect.height}px;` +
+    `border-radius:11px;overflow:hidden;z-index:999;pointer-events:none;` +
+    `transition:left .52s cubic-bezier(.25,.46,.45,.94),` +
+               `top .52s cubic-bezier(.25,.46,.45,.94),` +
+               `width .52s,height .52s,opacity .3s .44s`;
+  const img = document.createElement('img');
+  img.src   = GUEST_BASE + name + '.jpg';
+  img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+  clone.appendChild(img);
+  document.body.appendChild(clone);
+
+  const tw = 100, th = 100;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    clone.style.left    = (photoRect.left + photoRect.width  / 2 - tw / 2) + 'px';
+    clone.style.top     = (photoRect.top  + photoRect.height / 2 - th / 2) + 'px';
+    clone.style.width   = tw + 'px';
+    clone.style.height  = th + 'px';
+    clone.style.opacity = '0';
+  }));
+
+  setTimeout(() => clone.remove(), 1000);
+  removeSlot(name, false);
+}
+
+function tapBeltAt(clientX, clientY) {
+  const el   = document.elementFromPoint(clientX, clientY);
+  const face = el?.closest?.('.face') || (el?.classList?.contains('face') ? el : null);
+  if (face) identifyFace(face.dataset.name);
+}
+
+// ─── Belt drag ───────────────────────────────────
+function bindBeltEvents() {
+  const belt = document.getElementById('belt-section');
+
+  belt.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    beltDragActive = true; beltDragStartX = t.clientX;
+    beltDragLastX  = t.clientX; beltDragLastTime = performance.now();
+    beltDragVelocity = 0; beltDidDrag = false;
+  }, { passive: false });
+
+  belt.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const x = e.touches[0].clientX, now = performance.now();
+    const dx = x - beltDragLastX;
+    beltDragVelocity = dx / Math.max(now - beltDragLastTime, 1);
+    beltDragLastX = x; beltDragLastTime = now;
+    if (Math.abs(x - beltDragStartX) > 6) beltDidDrag = true;
+    speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + dx * 0.18));
+  }, { passive: false });
+
+  belt.addEventListener('touchend', e => {
+    e.preventDefault();
+    beltDragActive = false;
+    const t = e.changedTouches[0];
+    if (!beltDidDrag) tapBeltAt(t.clientX, t.clientY);
+    else speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + beltDragVelocity * 50));
+  }, { passive: false });
+
+  belt.addEventListener('mousedown', e => {
+    beltDragActive = true; beltDragStartX = e.clientX;
+    beltDragLastX  = e.clientX; beltDragLastTime = performance.now();
+    beltDragVelocity = 0; beltDidDrag = false;
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!beltDragActive) return;
+    const dx = e.clientX - beltDragLastX, now = performance.now();
+    beltDragVelocity = dx / Math.max(now - beltDragLastTime, 1);
+    beltDragLastX = e.clientX; beltDragLastTime = now;
+    if (Math.abs(e.clientX - beltDragStartX) > 6) beltDidDrag = true;
+    speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + dx * 0.18));
+  });
+
+  window.addEventListener('mouseup', e => {
+    if (!beltDragActive) return;
+    beltDragActive = false;
+    if (!beltDidDrag) tapBeltAt(e.clientX, e.clientY);
+    else speed = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, speed + beltDragVelocity * 50));
+  });
+}
+
+// ─── Navigation ──────────────────────────────────
+function bindNavEvents() {
+  document.getElementById('btn-prev').addEventListener('click', () => goTo(photoIdx - 1));
+  document.getElementById('btn-next').addEventListener('click', () => {
+    if (!photoRevealed) revealPhoto();
+    else goTo(photoIdx + 1);
+  });
+}
+
+function goTo(idx) {
+  if (idx < 0 || idx >= PHOTOS.length) return;
+  removedGuests.clear();
+  buildBelt();
+  loadPhoto(idx);
+  updateNav();
+}
+
+function updateNav() {
+  document.getElementById('btn-prev').disabled = photoIdx === 0;
+  document.getElementById('btn-next').disabled = photoRevealed && photoIdx === PHOTOS.length - 1;
+}
+</script>
+</body>
+</html>

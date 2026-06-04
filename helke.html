@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Меню — Helke</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f5f0e8;
+      color: #2c1a0e;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 17px;
+      line-height: 1.55;
+      padding: 0 0 48px;
+    }
+
+    header {
+      background: #2c1a0e;
+      color: #f5f0e8;
+      text-align: center;
+      padding: 28px 20px 22px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    header p {
+      margin-top: 6px;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      letter-spacing: 0.08em;
+    }
+
+    .section {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    .section-title {
+      margin-top: 36px;
+      margin-bottom: 10px;
+      font-size: 0.72rem;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8b5e3c;
+      border-bottom: 1px solid #c9b49a;
+      padding-bottom: 8px;
+    }
+
+    /* ── Radio card ── */
+    .choice-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 4px;
+      border-bottom: 1px solid #e0d5c4;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .choice-option:last-of-type {
+      border-bottom: none;
+    }
+
+    .radio-dot {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      margin-top: 2px;
+      border: 2px solid #c9b49a;
+      border-radius: 50%;
+      background: #fff;
+      position: relative;
+      transition: border-color 0.15s;
+    }
+
+    .choice-option.selected .radio-dot {
+      border-color: #8b5e3c;
+    }
+
+    .radio-dot::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: #8b5e3c;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .choice-option.selected .radio-dot::after {
+      opacity: 1;
+    }
+
+    .choice-text { flex: 1; }
+
+    .choice-name {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #2c1a0e;
+    }
+
+    .choice-name-tr {
+      font-weight: normal;
+      color: #7a5c40;
+      font-size: 0.93rem;
+    }
+
+    .choice-desc {
+      display: block;
+      margin-top: 3px;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: #5a4030;
+      line-height: 1.45;
+    }
+
+    /* ── Footer form ── */
+    .footer-form {
+      max-width: 680px;
+      margin: 40px auto 0;
+      padding: 28px 16px 10px;
+      border-top: 2px solid #c9b49a;
+    }
+
+    .field-label {
+      display: block;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #8b5e3c;
+      margin-bottom: 8px;
+    }
+
+    .name-input {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-family: Georgia, serif;
+      border: 2px solid #c9b49a;
+      border-radius: 6px;
+      background: #fff;
+      color: #2c1a0e;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .name-input:focus { border-color: #8b5e3c; }
+
+    .submit-btn {
+      margin-top: 14px;
+      width: 100%;
+      padding: 14px;
+      background: #2c1a0e;
+      color: #f5f0e8;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .submit-btn:hover:not(:disabled),
+    .submit-btn:active:not(:disabled) { background: #8b5e3c; }
+
+    .submit-btn:disabled {
+      background: #c9b49a;
+      color: #f5f0e8;
+      cursor: not-allowed;
+    }
+
+    .form-err {
+      display: none;
+      margin-top: 14px;
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.9rem;
+      color: #8b2020;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Helke</h1>
+  <p>Гёреме — Ужин 16 мая</p>
+</header>
+
+<div id="menu-root" class="section"></div>
+
+<div class="footer-form section">
+  <label class="field-label" for="guest-name">ИМЯ</label>
+  <input class="name-input" type="text" id="guest-name" autocomplete="given-name">
+  <button class="submit-btn" id="submit-btn" disabled>ОТПРАВИТЬ</button>
+  <p class="form-err" id="form-err"></p>
+</div>
+
+<script>
+// ─── MENU DATA ────────────────────────────────────────────────────────────────
+var MENU = [
+  {
+    category: 'Супы, мезе и салаты',
+    items: [
+      { ru: 'Чечевичный суп',                      tr: 'Mercimek Çorbası',    desc: 'Традиционный турецкий суп из красной чечевицы, обычно взбитый до кремовой текстуры, с маслом, паприкой и лимоном.' },
+      { ru: 'Салат из огурца с йогуртом',           tr: 'Kurucacık',           desc: 'Освежающий йогуртовый салат с огурцом, похожий на густой джаджык или дзадзики.' },
+      { ru: 'Копчёное пюре из баклажана',           tr: 'Patlıcan Söğürme',    desc: 'Баклажан, обжаренный на огне и превращённый в нежное пюре с лёгким дымным ароматом.' },
+      { ru: 'Атом — йогурт с острым маслом',        tr: 'Atom',                desc: 'Густой йогурт с горячим сливочным маслом и перцем чили; насыщенная и слегка острая закуска.' },
+      { ru: 'Запечённый красный перец',             tr: 'Köz Kapya',           desc: 'Красный перец, обжаренный на огне и заправленный оливковым маслом.' },
+      { ru: 'Острая овощная паста',                 tr: 'Acılı Ezme',          desc: 'Мелко нарезанные помидоры, перец, лук, зелень и чили, превращённые в острую закуску.' },
+      { ru: 'Критская сырная намазка',              tr: 'Girit Ezme',          desc: 'Нежная сырная закуска с травами и оливковым маслом в критском стиле.' },
+      { ru: 'Хумус',                                tr: 'Humus',               desc: 'Пюре из нута с тахини, лимонным соком и оливковым маслом.' },
+      { ru: 'Фирменное ассорти мезе «Valide Sultan»', tr: 'Valide Sultan',     desc: 'Ассорти закусок, выбранных шеф-поваром.' },
+      { ru: 'Сыр Эзине',                            tr: 'Ezine Peyniri',       desc: 'Турецкий белый сыр из региона Эзине, похожий на фету, но более сливочный.' },
+      { ru: 'Салат Гавурдаг',                       tr: 'Gavurdağ Salatası',   desc: 'Традиционный турецкий салат с помидорами, грецкими орехами, луком, перцем, зеленью и гранатовым соусом.' },
+      { ru: 'Салат Табладжы',                       tr: 'Tablacı Salatası',    desc: 'Мелко нарезанный турецкий салат из овощей и зелени.' },
+      { ru: 'Сезонный салат',                       tr: 'Mevsim Salatası',     desc: 'Смесь сезонной зелени и овощей.' }
+    ]
+  },
+  {
+    category: 'Горячие закуски',
+    items: [
+      { ru: 'Пирожок «Моряк» с мёдом',             tr: 'Ballı Gemici Böreği',  desc: 'Слоёная выпечка с сочетанием солёных и сладких вкусов, подаётся с мёдом.' },
+      { ru: 'Долма из виноградных листьев с вишней', tr: 'Vişneli Yaprak Sarma', desc: 'Виноградные листья, фаршированные рисом и приправленные кислой вишней.' }
+    ]
+  },
+  {
+    category: 'Основные блюда',
+    items: [
+      { ru: 'Куриный шашлык',                            tr: 'Tavuk Şiş',    desc: 'Маринованные кусочки курицы, приготовленные на шампуре на углях.' },
+      { ru: 'Медленно приготовленная баранина «Yağlı Kara»', tr: 'Yağlı Kara', desc: 'Жирная баранина, долго томлёная до мягкости, а затем обжаренная на гриле.' },
+      { ru: 'Стейк из говяжьей вырезки',                tr: 'Lokum Bonfile', desc: 'Очень мягкая говяжья вырезка на гриле; слово "lokum" подчёркивает нежную текстуру мяса.' }
+    ]
+  }
+];
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+var root      = document.getElementById('menu-root');
+var nameInput = document.getElementById('guest-name');
+var submitBtn = document.getElementById('submit-btn');
+
+// One selected element per category index
+var selected  = new Array(MENU.length).fill(null);
+var posCounter = 0;
+
+MENU.forEach(function (section, sIdx) {
+  var h2 = document.createElement('h2');
+  h2.className = 'section-title';
+  h2.textContent = section.category;
+  root.appendChild(h2);
+
+  section.items.forEach(function (item) {
+    posCounter++;
+    var div = document.createElement('div');
+    div.className = 'choice-option';
+    div.dataset.ru   = item.ru;
+    div.dataset.tr   = item.tr;
+    div.dataset.pos  = String(posCounter).padStart(2, '0');
+    div.dataset.sidx = sIdx;
+
+    var dot = document.createElement('div');
+    dot.className = 'radio-dot';
+
+    var text = document.createElement('div');
+    text.className = 'choice-text';
+
+    var nameSpan = document.createElement('span');
+    nameSpan.className = 'choice-name';
+    nameSpan.appendChild(document.createTextNode(item.ru + ' '));
+
+    var trSpan = document.createElement('span');
+    trSpan.className = 'choice-name-tr';
+    trSpan.textContent = '(' + item.tr + ')';
+    nameSpan.appendChild(trSpan);
+
+    var descSpan = document.createElement('span');
+    descSpan.className = 'choice-desc';
+    descSpan.textContent = item.desc;
+
+    text.appendChild(nameSpan);
+    text.appendChild(descSpan);
+    div.appendChild(dot);
+    div.appendChild(text);
+    root.appendChild(div);
+
+    div.addEventListener('click', function () {
+      var idx = parseInt(div.dataset.sidx);
+      if (selected[idx]) selected[idx].classList.remove('selected');
+      selected[idx] = div;
+      div.classList.add('selected');
+      updateButton();
+    });
+  });
+});
+
+// ─── NAME GATE ────────────────────────────────────────────────────────────────
+function updateButton() {
+  submitBtn.disabled = nameInput.value.trim() === '';
+}
+
+nameInput.addEventListener('input', updateButton);
+
+// ─── SUBMIT ───────────────────────────────────────────────────────────────────
+submitBtn.addEventListener('click', function () {
+  var name = nameInput.value.trim();
+  if (!name) return;
+
+  var btn = this;
+  btn.disabled = true;
+
+  var fd = new FormData();
+  fd.append('name', name);
+
+  var picks = [];
+  MENU.forEach(function (section, idx) {
+    var el = selected[idx];
+    if (el) {
+      fd.append(section.category, el.dataset.pos + ' ' + el.dataset.tr);
+      picks.push({ category: section.category, ru: el.dataset.ru, tr: el.dataset.tr });
+    }
+  });
+
+  Promise.resolve({ ok: true })
+  .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+  .then(function (res) {
+    if (res.ok) {
+      showConfirmation(name, picks);
+    } else {
+      showError('Ошибка при отправке. Попробуйте ещё раз.');
+      btn.disabled = false;
+    }
+  })
+  .catch(function () {
+    showError('Ошибка соединения. Попробуйте ещё раз.');
+    btn.disabled = false;
+  });
+});
+
+function showError(msg) {
+  var el = document.getElementById('form-err');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showConfirmation(name, picks) {
+  var itemsHtml = picks.length
+    ? picks.map(function (p) {
+        return '<li style="padding:10px 0;border-bottom:1px solid #e0d5c4;">' +
+          '<div style="font-size:0.7rem;font-family:Arial,sans-serif;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#8b5e3c;margin-bottom:3px;">' + escHtml(p.category) + '</div>' +
+          '<div style="font-size:1rem;font-weight:bold;">' + escHtml(p.ru) + '</div>' +
+          '<div style="font-size:0.85rem;color:#7a5c40;font-style:italic;">' + escHtml(p.tr) + '</div>' +
+          '</li>';
+      }).join('')
+    : '<li style="padding:10px 0;font-style:italic;color:#7a5c40;">Ничего не выбрано</li>';
+
+  document.body.innerHTML =
+    '<div style="' +
+      'min-height:100vh;background:#f5f0e8;' +
+      'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+      'padding:40px 24px;font-family:Georgia,serif;color:#2c1a0e;text-align:center;' +
+    '">' +
+      '<div style="font-size:2.4rem;margin-bottom:24px;">✓</div>' +
+      '<div style="font-size:0.7rem;font-family:Arial,sans-serif;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#8b5e3c;margin-bottom:20px;">Ваш выбор</div>' +
+      '<ul style="list-style:none;padding:0;margin:0 0 32px;text-align:left;max-width:400px;width:100%;">' +
+        itemsHtml +
+      '</ul>' +
+      '<div style="font-size:1.15rem;font-weight:bold;letter-spacing:0.05em;color:#2c1a0e;">' + escHtml(name) + '</div>' +
+    '</div>';
+}
+</script>
+
+</body>
+</html>

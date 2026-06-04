@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>Gallery</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #slide {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    #slide img.fade-out {
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    #slide img.fade-in {
+      opacity: 1;
+      transition: opacity 0.25s ease;
+    }
+
+    .zone {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 40%;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    #zone-prev { left: 0; }
+    #zone-next { right: 0; }
+
+    .arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    #arrow-prev { left: 12px; }
+    #arrow-next { right: 12px; }
+
+    #btn-fs {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.45);
+      cursor: pointer;
+      z-index: 30;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    #btn-fs:hover { color: rgba(255, 255, 255, 0.85); }
+
+    :fullscreen #btn-fs,
+    :-webkit-full-screen #btn-fs { display: none; }
+  </style>
+</head>
+<body>
+
+  <div id="slide">
+    <img id="photo" src="" alt="">
+  </div>
+
+  <div id="zone-prev" class="zone"></div>
+  <div id="zone-next" class="zone"></div>
+
+  <div id="arrow-prev" class="arrow">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+  </div>
+  <div id="arrow-next" class="arrow">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 18 15 12 9 6"/>
+    </svg>
+  </div>
+
+  <button id="btn-fs" title="Fullscreen">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+      <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+    </svg>
+  </button>
+
+  <audio id="click-sound" src="assets/gallery/diapoclick.mp3" preload="auto"></audio>
+
+  <script>
+    /* BUILD:total */
+    var TOTAL = 190;
+    /* BUILD:end */
+
+    var current   = 0;
+    var photo     = document.getElementById('photo');
+    var sound     = document.getElementById('click-sound');
+    var busy      = false;
+    var autoTimer = null;
+    var paused    = false;
+
+    var AUTO_INTERVAL = 15000;
+
+    function pad(n) {
+      return String(n).padStart(3, '0');
+    }
+
+    // Shuffled deck: every photo shown once before any repeat
+    var deck = [];
+    var deckPos = 0;
+
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+    }
+
+    function nextFromDeck() {
+      if (deckPos >= deck.length) {
+        deck = [];
+        for (var i = 0; i < TOTAL; i++) deck.push(i);
+        shuffle(deck);
+        // Avoid immediate repeat across reshuffles
+        if (deck[0] === current) { var tmp = deck[0]; deck[0] = deck[deck.length - 1]; deck[deck.length - 1] = tmp; }
+        deckPos = 0;
+      }
+      return deck[deckPos++];
+    }
+
+    function resetTimer() {
+      clearTimeout(autoTimer);
+      if (!paused) {
+        autoTimer = setTimeout(function () { show(nextFromDeck()); resetTimer(); }, AUTO_INTERVAL);
+      }
+    }
+
+    function togglePause() {
+      paused = !paused;
+      if (paused) {
+        clearTimeout(autoTimer);
+      } else {
+        resetTimer();
+      }
+    }
+
+    function show(index) {
+      if (busy) return;
+      busy = true;
+
+      sound.currentTime = 0;
+      sound.play().catch(function () {});
+
+      photo.classList.add('fade-out');
+      photo.classList.remove('fade-in');
+
+      setTimeout(function () {
+        current = index;
+
+        function onLoaded() {
+          photo.removeEventListener('load', onLoaded);
+          photo.classList.remove('fade-out');
+          photo.classList.add('fade-in');
+          busy = false;
+        }
+
+        photo.addEventListener('load', onLoaded);
+        photo.src = 'assets/gallery/' + pad(current) + '.jpg';
+
+        if (photo.complete) onLoaded();
+      }, 250);
+    }
+
+    function advance(delta) {
+      var next = (current + delta + TOTAL) % TOTAL;
+      show(next);
+      resetTimer();
+    }
+
+    document.getElementById('btn-fs').addEventListener('click', function (e) {
+      e.stopPropagation();
+      var el = document.body;
+      if (el.requestFullscreen)            el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    });
+
+    document.getElementById('zone-next').addEventListener('click', function () {
+      show(nextFromDeck());
+      resetTimer();
+    });
+
+    document.getElementById('zone-prev').addEventListener('click', function () {
+      show(nextFromDeck());
+      resetTimer();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === ' ')          { e.preventDefault(); togglePause(); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(nextFromDeck()); resetTimer(); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); show(nextFromDeck()); resetTimer(); }
+    });
+
+    // Init: start on a random photo
+    current = Math.floor(Math.random() * TOTAL);
+    photo.src = 'assets/gallery/' + pad(current) + '.jpg';
+    photo.classList.add('fade-in');
+    resetTimer();
+  </script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ваш выбор — Olivia Cave</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f5f0e8;
+      color: #2c1a0e;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 17px;
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #2c1a0e;
+    }
+
+    header p {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: #8b5e3c;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Choice options ── */
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .choice-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px;
+      background: #fff;
+      border: 2px solid #c9b49a;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .choice-option:hover {
+      border-color: #8b5e3c;
+    }
+
+    .choice-option.selected {
+      border-color: #8b5e3c;
+      background: #fdf8f2;
+    }
+
+    .radio-dot {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      margin-top: 2px;
+      border: 2px solid #c9b49a;
+      border-radius: 50%;
+      background: #fff;
+      position: relative;
+      transition: border-color 0.15s;
+    }
+
+    .choice-option.selected .radio-dot {
+      border-color: #8b5e3c;
+    }
+
+    .radio-dot::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      background: #8b5e3c;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .choice-option.selected .radio-dot::after {
+      opacity: 1;
+    }
+
+    .choice-text {
+      flex: 1;
+    }
+
+    .choice-name {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #2c1a0e;
+    }
+
+    .choice-name-tr {
+      font-weight: normal;
+      color: #7a5c40;
+      font-size: 0.93rem;
+    }
+
+    .choice-desc {
+      display: block;
+      margin-top: 4px;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: #5a4030;
+      line-height: 1.45;
+    }
+
+    /* ── Name field ── */
+    .name-section {
+      border-top: 1px solid #c9b49a;
+      padding-top: 24px;
+      margin-bottom: 20px;
+    }
+
+    .field-label {
+      display: block;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8b5e3c;
+      margin-bottom: 8px;
+    }
+
+    .name-input {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-family: Georgia, serif;
+      border: 2px solid #c9b49a;
+      border-radius: 6px;
+      background: #fff;
+      color: #2c1a0e;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .name-input:focus {
+      border-color: #8b5e3c;
+    }
+
+    /* ── Submit button ── */
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #2c1a0e;
+      color: #f5f0e8;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .submit-btn:hover:not(:disabled),
+    .submit-btn:active:not(:disabled) {
+      background: #8b5e3c;
+    }
+
+    .submit-btn:disabled {
+      background: #c9b49a;
+      color: #f5f0e8;
+      cursor: not-allowed;
+    }
+
+    .form-err {
+      display: none;
+      margin-top: 14px;
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.9rem;
+      color: #8b2020;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <header>
+    <h1>Olivia Cave</h1>
+    <p>Гёреме — Ужин 15 мая</p>
+  </header>
+
+  <div class="choices" id="choices"></div>
+
+  <div class="name-section">
+    <label class="field-label" for="guest-name">ИМЯ</label>
+    <input class="name-input" type="text" id="guest-name" autocomplete="given-name">
+  </div>
+
+  <button class="submit-btn" id="submit-btn" disabled>ОТПРАВИТЬ</button>
+  <p class="form-err" id="form-err"></p>
+</div>
+
+<script>
+// ─── MENU DATA ────────────────────────────────────────────────────────────────
+var CHOICES = [
+  {
+    tr:   'Testi Kebabı',
+    ru:   'Кебаб в глиняном горшке',
+    desc: 'Мясо с овощами, медленно приготовленное в запечатанном глиняном горшке. Горшок обычно разбивают при подаче.'
+  },
+  {
+    tr:   'İslim Kebabı',
+    ru:   'Кебаб с баклажаном',
+    desc: 'Фрикадельки или кусочки мяса, завернутые в ломтики баклажана и запечённые в томатном соусе.'
+  },
+  {
+    tr:   'Kırmetti Köfte',
+    ru:   'Кёфте по-кирметтийски',
+    desc: 'Небольшие мясные фрикадельки в томатном соусе с овощами; региональное блюдо Центральной Анатолии.'
+  }
+];
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+var container  = document.getElementById('choices');
+var nameInput  = document.getElementById('guest-name');
+var submitBtn  = document.getElementById('submit-btn');
+var selectedEl = null;
+
+CHOICES.forEach(function (item) {
+  var div = document.createElement('div');
+  div.className = 'choice-option';
+  div.dataset.ru = item.ru;
+  div.dataset.tr = item.tr;
+
+  var dot = document.createElement('div');
+  dot.className = 'radio-dot';
+
+  var text = document.createElement('div');
+  text.className = 'choice-text';
+
+  var nameSpan = document.createElement('span');
+  nameSpan.className = 'choice-name';
+  nameSpan.appendChild(document.createTextNode(item.ru + ' '));
+
+  var trSpan = document.createElement('span');
+  trSpan.className = 'choice-name-tr';
+  trSpan.textContent = '(' + item.tr + ')';
+  nameSpan.appendChild(trSpan);
+
+  var descSpan = document.createElement('span');
+  descSpan.className = 'choice-desc';
+  descSpan.textContent = item.desc;
+
+  text.appendChild(nameSpan);
+  text.appendChild(descSpan);
+  div.appendChild(dot);
+  div.appendChild(text);
+  container.appendChild(div);
+
+  div.addEventListener('click', function () {
+    if (selectedEl) selectedEl.classList.remove('selected');
+    selectedEl = div;
+    div.classList.add('selected');
+    updateButton();
+  });
+});
+
+// ─── NAME GATE ────────────────────────────────────────────────────────────────
+function updateButton() {
+  submitBtn.disabled = !(selectedEl && nameInput.value.trim() !== '');
+}
+
+nameInput.addEventListener('input', updateButton);
+
+// ─── SUBMIT ───────────────────────────────────────────────────────────────────
+submitBtn.addEventListener('click', function () {
+  var name = nameInput.value.trim();
+  if (!name || !selectedEl) return;
+
+  var btn = this;
+  btn.disabled = true;
+
+  var fd = new FormData();
+  fd.append('name',   name);
+  fd.append('choice', selectedEl.dataset.tr);
+
+  Promise.resolve({ ok: true })
+  .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+  .then(function (res) {
+    if (res.ok) {
+      showConfirmation(name, selectedEl.dataset.ru, selectedEl.dataset.tr);
+    } else {
+      showError('Ошибка при отправке. Попробуйте ещё раз.');
+      btn.disabled = false;
+    }
+  })
+  .catch(function () {
+    showError('Ошибка соединения. Попробуйте ещё раз.');
+    btn.disabled = false;
+  });
+});
+
+function showError(msg) {
+  var el = document.getElementById('form-err');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showConfirmation(name, ru, tr) {
+  document.body.innerHTML =
+    '<div style="' +
+      'min-height:100vh;' +
+      'background:#f5f0e8;' +
+      'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+      'padding:40px 24px;' +
+      'font-family:Georgia,serif;' +
+      'color:#2c1a0e;' +
+      'text-align:center;' +
+    '">' +
+      '<div style="font-size:2.4rem;margin-bottom:24px;">✓</div>' +
+      '<div style="' +
+        'font-size:0.7rem;' +
+        'font-family:Arial,sans-serif;' +
+        'font-weight:700;' +
+        'letter-spacing:0.2em;' +
+        'text-transform:uppercase;' +
+        'color:#8b5e3c;' +
+        'margin-bottom:20px;' +
+      '">Ваш выбор</div>' +
+      '<div style="font-size:1.05rem;font-weight:bold;margin-bottom:4px;">' + escHtml(ru) + '</div>' +
+      '<div style="font-size:0.9rem;color:#7a5c40;font-style:italic;margin-bottom:32px;">' + escHtml(tr) + '</div>' +
+      '<div style="' +
+        'font-size:1.15rem;' +
+        'font-weight:bold;' +
+        'letter-spacing:0.05em;' +
+        'color:#2c1a0e;' +
+      '">' + escHtml(name) + '</div>' +
+    '</div>';
+}
+</script>
+
+</body>
+</html>
